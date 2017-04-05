@@ -15,11 +15,37 @@ public class Node : MonoBehaviour
     private int _cost;
     public int Cost { get { return _cost; } set { _cost = value; } }
 
+    // このノードにつながっているノード
+    private List<Node> _linkNodes = new List<Node>();
+    public List<Node> LinkNodes { get { return _linkNodes; } set { _linkNodes = value; } }
+
+    // ノードに伸びる線
+    [SerializeField]
+    private GameObject _linkLine;
+    private List<NodeLinkLine> _linkLines = new List<NodeLinkLine>();
+    public List<NodeLinkLine> LinkLines { get { return _linkLines; } set { _linkLines = value; } }
 
 
     void Start()
     {
+        ConnectLines();
+    }
 
+    public void Link(Node node)
+    {
+        _linkNodes.Add(node);
+    }
+
+    public void ConnectLines()
+    {
+        for (int i = 0; i < _linkNodes.Count; i++)
+        {
+            var prefab = Instantiate(_linkLine, transform);
+
+            var line = prefab.GetComponent<NodeLinkLine>();
+            line.SetLinkNode(_linkNodes[i]);
+            _linkLines.Add(line);
+        }
     }
 
     void Update()

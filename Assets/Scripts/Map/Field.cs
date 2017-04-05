@@ -17,12 +17,14 @@ public class Field : MonoBehaviour
     private int _loadNum = 40;
 
 
+    private int _surfaceNum = 4;
     private int _interval = 3;
     private int _heightInterval = 6;
 
     void Start()
     {
         NodesInitialize();
+        NodesLink();
     }
 
     private void NodesInitialize()
@@ -39,18 +41,18 @@ public class Field : MonoBehaviour
 
                 var direction = SurfaceDirection(surface_num);
                 pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
-                
+
                 node.transform.position = pos;
 
                 floor.Add(Instantiate(node, transform));
 
-                // 曲がり角
-                if (x % (_loadNum / 4) == (_loadNum / 4) - 1)
+                // 面のカウントを増やす
+                if (x % (_loadNum / _surfaceNum) == (_loadNum / _surfaceNum) - 1)
                     surface_num++;
             }
             pos += new Vector3(0, _heightInterval, 0);
             _nodes.Add(floor);
-            floor.Clear();
+            //floor.Clear();
         }
     }
 
@@ -66,7 +68,34 @@ public class Field : MonoBehaviour
             return new Vector3(0, 1, -1);
         return Vector3.zero;
     }
-    
+
+    private void NodesLink()
+    {
+        for (int y = 0; y < _nodes.Count; y++)
+        {
+            for (int x = 0; x < _nodes[y].Count; x++)
+            {
+                var node = _nodes[y][x].GetComponent<Node>();
+
+                if (x < _loadNum - 1)
+                {
+                    var next_node = _nodes[y][x + 1].GetComponent<Node>();
+                    node.Link(next_node);
+                }
+                else
+                    node.LinkNodes.Add(_nodes[y][0].GetComponent<Node>());
+
+                if (x > 0)
+                {
+                    var previos_node = _nodes[y][x - 1].GetComponent<Node>();
+                    node.Link(previos_node);
+                }
+                else
+                    node.LinkNodes.Add(_nodes[y][_loadNum - 1].GetComponent<Node>());
+            }
+        }
+    }
+
     void Update()
     {
 
