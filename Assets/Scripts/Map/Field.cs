@@ -83,15 +83,17 @@ public class Field : MonoBehaviour
                     node.Link(next_node);
                 }
                 else
-                    node.LinkNodes.Add(_nodes[y][0].GetComponent<Node>());
-
-                if (x > 0)
                 {
-                    var previos_node = _nodes[y][x - 1].GetComponent<Node>();
-                    node.Link(previos_node);
+                    var next_node = _nodes[y][0].GetComponent<Node>();
+                    node.Link(next_node);
                 }
-                else
-                    node.LinkNodes.Add(_nodes[y][_loadNum - 1].GetComponent<Node>());
+
+                // 階段お試し
+                if (x % 6 == 0 && y < _nodes.Count - 1)
+                {
+                    var next_node = _nodes[y + 1][x + 2].GetComponent<Node>();
+                    node.Link(next_node);
+                }
             }
         }
     }

@@ -6,7 +6,6 @@ public class Node : MonoBehaviour
 {
 
     // ダイクストラ法 http://www.deqnotes.net/acmicpc/dijkstra/
-
     // 確定かどうか
     private bool _isDone;
     public bool IsDone { get { return _isDone; } set { _isDone = value; } }
@@ -33,7 +32,11 @@ public class Node : MonoBehaviour
 
     public void Link(Node node)
     {
+        foreach (var link_nodes in _linkNodes)
+            if (link_nodes == node)
+                return;
         _linkNodes.Add(node);
+        node.Link(this);
     }
 
     public void ConnectLines()
