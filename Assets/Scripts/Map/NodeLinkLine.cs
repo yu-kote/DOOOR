@@ -8,7 +8,7 @@ public class NodeLinkLine : MonoBehaviour
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
-    
+
     void Awake()
     {
         CreateLine();
