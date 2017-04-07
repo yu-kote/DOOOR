@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour
 {
-	// 移動量
+
 	[SerializeField]
-	private Vector3 _moveSpeed = Vector3.one;
-	public Vector3 MoveSpeed {
+	private Vector2 _moveSpeed = Vector2.one;
+	public Vector2 MoveSpeed {
+
 		get { return _moveSpeed; }
 		set { _moveSpeed = value; }
 	}
@@ -24,6 +25,7 @@ public class PlayerMover : MonoBehaviour
 
 	void Update()
 	{
+
 		// 軸の傾きを獲得
 		float horizotal = Input.GetAxis("Horizotal");
 		float vertical = Input.GetAxis("Vecrtical");
