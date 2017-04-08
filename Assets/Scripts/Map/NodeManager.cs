@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using System.Linq;
+using System;
 
-public class Field : MonoBehaviour
+public class NodeManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject _node;
 
-    // 面の、高さの、横
+    // 高さの、横
     private List<List<GameObject>> _nodes = new List<List<GameObject>>();
-
     public List<List<GameObject>> Nodes { get { return _nodes; } set { _nodes = value; } }
 
     private int _topFloor = 3;
@@ -21,7 +23,7 @@ public class Field : MonoBehaviour
     private int _interval = 3;
     private int _heightInterval = 6;
 
-    void Start()
+    void Awake()
     {
         NodesInitialize();
         NodesLink();
@@ -52,7 +54,6 @@ public class Field : MonoBehaviour
             }
             pos += new Vector3(0, _heightInterval, 0);
             _nodes.Add(floor);
-            //floor.Clear();
         }
     }
 
@@ -96,10 +97,5 @@ public class Field : MonoBehaviour
                 }
             }
         }
-    }
-
-    void Update()
-    {
-
     }
 }
