@@ -27,6 +27,7 @@ public class NodeManager : MonoBehaviour
     {
         NodesInitialize();
         NodesLink();
+        AttributeTest();
     }
 
     private void NodesInitialize()
@@ -49,15 +50,19 @@ public class NodeManager : MonoBehaviour
                 floor.Add(Instantiate(node, transform));
 
                 // 面のカウントを増やす
-                if (x % (_loadNum / _surfaceNum) == (_loadNum / _surfaceNum) - 1)
+                if (IsCorner(x))
                 {
-
                     surface_num++;
                 }
             }
             pos += new Vector3(0, _heightInterval, 0);
             _nodes.Add(floor);
         }
+    }
+
+    private bool IsCorner(int value)
+    {
+        return value % (_loadNum / _surfaceNum) == (_loadNum / _surfaceNum) - 1;
     }
 
     private Vector3 SurfaceDirection(int surface_num)
@@ -98,8 +103,39 @@ public class NodeManager : MonoBehaviour
                     var next_node = _nodes[y + 1][x + 2].GetComponent<Node>();
                     node.Link(next_node);
                     node.gameObject.AddComponent<Stairs>();
+                    next_node.gameObject.AddComponent<Stairs>();
                 }
             }
         }
     }
+
+    /// <summary>
+    /// 障害物を試しにおいてみる
+    /// </summary>
+    private void AttributeTest()
+    {
+        for (int y = 0; y < _nodes.Count; y++)
+        {
+            for (int x = 0; x < _nodes[y].Count; x++)
+            {
+                var node = _nodes[y][x].GetComponent<Node>();
+
+                if (IsCorner(x))
+                {
+                    node.gameObject.AddComponent<Corner>();
+                    continue;
+                }
+                if (AttributeRandom())
+                    node.gameObject.AddComponent<Wall>();
+
+            }
+        }
+    }
+
+    private bool AttributeRandom(int max = 100)
+    {
+        var r = UnityEngine.Random.Range(0, max);
+        return r < 10;
+    }
+
 }

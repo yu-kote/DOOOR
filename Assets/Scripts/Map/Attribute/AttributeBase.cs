@@ -19,4 +19,9 @@ public class AttributeBase : MonoBehaviour
         if (_attribute)
             Destroy(_attribute);
     }
+
+    public bool IsInstanceAttribute()
+    {
+        return _attribute != null;
+    }
 }
