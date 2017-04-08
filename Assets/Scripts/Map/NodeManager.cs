@@ -50,7 +50,10 @@ public class NodeManager : MonoBehaviour
 
                 // 面のカウントを増やす
                 if (x % (_loadNum / _surfaceNum) == (_loadNum / _surfaceNum) - 1)
+                {
+
                     surface_num++;
+                }
             }
             pos += new Vector3(0, _heightInterval, 0);
             _nodes.Add(floor);
@@ -94,6 +97,7 @@ public class NodeManager : MonoBehaviour
                 {
                     var next_node = _nodes[y + 1][x + 2].GetComponent<Node>();
                     node.Link(next_node);
+                    node.gameObject.AddComponent<Stairs>();
                 }
             }
         }

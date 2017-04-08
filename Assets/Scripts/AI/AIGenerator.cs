@@ -32,6 +32,7 @@ public class AIGenerator : MonoBehaviour
         var start_pos = start_node.transform.position;
 
         human.transform.position = start_pos;
+        human.transform.position += new Vector3(0, human.transform.localScale.y, 0);
 
         var my_number = human.GetComponent<MyNumber>();
         my_number.Number = _generateCount;
@@ -50,11 +51,5 @@ public class AIGenerator : MonoBehaviour
     void CreateKiller()
     {
         CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
-    }
-
-
-    void Update()
-    {
-
     }
 }
