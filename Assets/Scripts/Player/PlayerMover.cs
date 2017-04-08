@@ -40,7 +40,6 @@ public class PlayerMover : MonoBehaviour
 		float cameraRotateYValue = _cameraTrans.eulerAngles.y;
 
 		// カメラが見ている方向に対して移動軸を変更しないといけない
-		// 未実装
 		Vector3 movingAmount = new Vector3(
 			_moveSpeed.x * horizotal * Mathf.Cos(cameraRotateYValue * Mathf.Deg2Rad),
 			_moveSpeed.y * vertical,
