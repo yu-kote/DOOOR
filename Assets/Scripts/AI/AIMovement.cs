@@ -21,14 +21,16 @@ public class AIMovement : MonoBehaviour
 
     private bool _canMove = false;
 
+    [SerializeField]
+    private float _speed = 0;
+
     void Start()
     {
         _field = GameObject.Find("Field");
         _nodeController = _field.GetComponent<NodeController>();
         _myNumber = GetComponent<MyNumber>();
-
+        AddFootPrint();
         NextNodeSearch();
-
     }
 
     void AddFootPrint()
@@ -63,7 +65,7 @@ public class AIMovement : MonoBehaviour
         {
             var distance = _nextNode.transform.position - _currentNode.transform.position;
             _moveDistance = distance;
-            _moveDirection = distance * 0.01f;
+            _moveDirection = distance * 0.01f * _speed;
             LeaveFootPrint();
             _currentNode = _nextNode;
             AddFootPrint();
@@ -79,7 +81,7 @@ public class AIMovement : MonoBehaviour
         // まだ足跡がついてないノードを探す
         var candidate = NotFootPrintNode();
 
-        if (candidate == null)
+        if (candidate.Count == 0)
         {
             _nodeController.EraseTraces(_myNumber);
             candidate = NotFootPrintNode();
@@ -87,7 +89,6 @@ public class AIMovement : MonoBehaviour
 
         var next_node_num = Random.Range(0, candidate.Count);
 
-        Debug.Log(next_node_num);
         _nextNode = candidate[next_node_num];
     }
 

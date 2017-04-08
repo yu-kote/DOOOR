@@ -16,12 +16,15 @@ public class NodeController : MonoBehaviour
     // 足跡を消す
     public void EraseTraces(MyNumber mynumber)
     {
-        var nodes = _nodeManager.Nodes.Cast<GameObject>();
+        var nodes = _nodeManager.Nodes;
 
-        foreach (var node in nodes)
+        foreach (var y in nodes)
         {
-            var footprint = node.GetComponent<FootPrint>();
-            footprint.Traces.Remove(mynumber);
+            foreach (var node in y)
+            {
+                var footprint = node.GetComponent<FootPrint>();
+                footprint.Traces.Remove(mynumber);
+            }
         }
     }
 }
