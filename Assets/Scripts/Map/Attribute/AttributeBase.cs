@@ -8,8 +8,12 @@ public class AttributeBase : MonoBehaviour
 
     protected void CreateAttribute(string prefab_name)
     {
-        _attribute = Resources.Load<GameObject>("Prefabs/FieldObject/" + prefab_name);
+        _attribute = Resources.Load<GameObject>("Prefabs/Attribute/" + prefab_name);
         _attribute = Instantiate(_attribute, transform);
+
+        // ノードの子に設定するとき、
+        // Unityが自動的にposとrotateを修正してしまうので、
+        // 親のposとrotateに合わせるために初期化する
 
         _attribute.transform.localPosition = Vector3.zero;
         _attribute.transform.localEulerAngles = Vector3.zero;

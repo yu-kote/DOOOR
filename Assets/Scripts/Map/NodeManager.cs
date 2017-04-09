@@ -32,35 +32,33 @@ public class NodeManager : MonoBehaviour
 
     private void NodesInitialize()
     {
-        var pos = new Vector3();
-
+        // nodeのインスタンス
         for (int y = 0; y < _topFloor; y++)
         {
             List<GameObject> floor = new List<GameObject>();
             for (int x = 0; x < _loadNum; x++)
             {
-                // 面の番号を出す
-                var surface_num = WhichSurfaceNum(x);
-
-                var direction = SurfaceDirection(surface_num);
-
-                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
-                _node.transform.position = pos;
-
                 floor.Add(Instantiate(_node, transform));
             }
-            pos += new Vector3(0, _heightInterval, 0);
             _nodes.Add(floor);
         }
-        
+
+        var pos = new Vector3();
+
         // プレハブが直接いじられてしまうので、別枠でfor文を回す
         for (int y = 0; y < _topFloor; y++)
         {
             for (int x = 0; x < _loadNum; x++)
             {
                 var node = _nodes[y][x].GetComponent<Node>();
+
+                var direction = SurfaceDirection(WhichSurfaceNum(x));
+
+                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
+                node.transform.position = pos;
                 node.transform.Rotate(SurfaceRotation(WhichSurfaceNum(x)));
             }
+            pos += new Vector3(0, _heightInterval, 0);
         }
     }
 
@@ -118,15 +116,6 @@ public class NodeManager : MonoBehaviour
                     var next_node = _nodes[y][0].GetComponent<Node>();
                     node.Link(next_node);
                 }
-
-                // 階段お試し
-                if (x % 7 == 0 && y < _nodes.Count - 1)
-                {
-                    var next_node = _nodes[y + 1][x + 2].GetComponent<Node>();
-                    node.Link(next_node);
-                    node.gameObject.AddComponent<Stairs>();
-                    next_node.gameObject.AddComponent<Stairs>();
-                }
             }
         }
     }
@@ -150,6 +139,14 @@ public class NodeManager : MonoBehaviour
                 if (AttributeRandom())
                     node.gameObject.AddComponent<Wall>();
 
+                // 階段お試し
+                if (x % 7 == 0 && y < _nodes.Count - 1)
+                {
+                    var next_node = _nodes[y + 1][x + 2].GetComponent<Node>();
+                    node.Link(next_node);
+                    node.gameObject.AddComponent<Stairs>();
+                    next_node.gameObject.AddComponent<Stairs>();
+                }
             }
         }
     }
