@@ -17,8 +17,7 @@ public class NodeManager : MonoBehaviour
     private int _topFloor = 3;
 
     private int _loadNum = 60;
-
-
+    
     private int _surfaceNum = 4;
     private int _interval = 3;
     private int _heightInterval = 6;
