@@ -12,6 +12,7 @@ public class AttributeBase : MonoBehaviour
         _attribute = Instantiate(_attribute, transform);
 
         _attribute.transform.localPosition = Vector3.zero;
+        _attribute.transform.localEulerAngles = Vector3.zero;
     }
 
     private void OnDestroy()
