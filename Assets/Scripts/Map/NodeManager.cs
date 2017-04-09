@@ -17,7 +17,7 @@ public class NodeManager : MonoBehaviour
     private int _topFloor = 3;
 
     private int _loadNum = 60;
-    
+
     private int _surfaceNum = 4;
     private int _interval = 3;
     private int _heightInterval = 6;
@@ -27,6 +27,8 @@ public class NodeManager : MonoBehaviour
         NodesInitialize();
         NodesLink();
         AttributeTest();
+
+        Debug.Log(GetNodesCenterPoint());
     }
 
     private void NodesInitialize()
@@ -53,9 +55,9 @@ public class NodeManager : MonoBehaviour
 
                 var direction = SurfaceDirection(WhichSurfaceNum(x));
 
-                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
                 node.transform.position = pos;
                 node.transform.Rotate(SurfaceRotation(WhichSurfaceNum(x)));
+                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
             }
             pos += new Vector3(0, _heightInterval, 0);
         }
@@ -154,6 +156,14 @@ public class NodeManager : MonoBehaviour
     {
         var r = UnityEngine.Random.Range(0, max);
         return r < 10;
+    }
+
+    public Vector3 GetNodesCenterPoint()
+    {
+        var x = (_loadNum / _surfaceNum) * _interval / 2.0f;
+        var y = (_topFloor * _heightInterval) / 2.0f;
+        var z = x;
+        return new Vector3(x, y, z);
     }
 
 }
