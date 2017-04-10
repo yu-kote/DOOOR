@@ -18,7 +18,7 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
         {
-            CreateKiller();
+            //CreateKiller();
         });
     }
 
@@ -37,8 +37,9 @@ public class AIGenerator : MonoBehaviour
         var my_number = human.GetComponent<MyNumber>();
         my_number.Number = _generateCount;
 
-        var movement = human.GetComponent<AIMovement>();
-        movement.CurrentNode = start_node.GetComponent<Node>();
+        //var movement = human.GetComponent<AIMovement>();
+        //movement.CurrentNode = start_node.GetComponent<Node>();
+        start_node.GetComponent<FootPrint>().StepIn(human);
 
         _generateCount++;
     }

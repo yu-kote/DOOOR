@@ -22,17 +22,20 @@ public class AIMovement : MonoBehaviour
     [SerializeField]
     private Vector3 _moveLength;
 
-    private bool _canMove = false;
+    private bool _canMove = true;
+    public bool CanMove { get { return _canMove; } set { _canMove = value; } }
+
 
     [SerializeField]
-    private float _speed = 0;
+    private float _speed = 1;
 
     void Start()
     {
         _field = GameObject.Find("Field");
         _nodeController = _field.GetComponent<NodeController>();
         _myNumber = GetComponent<MyNumber>();
-        AddFootPrint(_currentNode);
+        var node_manager = _field.GetComponent<NodeManager>();
+        _currentNode = node_manager.SearchOnNodeHuman(gameObject);
         NextNodeSearch();
     }
 
@@ -64,9 +67,7 @@ public class AIMovement : MonoBehaviour
         //    AddFootPrint();
         //    _canMove = true;
         //});
-
-        Move();
-
+        
         // 次の移動先が決まったら
         if (_nextNode != _currentNode)
         {
@@ -83,15 +84,13 @@ public class AIMovement : MonoBehaviour
 
             // 今いるノードを更新する
             _currentNode = _nextNode;
-
-            _canMove = true;
         }
+
+        Move();
     }
 
     void NextNodeSearch()
     {
-        _canMove = false;
-
         // まだ足跡がついてないノードを探す
         var candidate = CanMoveNode();
 
@@ -139,4 +138,5 @@ public class AIMovement : MonoBehaviour
     {
         return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.z), Mathf.Abs(value.z));
     }
+
 }

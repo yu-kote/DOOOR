@@ -6,7 +6,7 @@ using System.Linq;
 public class NodeController : MonoBehaviour
 {
     private NodeManager _nodeManager;
-    
+
     void Start()
     {
         _nodeManager = GetComponent<NodeManager>();
@@ -22,7 +22,8 @@ public class NodeController : MonoBehaviour
             foreach (var node in y)
             {
                 var footprint = node.GetComponent<FootPrint>();
-                footprint.Traces.Remove(mynumber);
+                if (footprint != null)
+                    footprint.Traces.Remove(mynumber);
             }
         }
     }
