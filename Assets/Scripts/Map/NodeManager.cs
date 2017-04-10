@@ -27,8 +27,6 @@ public class NodeManager : MonoBehaviour
         NodesInitialize();
         NodesLink();
         AttributeTest();
-
-        Debug.Log(GetNodesCenterPoint());
     }
 
     private void NodesInitialize()
@@ -156,6 +154,19 @@ public class NodeManager : MonoBehaviour
     {
         var r = UnityEngine.Random.Range(0, max);
         return r < 10;
+    }
+
+    public Node SearchOnNodeHuman(GameObject human)
+    {
+        foreach (var y in _nodes)
+        {
+            foreach (var node in y)
+            {
+                if (node.GetComponent<FootPrint>().HumansOnNode.Contains(human))
+                    return node.GetComponent<Node>();
+            }
+        }
+        return null;
     }
 
     public Vector3 GetNodesCenterPoint()
