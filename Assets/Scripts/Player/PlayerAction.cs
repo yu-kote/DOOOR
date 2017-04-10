@@ -12,4 +12,17 @@ public class PlayerAction : MonoBehaviour
 	{
 		return Input.GetButtonDown(_actionButton);
 	}
+
+	public void OnTriggerEnter(Collider other)
+	{
+		//ボタン押してなかったらはじく
+		if (!IsPushAcitonButton())
+			return;
+		//ノードの情報にトラップがあるかどうかを見る
+		//未実装
+		//if(!node.isTrap)
+		//  return;
+
+		other.GetComponent<TrapSpawner>().SpawnTrap();
+	}
 }
