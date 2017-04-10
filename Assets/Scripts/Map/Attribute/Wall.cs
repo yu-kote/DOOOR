@@ -7,6 +7,5 @@ public class Wall : AttributeBase
     void Start()
     {
         CreateAttribute("Wall");
-
     }
 }

@@ -23,6 +23,13 @@ public class FootPrint : MonoBehaviour
         _traces.Add(num);
     }
 
+    public void AddTrace(GameObject human)
+    {
+        var num = human.GetComponent<MyNumber>();
+        if (_traces.Contains(num)) return;
+        _traces.Add(num);
+    }
+
     public void StepOut(GameObject human)
     {
         _humansOnNode.Remove(human);

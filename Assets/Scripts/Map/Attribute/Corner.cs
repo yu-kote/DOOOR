@@ -7,6 +7,5 @@ public class Corner : AttributeBase
     void Start()
     {
         CreateAttribute("Corner");
-
     }
 }

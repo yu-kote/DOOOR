@@ -6,8 +6,7 @@ using System.Linq;
 public class NodeController : MonoBehaviour
 {
     private NodeManager _nodeManager;
-
-
+    
     void Start()
     {
         _nodeManager = GetComponent<NodeManager>();

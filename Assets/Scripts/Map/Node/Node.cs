@@ -16,7 +16,6 @@ public class Node : MonoBehaviour
     private List<NodeLinkLine> _linkLines = new List<NodeLinkLine>();
     public List<NodeLinkLine> LinkLines { get { return _linkLines; } set { _linkLines = value; } }
 
-
     void Start()
     {
         ConnectLines();
@@ -43,8 +42,19 @@ public class Node : MonoBehaviour
         }
     }
 
-    void Update()
+    /// <summary>
+    /// つながっているノードに引数のコンポーネントがあるかどうかを返す関数
+    /// </summary>
+    public T LinkNodeComponentCheck<T>()
     {
-
+        foreach (var nodes in _linkNodes)
+        {
+            var component = nodes.gameObject.GetComponent<T>();
+            if (component != null)
+            {
+                return component;
+            }
+        }
+        return default(T);
     }
 }

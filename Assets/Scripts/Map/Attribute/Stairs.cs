@@ -6,7 +6,9 @@ public class Stairs : AttributeBase
 {
     void Start()
     {
-        CreateAttribute("Stairs");
+        var node = gameObject.GetComponent<Node>();
+        var node_attribute = node.LinkNodeComponentCheck<Stairs>();
+        if (node_attribute.IsInstanceAttribute() == false)
+            CreateAttribute("Stairs");
     }
-    
 }
