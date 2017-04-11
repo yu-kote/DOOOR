@@ -22,11 +22,11 @@ public class AIMovement : MonoBehaviour
 
     private bool _canMove = true;
     public bool CanMove { get { return _canMove; } set { _canMove = value; } }
-    
+
     [SerializeField]
     private float _speed = 1;
 
-    void Start()
+    public void Start()
     {
         _field = GameObject.Find("Field");
         _nodeController = _field.GetComponent<NodeController>();
@@ -36,13 +36,13 @@ public class AIMovement : MonoBehaviour
         NextNodeSearch();
     }
 
-    void AddFootPrint(Node node)
+    public void AddFootPrint(Node node)
     {
         var foot_print = node.GetComponent<FootPrint>();
         foot_print.StepIn(gameObject);
     }
 
-    void LeaveFootPrint(Node node)
+    public void LeaveFootPrint(Node node)
     {
         var foot_print = node.GetComponent<FootPrint>();
         foot_print.StepOut(gameObject);
@@ -82,7 +82,6 @@ public class AIMovement : MonoBehaviour
             // 今いるノードを更新する
             _currentNode = _nextNode;
         }
-
         Move();
     }
 
