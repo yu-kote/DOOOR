@@ -50,6 +50,8 @@ public class NodeManager : MonoBehaviour
             for (int x = 0; x < _loadNum; x++)
             {
                 var node = _nodes[y][x].GetComponent<Node>();
+                node.CellX = x;
+                node.CellY = y;
 
                 var direction = SurfaceDirection(WhichSurfaceNum(x));
 
