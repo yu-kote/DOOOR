@@ -14,7 +14,7 @@ public class AITrapEffect : MonoBehaviour
     }
 
     // 今のところは瞬間移動になる
-    void ToMove(Node target_node)
+    public void ToMove(Node target_node)
     {
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
 

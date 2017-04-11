@@ -31,7 +31,7 @@ public class PitFall : MonoBehaviour
 			Debug.Log("_footPrint is null");
 
 		_nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
-		if(_nodeManager == null)
+		if (_nodeManager == null)
 			Debug.Log("_nodeManager is null");
 	}
 
@@ -55,6 +55,9 @@ public class PitFall : MonoBehaviour
 		//下に壁があれば落ちない
 		if (underNode.GetComponent<Wall>() != null)
 			return;
+
+		foreach (var human in _footPrint.HumansOnNode)
+			human.GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
 
 		Debug.Log("・・・・・・・・・・・・・・・");
 		Debug.Log("落とし穴　作動");
