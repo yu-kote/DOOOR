@@ -46,8 +46,6 @@ public class PlayerMover : MonoBehaviour
 			_moveSpeed.x * -horizotal * Mathf.Sin(cameraRotateYValue * Mathf.Deg2Rad))
 			* deltaTime;
 
-		Debug.Log(cameraRotateYValue);
-
 		transform.position += movingAmount;
 
 		// ステージないから出れないようにする処理
