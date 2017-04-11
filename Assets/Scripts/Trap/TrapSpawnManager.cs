@@ -26,6 +26,9 @@ public class TrapSpawnManager : MonoBehaviour
 			case TrapType.PITFALLS:
 				_trapObject.GetComponent<PitFall>().FootPrint
 					= nodeTrans.GetComponent<FootPrint>();
+				_trapObject.GetComponent<PitFall>().NodeCell
+					= new Vector2(nodeTrans.GetComponent<Node>().CellX,
+					nodeTrans.GetComponent<Node>().CellY);
 				break;
 			case TrapType.NONE:
 				break;
