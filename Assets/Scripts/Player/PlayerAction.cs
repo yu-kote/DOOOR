@@ -25,32 +25,26 @@ public class PlayerAction : MonoBehaviour
 	//今選択しているトラップが設置できる場合生成する
 	public void OnTriggerStay(Collider other)
 	{
-		Debug.Log("入ってる");
-
 		//ボタン押してなかったらはじく
 		if (!Input.GetButtonDown(_actionButton))
 			return;
 
-		Debug.Log("押した");
-
 		TrapStatus trapStatus = other.GetComponent<TrapStatus>();
+
+		if (trapStatus == null)
+			return;
+
 		//生成済みだった場合はじく
 		if (trapStatus.IsSpawn)
 			return;
-
-		Debug.Log("まだ生成されてない");
 
 		//何も設置できない場合はじく
 		if (trapStatus.CanSetTrapStatus == 0)
 			return;
 
-		Debug.Log("ここはなんか設置できる");
-
 		//設置不可能だった場合はじく
 		if (!trapStatus.IsCanSetTrap(_selectTrapType))
 			return;
-
-		Debug.Log("生成すっか");
 
 		//トラップ生成
 		_trapSpawnManager.SpawnTrap(_selectTrapType, other.transform);
