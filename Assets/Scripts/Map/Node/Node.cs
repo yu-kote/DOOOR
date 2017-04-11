@@ -6,6 +6,12 @@ public class Node : MonoBehaviour
 {
     // ダイクストラ法 http://www.deqnotes.net/acmicpc/dijkstra/
 
+    private int cell_x;
+    public int CellX { get { return cell_x; } set { cell_x = value; } }
+    private int cell_y;
+    public int CellY { get { return cell_y; } set { cell_y = value; } }
+
+
     // このノードにつながっているノード
     private List<Node> _linkNodes = new List<Node>();
     public List<Node> LinkNodes { get { return _linkNodes; } set { _linkNodes = value; } }
@@ -15,7 +21,6 @@ public class Node : MonoBehaviour
     private GameObject _linkLine;
     private List<NodeLinkLine> _linkLines = new List<NodeLinkLine>();
     public List<NodeLinkLine> LinkLines { get { return _linkLines; } set { _linkLines = value; } }
-
 
     void Start()
     {
@@ -43,8 +48,19 @@ public class Node : MonoBehaviour
         }
     }
 
-    void Update()
+    /// <summary>
+    /// つながっているノードに引数のコンポーネントがあるかどうかを返す関数
+    /// </summary>
+    public T LinkNodeComponentCheck<T>()
     {
-
+        foreach (var nodes in _linkNodes)
+        {
+            var component = nodes.gameObject.GetComponent<T>();
+            if (component != null)
+            {
+                return component;
+            }
+        }
+        return default(T);
     }
 }

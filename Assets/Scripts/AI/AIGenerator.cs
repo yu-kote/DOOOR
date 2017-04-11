@@ -18,7 +18,7 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
         {
-            CreateKiller();
+            //CreateKiller();
         });
     }
 
@@ -32,12 +32,14 @@ public class AIGenerator : MonoBehaviour
         var start_pos = start_node.transform.position;
 
         human.transform.position = start_pos;
+        human.transform.position += new Vector3(0, human.transform.localScale.y, 0);
 
         var my_number = human.GetComponent<MyNumber>();
         my_number.Number = _generateCount;
 
-        var movement = human.GetComponent<AIMovement>();
-        movement.CurrentNode = start_node.GetComponent<Node>();
+        //var movement = human.GetComponent<AIMovement>();
+        //movement.CurrentNode = start_node.GetComponent<Node>();
+        start_node.GetComponent<FootPrint>().StepIn(human);
 
         _generateCount++;
     }
@@ -50,11 +52,5 @@ public class AIGenerator : MonoBehaviour
     void CreateKiller()
     {
         CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
-    }
-
-
-    void Update()
-    {
-
     }
 }
