@@ -12,8 +12,6 @@ public class AIMovement : MonoBehaviour
     private MyNumber _myNumber;
 
     private Node _currentNode;
-    public Node CurrentNode { get { return _currentNode; } set { _currentNode = value; } }
-
     private Node _nextNode = null;
 
     // デバッグ用にSerializeField
@@ -24,8 +22,7 @@ public class AIMovement : MonoBehaviour
 
     private bool _canMove = true;
     public bool CanMove { get { return _canMove; } set { _canMove = value; } }
-
-
+    
     [SerializeField]
     private float _speed = 1;
 
@@ -67,7 +64,7 @@ public class AIMovement : MonoBehaviour
         //    AddFootPrint();
         //    _canMove = true;
         //});
-        
+
         // 次の移動先が決まったら
         if (_nextNode != _currentNode)
         {
@@ -138,5 +135,4 @@ public class AIMovement : MonoBehaviour
     {
         return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.z), Mathf.Abs(value.z));
     }
-
 }
