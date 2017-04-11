@@ -7,22 +7,57 @@ public class PlayerAction : MonoBehaviour
 	// プレイヤーがマップに対してアクションを起こす時に押すボタン
 	[SerializeField]
 	private string _actionButton = "Action";
+	//選択しているトラップのタイプ
+	[SerializeField]
+	private TrapType _selectTrapType = TrapType.PITFALLS;
 
-	public bool IsPushAcitonButton()
+	private TrapSpawnManager _trapSpawnManager = null;
+
+	void Start()
 	{
-		return Input.GetButtonDown(_actionButton);
+		_trapSpawnManager
+			= GameObject.Find("TrapSpawnManager").GetComponent<TrapSpawnManager>();
+		if (_trapSpawnManager == null)
+			Debug.Log("_trapSpawnManager is null");
 	}
 
-	public void OnTriggerEnter(Collider other)
+	//プレイヤーのトリガーの範囲内に入ったノードのトラップステータスの情報を見て
+	//今選択しているトラップが設置できる場合生成する
+	public void OnTriggerStay(Collider other)
 	{
+		Debug.Log("入ってる");
+
 		//ボタン押してなかったらはじく
-		if (!IsPushAcitonButton())
+		if (!Input.GetButtonDown(_actionButton))
 			return;
-		//ノードの情報にトラップがあるかどうかを見る
-		//未実装
-		//if(!node.isTrap)
-		//  return;
 
-		other.GetComponent<TrapSpawner>().SpawnTrap();
+		Debug.Log("押した");
+
+		TrapStatus trapStatus = other.GetComponent<TrapStatus>();
+		//生成済みだった場合はじく
+		if (trapStatus.IsSpawn)
+			return;
+
+		Debug.Log("まだ生成されてない");
+
+		//何も設置できない場合はじく
+		if (trapStatus.CanSetTrapStatus == 0)
+			return;
+
+		Debug.Log("ここはなんか設置できる");
+
+		//設置不可能だった場合はじく
+		if (!trapStatus.IsCanSetTrap(_selectTrapType))
+			return;
+
+		Debug.Log("生成すっか");
+
+		//トラップ生成
+		_trapSpawnManager.SpawnTrap(_selectTrapType, other.transform);
+		//今の所一つのノードに対して一つのトラップしか仕掛けれない状態にしている
+		trapStatus.IsSpawn = true;
+		//ノードに対して何が設置されたか保存しときたい
+		//未実装
 	}
+	
 }
