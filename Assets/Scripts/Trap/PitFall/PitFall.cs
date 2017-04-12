@@ -4,12 +4,7 @@ using UnityEngine;
 
 public class PitFall : MonoBehaviour
 {
-	private FootPrint _footPrint = null;
-	public FootPrint FootPrint
-	{
-		get { return _footPrint; }
-		set { _footPrint = value; }
-	}
+	public FootPrint _footPrint = null;
 	private NodeManager _nodeManager = null;
 	private Vector2 _nodeCell = Vector2.zero;
 	public Vector2 NodeCell

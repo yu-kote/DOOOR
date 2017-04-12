@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rope : MonoBehaviour
 {
-	private FootPrint _footPrint = null;
+	public FootPrint _footPrint = null;
 
 	void Start()
 	{

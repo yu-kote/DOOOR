@@ -24,12 +24,17 @@ public class TrapSpawnManager : MonoBehaviour
 		switch (type)
 		{
 			case TrapType.PITFALLS:
-				_trapObject.GetComponent<PitFall>().FootPrint
+				_trapObject.GetComponent<PitFall>()._footPrint
 					= nodeTrans.GetComponent<FootPrint>();
 				_trapObject.GetComponent<PitFall>().NodeCell
 					= new Vector2(nodeTrans.GetComponent<Node>().CellX,
 					nodeTrans.GetComponent<Node>().CellY);
 				break;
+			case TrapType.ROPE:
+				_trapObject.GetComponent<Rope>()._footPrint
+					= nodeTrans.GetComponent<FootPrint>();
+				break;
+
 			case TrapType.NONE:
 				break;
 		}
