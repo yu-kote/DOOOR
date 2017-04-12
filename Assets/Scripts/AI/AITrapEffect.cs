@@ -34,4 +34,13 @@ public class AITrapEffect : MonoBehaviour
         if (movement == null) return;
         movement.Start();
     }
+
+	//ロープの罠にかかった時の処理
+	public void ToOverturn()
+	{
+		//人が転ぶアニメーション記述
+		//未実装
+
+
+	}
 }

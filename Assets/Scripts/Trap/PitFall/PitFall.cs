@@ -57,12 +57,7 @@ public class PitFall : MonoBehaviour
 			return;
 
 		for(int i = 0; i < _footPrint.HumansOnNode.Count; i++)
-		{
-			if (!_footPrint.HumansOnNode.Contains(_footPrint.HumansOnNode[i]))
-				continue;
-
 			_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
-		}
 
 		_isUsed = true;
 	}
