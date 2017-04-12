@@ -12,7 +12,7 @@ public class PlayerMover : MonoBehaviour
 		get { return _moveSpeed; }
 		set { _moveSpeed = value; }
 	}
-	[SerializeField]
+	
 	private Transform _cameraTrans = null;
 
 	void Awake()
@@ -22,6 +22,7 @@ public class PlayerMover : MonoBehaviour
 
 	void Start()
 	{
+		_cameraTrans = GameObject.Find("MainCamera").transform;
 		if (_cameraTrans == null)
 			Debug.Log("_cameraTrans null!");
 	}
