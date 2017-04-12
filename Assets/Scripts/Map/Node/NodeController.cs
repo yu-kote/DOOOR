@@ -27,4 +27,13 @@ public class NodeController : MonoBehaviour
             }
         }
     }
+
+    // 足跡を消して今いる位置に足跡をつける
+    public void ReFootPrint(MyNumber mynumber, Node current_node)
+    {
+        EraseTraces(mynumber);
+        // 今乗っているノードが再検索されないように足跡を付け直す
+        current_node.GetComponent<FootPrint>().AddTrace(gameObject);
+    }
+
 }

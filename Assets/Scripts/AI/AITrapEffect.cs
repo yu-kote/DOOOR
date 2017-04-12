@@ -30,7 +30,7 @@ public class AITrapEffect : MonoBehaviour
                             target_node.transform.position.z);
 
 
-        var movement = GetComponent<AIMovement>();
+        var movement = GetComponent<AISearchMove>();
         if (movement == null) return;
         movement.Start();
     }
