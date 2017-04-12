@@ -29,11 +29,16 @@ public class PlayerAction : MonoBehaviour
 		if (!Input.GetButtonDown(_actionButton))
 			return;
 
-		TrapStatus trapStatus = other.GetComponent<TrapStatus>();
+		if (other.tag == "Node")
+			CreateTrap(other.gameObject);
+		else if (other.tag == "Attribute")
+			CraftTheInstallation(other.gameObject);
+	}
 
-		if (trapStatus == null)
-			return;
-
+	private void CreateTrap(GameObject node)
+	{
+		TrapStatus trapStatus = node.GetComponent<TrapStatus>();
+		
 		//生成済みだった場合はじく
 		if (trapStatus.IsSpawn)
 			return;
@@ -47,11 +52,20 @@ public class PlayerAction : MonoBehaviour
 			return;
 
 		//トラップ生成
-		_trapSpawnManager.SpawnTrap(_selectTrapType, other.transform);
+		_trapSpawnManager.SpawnTrap(_selectTrapType, node.transform);
 		//今の所一つのノードに対して一つのトラップしか仕掛けれない状態にしている
 		trapStatus.IsSpawn = true;
-		//ノードに対して何が設置されたか保存しときたい
-		//未実装
 	}
-	
+
+	private void CraftTheInstallation(GameObject installation)
+	{
+		switch (installation.name)
+		{
+			case "Door":
+				//数秒間開けれなくなったりするとかの処理
+				//未実装
+				break;
+		}
+	}
+
 }
