@@ -57,7 +57,7 @@ public class Rotater : MonoBehaviour
 		if (_time < 1.0f)
 			return;
 
-		if(_time > 1.0f)
+		if (_time > 1.0f)
 		{
 			float overTime = _time - 1.0f;
 			transform.RotateAround(_interestPoint, Vector3.up, -_angle * overTime);
