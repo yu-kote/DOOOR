@@ -40,12 +40,17 @@ public class PitFall : MonoBehaviour
 		//発動済みだったらはじく
 		if (_isUsed)
 			return;
-		//ノードに人が一人もいなければはじく
-		if (_footPrint.HumansOnNode.Count == 0)
-			return;
 		//一階だったらはじく
 		if (_nodeCell.y == 0)
 			return;
+		//ノードに人が一人もいなければはじく
+		if (_footPrint.HumansOnNode.Count == 0)
+			return;
+		if(_footPrint.HumansOnNode.Count == 1)
+		{
+			if (_footPrint.HumansOnNode[0].tag == "Killer")
+				return;
+		}
 
 		//ここに落とし穴のアニメーション開始処理を記述する
 		//未実装
@@ -57,7 +62,12 @@ public class PitFall : MonoBehaviour
 			return;
 
 		for(int i = 0; i < _footPrint.HumansOnNode.Count; i++)
+		{
+			if (_footPrint.HumansOnNode[i].tag == "Killer")
+				continue;
+
 			_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
+		}
 
 		_isUsed = true;
 	}
