@@ -132,12 +132,15 @@ public class NodeManager : MonoBehaviour
             {
                 var node = _nodes[y][x].GetComponent<Node>();
 
+                // 角
                 if (IsCorner(x))
                 {
                     node.gameObject.AddComponent<Corner>();
                     continue;
                 }
-                if (AttributeRandom())
+
+                // 壁
+                if (AttributeRandom(150))
                     node.gameObject.AddComponent<Wall>();
 
                 // 階段お試し
