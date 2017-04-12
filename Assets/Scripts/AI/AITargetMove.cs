@@ -2,44 +2,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class AITargetMove : MonoBehaviour
+public class AITargetMove : AIBasicsMovement
 {
     private RoadPathManager _roadPathManager;
     private NodeManager _nodeManager;
-    private MyNumber _myNumber;
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
-
-    private Node _currentNode;
 
     private int searchLimit = 1000;
     private int searchCount = 0;
 
     private GameObject _testSymbol;
+    private List<GameObject> _testSymbolList = new List<GameObject>();
 
     void Start()
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
         _nodeManager = field.GetComponent<NodeManager>();
-        _myNumber = GetComponent<MyNumber>();
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
-        _targetNode = _nodeManager.Nodes[2][32].GetComponent<Node>();
+        _nodeController = field.GetComponent<NodeController>();
 
+        TargetMoveRandomTest();
+    }
+
+    private void TargetMoveRandomTest()
+    {
+        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        while (true)
+        {
+            var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
+            var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
+            if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
+                continue;
+            _targetNode = _nodeManager.Nodes[y][x].GetComponent<Node>();
+            break;
+        }
+
+        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
         _roadPathManager.RoadPathReset();
 
+        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_currentNode) == false)
         {
-            gameObject.AddComponent<AIMovement>();
+            gameObject.AddComponent<AISearchMove>();
             Destroy(GetComponent<AITargetMove>());
         }
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
 
-        // テスト
+        // 道を可視化してみる
         StartCoroutine(SearchRoad(_currentNode));
     }
 
@@ -47,25 +62,60 @@ public class AITargetMove : MonoBehaviour
     {
         while (current_node != _targetNode)
         {
-            _testSymbol = Instantiate(_testSymbol);
-
-            _testSymbol.transform.position = current_node.gameObject.transform.position;
             var nextnode = current_node.GetComponent<RoadPath>().Direction(gameObject);
-
+            if (nextnode == null ||
+                _currentNode == nextnode)
+            {
+                yield return new WaitForSeconds(0.5f);
+                continue;
+            }
             yield return new WaitForSeconds(0.05f);
+
+            _testSymbolList.Add(Instantiate(_testSymbol, current_node.transform));
+            _testSymbolList.Last().transform.position = current_node.gameObject.transform.position;
             yield return SearchRoad(nextnode);
         }
+        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        while (true)
+        {
+            yield return null;
+            if (_currentNode != _targetNode) continue;
+            SymbolDestroy();
+            break;
+        }
+    }
+
+    private void SymbolDestroy()
+    {
+        foreach (var symbol in _testSymbolList)
+            Destroy(symbol);
+        _testSymbolList.Clear();
     }
 
     void Update()
     {
-
+        if (MoveComplete() &&
+            _currentNode == _targetNode)
+        {
+            // ここを外すと再度ランダムでルートを選び出す
+            //TargetMoveRandomTest();
+        }
     }
+
+    protected override void NextNodeSearch()
+    {
+        //if (_currentNode != _targetNode)
+        _nextNode = _currentNode.GetComponent<RoadPath>().Direction(gameObject);
+        //else
+        //_nextNode = _currentNode;
+    }
+
     bool WriteRoadPath(Node current_node)
     {
         searchCount++;
         if (searchCount > searchLimit)
         {
+            searchCount = 0;
             Debug.Log("search limit");
             return false;
         }
@@ -97,7 +147,6 @@ public class AITargetMove : MonoBehaviour
                 return true;
         }
 
-        Debug.Log("search missing");
         return false;
     }
 
@@ -146,5 +195,10 @@ public class AITargetMove : MonoBehaviour
         T temp = lhs;
         lhs = rhs;
         rhs = temp;
+    }
+
+    private void OnDestroy()
+    {
+        SymbolDestroy();
     }
 }
