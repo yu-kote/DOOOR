@@ -13,8 +13,9 @@ public class RoadPath : MonoBehaviour
         set { _path = value; }
     }
 
-
+    // 調べ済みかどうか
     public bool _isDone = false;
+
 
     public void Add(GameObject human, Node node)
     {
@@ -27,7 +28,10 @@ public class RoadPath : MonoBehaviour
 
     public Node Direction(GameObject human)
     {
-        return _path[human.GetComponent<MyNumber>()];
+        var mynumber = human.GetComponent<MyNumber>();
+        if (_path.ContainsKey(mynumber) == false)
+            return null;
+        return _path[mynumber];
     }
 
     public void Remove(GameObject human)
