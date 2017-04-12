@@ -4,13 +4,10 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    // ダイクストラ法 http://www.deqnotes.net/acmicpc/dijkstra/
-
     private int cell_x;
     public int CellX { get { return cell_x; } set { cell_x = value; } }
     private int cell_y;
     public int CellY { get { return cell_y; } set { cell_y = value; } }
-
 
     // このノードにつながっているノード
     private List<Node> _linkNodes = new List<Node>();
