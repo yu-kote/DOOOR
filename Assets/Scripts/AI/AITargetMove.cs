@@ -33,14 +33,19 @@ public class AITargetMove : AIBasicsMovement
         _currentNode = GetComponent<AIController>().CurrentNode;
         _searchNode = _currentNode;
 
-        //TargetMoveStart(_targetNode);
-        TargetMoveRandomTest();
+        TargetMoveStart(_targetNode);
+        //TargetMoveRandomTest();
     }
 
     // 引数のノードに移動を始める
     private void TargetMoveStart(Node target_node)
     {
         _targetNode = target_node;
+        if (_targetNode == null)
+        {
+            _targetNode = _currentNode;
+            return;
+        }
 
         _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
         _roadPathManager.RoadPathReset();
@@ -48,9 +53,8 @@ public class AITargetMove : AIBasicsMovement
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
-            _roadPathManager.AllUnDone();
             gameObject.AddComponent<AISearchMove>();
-            Destroy(GetComponent<AITargetMove>());
+            Destroy(this);
         }
 
         _roadPathManager.AllUnDone();
@@ -72,9 +76,8 @@ public class AITargetMove : AIBasicsMovement
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
-            _roadPathManager.AllUnDone();
             gameObject.AddComponent<AISearchMove>();
-            Destroy(GetComponent<AITargetMove>());
+            Destroy(this);
         }
 
         _roadPathManager.AllUnDone();
@@ -135,8 +138,10 @@ public class AITargetMove : AIBasicsMovement
         if (MoveComplete() &&
             _currentNode == _targetNode)
         {
-            // ここを外すと再度ランダムでルートを選び出す
-            //TargetMoveRandomTest();
+            Debug.Log("Move complated");
+            gameObject.AddComponent<AISearchMove>();
+            gameObject.AddComponent<AIBeware>();
+            Destroy(this);
         }
     }
 
@@ -156,10 +161,7 @@ public class AITargetMove : AIBasicsMovement
         }
 
         if (current_node == _targetNode)
-        {
-            Debug.Log("goal");
             return true;
-        }
 
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
 
@@ -179,7 +181,6 @@ public class AITargetMove : AIBasicsMovement
             if (WriteRoadPath(node))
                 return true;
         }
-
         return false;
     }
 

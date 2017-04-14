@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class AIBeware : MonoBehaviour
 {
     private RoadPathManager _roadPathManager;
-    private NodeManager _nodeManager;
 
     [SerializeField]
     private int _searchLimit = 5;
@@ -16,7 +16,6 @@ public class AIBeware : MonoBehaviour
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeManager = field.GetComponent<NodeManager>();
 
         StartCoroutine(Search());
     }
@@ -25,13 +24,34 @@ public class AIBeware : MonoBehaviour
     {
         while (true)
         {
+            yield return null;
+            AIBasicsMovement movement = null;
+            if (GetComponent<AISearchMove>())
+                movement = GetComponent<AISearchMove>();
+            if (GetComponent<AITargetMove>())
+                movement = GetComponent<AITargetMove>();
+            if (movement)
+            {
+                if (movement.MoveComplete() == false)
+                    continue;
+            }
+
             var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
             if (find_humans != null)
             {
-                //find_humans[0].gameObject.transform.position += new Vector3(1, 1, 1);
+                var find_human_node = find_humans.First().GetComponent<AIController>().CurrentNode;
+                if (gameObject.tag == "Killer")
+                {
+                    var target_move = gameObject.AddComponent<AITargetMove>();
+                    target_move.SetTargetNode(find_human_node);
+                    target_move.Speed = 2;
+                    Destroy(this);
+                    if (GetComponent<AISearchMove>())
+                        Destroy(GetComponent<AISearchMove>());
+                }
+                Debug.Log("Found a human " + find_humans.First().tag);
             }
             _roadPathManager.AllUnDone();
-            yield return null;
         }
     }
 
@@ -60,14 +80,14 @@ public class AIBeware : MonoBehaviour
             if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
                 continue;
             // 壁は探索しない
-            if (node.gameObject.GetComponent<Wall>() != null)
+            if (node.gameObject.GetComponent<Wall>())
                 continue;
             // ほかの階は探索しない
-            if (current_node.gameObject.GetComponent<Stairs>() != null &&
-                node.gameObject.GetComponent<Stairs>() != null)
+            if (current_node.gameObject.GetComponent<Stairs>() &&
+                node.gameObject.GetComponent<Stairs>())
                 continue;
             // 角の場合は終了
-            if (node.gameObject.GetComponent<Corner>() != null)
+            if (node.gameObject.GetComponent<Corner>())
                 return null;
 
             loadpath.Add(gameObject, node);
