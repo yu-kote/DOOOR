@@ -26,6 +26,8 @@ public abstract class AIBasicsMovement : MonoBehaviour
     [SerializeField]
     private Vector3 _moveLength;
 
+    private IDisposable _updateDisposable;
+
     private void Awake()
     {
         StartCoroutine(StartSearch());
@@ -42,7 +44,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         yield return null;
 
-        this.UpdateAsObservable()
+        _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
                 // 次の移動先が決まったら
@@ -64,7 +66,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
                     _canMove = true;
                 }
                 Move();
-            });
+            }).AddTo(this);
     }
 
     void Move()
@@ -114,5 +116,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         AddFootPrint(_nextNode);
         LeaveFootPrint(_currentNode);
+    }
+
+    private void OnDisable()
+    {
+        if (_updateDisposable != null)
+            _updateDisposable.Dispose();
     }
 }
