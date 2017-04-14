@@ -23,17 +23,17 @@ public class NodeController : MonoBehaviour
             {
                 var footprint = node.GetComponent<FootPrint>();
                 if (footprint != null)
-                    footprint.Traces.Remove(mynumber);
+                    footprint.EraseTrace(mynumber);
             }
         }
     }
 
     // 足跡を消して今いる位置に足跡をつける
-    public void ReFootPrint(MyNumber mynumber, Node current_node)
+    public void ReFootPrint(GameObject human, Node current_node)
     {
-        EraseTraces(mynumber);
+        EraseTraces(human.GetComponent<MyNumber>());
         // 今乗っているノードが再検索されないように足跡を付け直す
-        current_node.GetComponent<FootPrint>().AddTrace(gameObject);
+        current_node.GetComponent<FootPrint>().AddTrace(human);
     }
 
 }

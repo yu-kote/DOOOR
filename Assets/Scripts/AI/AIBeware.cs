@@ -8,8 +8,12 @@ public class AIBeware : MonoBehaviour
 {
     private RoadPathManager _roadPathManager;
 
+    private Node _currentNode;
+
     [SerializeField]
     private int _searchLimit = 5;
+    public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
+
     private int _searchCount;
 
     void Start()
@@ -42,14 +46,26 @@ public class AIBeware : MonoBehaviour
                 var find_human_node = find_humans.First().GetComponent<AIController>().CurrentNode;
                 if (gameObject.tag == "Killer")
                 {
-                    var target_move = gameObject.AddComponent<AITargetMove>();
-                    target_move.SetTargetNode(find_human_node);
-                    target_move.Speed = 2;
-                    Destroy(this);
+                    if (GetComponent<AITargetMove>() == null)
+                    {
+                        var mover = gameObject.AddComponent<AITargetMove>();
+                        mover.SetTargetNode(find_human_node);
+                        mover.Speed = 1.5f;
+                    }
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
                 }
-                Debug.Log("Found a human " + find_humans.First().tag);
+                if (gameObject.tag == "Victim")
+                {
+                    if (GetComponent<AIRunAway>() == null)
+                    {
+                        var mover = gameObject.AddComponent<AIRunAway>();
+                        mover.SetTargetNode(find_human_node);
+                        mover.Speed = 2f;
+                    }
+                    if (GetComponent<AISearchMove>())
+                        Destroy(GetComponent<AISearchMove>());
+                }
             }
             _roadPathManager.AllUnDone();
         }
@@ -68,7 +84,6 @@ public class AIBeware : MonoBehaviour
         if (!humans.Contains(gameObject) &&
             humans.Count > 0)
         {
-            Debug.Log("look human");
             return humans;
         }
 
