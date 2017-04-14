@@ -70,7 +70,9 @@ public class NodeManager : MonoBehaviour
 
     private bool IsCorner(int value)
     {
-        return value % (_loadNum / _surfaceNum) == (_loadNum / _surfaceNum) - 1;
+        if (value % ((_loadNum / _surfaceNum) - 1) == 0)
+            return true;
+        return false;
     }
 
     public Vector3 SurfaceDirection(int surface_num)
