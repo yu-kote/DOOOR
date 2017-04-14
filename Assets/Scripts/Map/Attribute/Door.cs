@@ -15,12 +15,13 @@ public class Door : AttributeBase
 
 	void Awake()
 	{
-		anim = _attribute.GetComponent<Animator>();
+
 	}
 
 	void Start()
 	{
 		CreateAttribute("Door");
+		anim = _attribute.transform.GetChild(0).GetComponent<Animator>();
 	}
 
 	void Update()

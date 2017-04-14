@@ -143,7 +143,17 @@ public class NodeManager : MonoBehaviour
 
                 // 壁
                 if (AttributeRandom(150))
+				{
                     node.gameObject.AddComponent<Wall>();
+					continue;
+				}
+
+				//扉
+				if (AttributeRandom(1000))
+				{
+					node.gameObject.AddComponent<Door>();
+					continue;
+				}
 
                 // 階段お試し
                 if (x % 7 == 0 && y < _nodes.Count - 1)
