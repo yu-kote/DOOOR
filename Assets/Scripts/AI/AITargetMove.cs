@@ -48,10 +48,12 @@ public class AITargetMove : AIBasicsMovement
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
+            _roadPathManager.AllUnDone();
             gameObject.AddComponent<AISearchMove>();
             Destroy(GetComponent<AITargetMove>());
         }
 
+        _roadPathManager.AllUnDone();
         _searchNode = _currentNode;
 
         // 道を可視化してみる
@@ -70,10 +72,12 @@ public class AITargetMove : AIBasicsMovement
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
+            _roadPathManager.AllUnDone();
             gameObject.AddComponent<AISearchMove>();
             Destroy(GetComponent<AITargetMove>());
         }
 
+        _roadPathManager.AllUnDone();
         _searchNode = _currentNode;
 
         // 道を可視化してみる
@@ -163,10 +167,8 @@ public class AITargetMove : AIBasicsMovement
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
         SortByNodeLength(_targetNode, current_node.LinkNodes);
 
-        //for (int i = 0; i < current_node.LinkNodes.Count; i++)
         foreach (var node in current_node.LinkNodes)
         {
-            //var node = current_node.LinkNodes[i];
             if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
