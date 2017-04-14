@@ -25,7 +25,7 @@ public class AISearchMove : AIBasicsMovement
         // 周りのノードが全部足跡ついていたら自分の足跡をすべて消して探しなおす
         if (candidate.Count == 0)
         {
-            _nodeController.ReFootPrint(_myNumber, _currentNode);
+            _nodeController.ReFootPrint(gameObject, _currentNode);
             candidate = CanMoveNode();
         }
 

@@ -47,8 +47,8 @@ public class AITargetMove : AIBasicsMovement
             return;
         }
 
-        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
-        _roadPathManager.RoadPathReset();
+        _nodeController.ReFootPrint(gameObject, _currentNode);
+        _roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
@@ -70,8 +70,8 @@ public class AITargetMove : AIBasicsMovement
     {
         _targetNode = TargetRandomSelect();
 
-        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
-        _roadPathManager.RoadPathReset();
+        _nodeController.ReFootPrint(gameObject, _currentNode);
+        _roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
@@ -113,8 +113,8 @@ public class AITargetMove : AIBasicsMovement
             }
             yield return new WaitForSeconds(0.05f);
 
-            _testSymbolList.Add(Instantiate(_testSymbol, current_node.transform));
-            _testSymbolList.Last().transform.position = current_node.gameObject.transform.position;
+            _testSymbolList.Add(Instantiate(_testSymbol, nextnode.transform));
+            _testSymbolList.Last().transform.position = nextnode.gameObject.transform.position;
             yield return SearchRoad(nextnode);
         }
         while (true)
@@ -138,9 +138,7 @@ public class AITargetMove : AIBasicsMovement
         if (MoveComplete() &&
             _currentNode == _targetNode)
         {
-            Debug.Log("Move complated");
             gameObject.AddComponent<AISearchMove>();
-            gameObject.AddComponent<AIBeware>();
             Destroy(this);
         }
     }
@@ -185,7 +183,7 @@ public class AITargetMove : AIBasicsMovement
     }
 
     // 目標地点のノードまでの距離を短い順でソートする（バブルソート）
-    void SortByNodeLength(Node targetnode, List<Node> linknodes)
+    static public void SortByNodeLength(Node targetnode, List<Node> linknodes)
     {
         var tpos = targetnode.transform.position;
         for (int i = 0; i < linknodes.Count; i++)
