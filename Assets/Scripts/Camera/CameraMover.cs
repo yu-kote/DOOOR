@@ -8,11 +8,10 @@ public class CameraMover : MonoBehaviour
 
 	[SerializeField]
 	private Vector2 _movedrange = new Vector2(7.5f, 7.5f);
-	private Vector2 _pixelSize = Vector2.zero;
 
 	void Awake()
 	{
-		_pixelSize = GetComponent<Camera>().pixelRect.size;
+		
 	}
 
 	void Start()
