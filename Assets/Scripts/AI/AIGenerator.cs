@@ -16,9 +16,9 @@ public class AIGenerator : MonoBehaviour
 
         CreateVictim();
 
-        Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(6)).Subscribe(_ =>
         {
-            //CreateKiller();
+            CreateKiller();
         });
     }
 
