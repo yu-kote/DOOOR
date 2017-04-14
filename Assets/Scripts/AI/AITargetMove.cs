@@ -11,6 +11,9 @@ public class AITargetMove : AIBasicsMovement
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
+    public void SetTargetNode(Node target_node) { _targetNode = target_node; }
+
+    private Node _searchNode;
 
     private int searchLimit = 1000;
     private int searchCount = 0;
@@ -25,37 +28,73 @@ public class AITargetMove : AIBasicsMovement
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
 
+        _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
+
+        _currentNode = GetComponent<AIController>().CurrentNode;
+        _searchNode = _currentNode;
+
+        //TargetMoveStart(_targetNode);
         TargetMoveRandomTest();
     }
 
-    private void TargetMoveRandomTest()
+    // 引数のノードに移動を始める
+    private void TargetMoveStart(Node target_node)
     {
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        _targetNode = target_node;
+
+        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
+        _roadPathManager.RoadPathReset();
+
+        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
+        if (WriteRoadPath(_searchNode) == false)
+        {
+            _roadPathManager.AllUnDone();
+            gameObject.AddComponent<AISearchMove>();
+            Destroy(GetComponent<AITargetMove>());
+        }
+
+        _roadPathManager.AllUnDone();
+        _searchNode = _currentNode;
+
+        // 道を可視化してみる
+        StartCoroutine(SearchRoad(_searchNode));
+        _searchNode = _currentNode;
+    }
+
+    // ランダムに道を選んでみる 
+    public void TargetMoveRandomTest()
+    {
+        _targetNode = TargetRandomSelect();
+
+        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
+        _roadPathManager.RoadPathReset();
+
+        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
+        if (WriteRoadPath(_searchNode) == false)
+        {
+            _roadPathManager.AllUnDone();
+            gameObject.AddComponent<AISearchMove>();
+            Destroy(GetComponent<AITargetMove>());
+        }
+
+        _roadPathManager.AllUnDone();
+        _searchNode = _currentNode;
+
+        // 道を可視化してみる
+        StartCoroutine(SearchRoad(_searchNode));
+        _searchNode = _currentNode;
+    }
+
+    Node TargetRandomSelect()
+    {
         while (true)
         {
             var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
             var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
             if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
                 continue;
-            _targetNode = _nodeManager.Nodes[y][x].GetComponent<Node>();
-            break;
+            return _nodeManager.Nodes[y][x].GetComponent<Node>();
         }
-
-        _nodeController.ReFootPrint(GetComponent<MyNumber>(), _currentNode);
-        _roadPathManager.RoadPathReset();
-
-        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        if (WriteRoadPath(_currentNode) == false)
-        {
-            gameObject.AddComponent<AISearchMove>();
-            Destroy(GetComponent<AITargetMove>());
-        }
-
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
-        _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
-
-        // 道を可視化してみる
-        StartCoroutine(SearchRoad(_currentNode));
     }
 
     private IEnumerator SearchRoad(Node current_node)
@@ -75,7 +114,6 @@ public class AITargetMove : AIBasicsMovement
             _testSymbolList.Last().transform.position = current_node.gameObject.transform.position;
             yield return SearchRoad(nextnode);
         }
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         while (true)
         {
             yield return null;
@@ -104,10 +142,7 @@ public class AITargetMove : AIBasicsMovement
 
     protected override void NextNodeSearch()
     {
-        //if (_currentNode != _targetNode)
         _nextNode = _currentNode.GetComponent<RoadPath>().Direction(gameObject);
-        //else
-        //_nextNode = _currentNode;
     }
 
     bool WriteRoadPath(Node current_node)
@@ -132,10 +167,8 @@ public class AITargetMove : AIBasicsMovement
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
         SortByNodeLength(_targetNode, current_node.LinkNodes);
 
-        //for (int i = 0; i < current_node.LinkNodes.Count; i++)
         foreach (var node in current_node.LinkNodes)
         {
-            //var node = current_node.LinkNodes[i];
             if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)

@@ -18,6 +18,10 @@ public class FootPrint : MonoBehaviour
     {
         if (_humansOnNode.Contains(human)) return;
         _humansOnNode.Add(human);
+
+        // ノードに入った人間にこのノードにいるという情報を教える
+        human.GetComponent<AIController>().CurrentNode = GetComponent<Node>();
+
         var num = human.GetComponent<MyNumber>();
         if (_traces.Contains(num)) return;
         _traces.Add(num);
