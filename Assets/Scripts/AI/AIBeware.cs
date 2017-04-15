@@ -50,7 +50,7 @@ public class AIBeware : MonoBehaviour
                     {
                         var mover = gameObject.AddComponent<AITargetMove>();
                         mover.SetTargetNode(find_human_node);
-                        mover.Speed = 1.5f;
+                        mover.Speed = 3f;
                     }
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
@@ -61,7 +61,7 @@ public class AIBeware : MonoBehaviour
                     {
                         var mover = gameObject.AddComponent<AIRunAway>();
                         mover.SetTargetNode(find_human_node);
-                        mover.Speed = 2f;
+                        mover.Speed = 5f;
                     }
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
@@ -84,7 +84,13 @@ public class AIBeware : MonoBehaviour
         if (!humans.Contains(gameObject) &&
             humans.Count > 0)
         {
-            return humans;
+            foreach (var human in humans)
+            {
+                if (gameObject.tag == "Victim")
+                    if (human.tag == "Victim")
+                        continue;
+                return humans;
+            }
         }
 
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
@@ -100,7 +106,13 @@ public class AIBeware : MonoBehaviour
             // ほかの階は探索しない
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())
+            {
+                var stairs_humans = node.gameObject.GetComponent<FootPrint>().HumansOnNode;
+                if (!stairs_humans.Contains(gameObject) &&
+                     stairs_humans.Count > 0)
+                    return stairs_humans;
                 continue;
+            }
             // 角の場合は終了
             if (node.gameObject.GetComponent<Corner>())
                 return null;
