@@ -12,6 +12,12 @@ public class Door : AttributeBase
 
 	public DoorStatus _doorStatus = DoorStatus.CLOSE;
 	private Animator anim = null;
+	private float _statusLockTime = 0.0f;
+	public float StatusLockTime
+	{
+		get { return _statusLockTime; }
+		set { _statusLockTime = value; }
+	}
 
 	void Awake()
 	{
@@ -26,6 +32,8 @@ public class Door : AttributeBase
 
 	void Update()
 	{
+		_statusLockTime = Mathf.Max(0.0f, _statusLockTime - Time.deltaTime);
+
 		if (anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdol") &&
 			anim.GetBool("IsOpen"))
 			anim.SetBool("IsOpen", false);
@@ -37,6 +45,8 @@ public class Door : AttributeBase
 
 	public bool StartOpening()
 	{
+		if (_statusLockTime > 0.0f)
+			return false;
 		if (_doorStatus != DoorStatus.CLOSE)
 			return false;
 		if (!anim.GetCurrentAnimatorStateInfo(0).IsName("CloseIdol"))
@@ -50,6 +60,8 @@ public class Door : AttributeBase
 
 	public bool StartClosing()
 	{
+		if (_statusLockTime > 0.0f)
+			return false;
 		if (_doorStatus != DoorStatus.OPEN)
 			return false;
 		if (!anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdol"))
@@ -59,5 +71,13 @@ public class Door : AttributeBase
 		anim.SetBool("IsClose", true);
 
 		return true;
+	}
+
+	public void LockDoorStatus(float statusLockTime)
+	{
+		if (_statusLockTime > 0.0f)
+			return;
+
+		_statusLockTime = statusLockTime;
 	}
 }
