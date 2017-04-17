@@ -41,7 +41,8 @@ public class AIBeware : MonoBehaviour
             }
 
             var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
-            if (find_humans != null)
+            if (find_humans != null &&
+                find_humans.First() != null)
             {
                 var find_human_node = find_humans.First().GetComponent<AIController>().CurrentNode;
                 if (gameObject.tag == "Killer")
@@ -126,8 +127,6 @@ public class AIBeware : MonoBehaviour
         _searchCount = 0;
         return null;
     }
-
-
 
     void Update()
     {

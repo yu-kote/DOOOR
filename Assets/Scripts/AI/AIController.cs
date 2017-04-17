@@ -18,6 +18,37 @@ public class AIController : MonoBehaviour
 
     void Update()
     {
+        if (tag != "Killer") return;
 
+        var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
+        if (humans.Count < 2) return;
+
+        foreach (var human in humans)
+        {
+            if (human == null) continue;
+            if (human.tag != "Victim") continue;
+            Destroy(human);
+            break;
+        }
     }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (gameObject.tag != "Killer") return;
+        if (other.gameObject.tag != "Victim") return;
+
+        Debug.Log("Kill Enter" + other.gameObject.tag);
+        //Destroy(other.gameObject);
+    }
+
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (gameObject.tag != "Killer") return;
+        if (collision.gameObject.tag != "Victim") return;
+
+        Debug.Log("Kill Collder" + collision.gameObject.tag);
+        //Destroy(collision.gameObject);
+    }
+
 }
