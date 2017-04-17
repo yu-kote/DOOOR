@@ -9,6 +9,15 @@ public class AIController : MonoBehaviour
 
     private NodeManager _nodeManager;
 
+    [SerializeField]
+    private float _defaultSpeed;
+    public float DefaultSpeed { get { return _defaultSpeed; } set { _defaultSpeed = value; } }
+    [SerializeField]
+    private float _hurryUpSpeed;
+    public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
+
+
+
     void Start()
     {
         var field = GameObject.Find("Field");

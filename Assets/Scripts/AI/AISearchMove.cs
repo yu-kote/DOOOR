@@ -11,6 +11,7 @@ public class AISearchMove : AIBasicsMovement
 
     public void Start()
     {
+        Speed = GetComponent<AIController>().DefaultSpeed;
         MoveSetup();
     }
 

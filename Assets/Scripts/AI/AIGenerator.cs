@@ -13,10 +13,10 @@ public class AIGenerator : MonoBehaviour
     void Start()
     {
         _field = GameObject.Find("Field");
+        for (int i = 0; i < 5; i++)
+            CreateVictim();
 
-        CreateVictim();
-
-        Observable.Timer(TimeSpan.FromSeconds(6)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
         {
             CreateKiller();
         });
@@ -37,8 +37,6 @@ public class AIGenerator : MonoBehaviour
         var my_number = human.GetComponent<MyNumber>();
         my_number.Number = _generateCount;
 
-        //var movement = human.GetComponent<AIMovement>();
-        //movement.CurrentNode = start_node.GetComponent<Node>();
         start_node.GetComponent<FootPrint>().StepIn(human);
 
         _generateCount++;

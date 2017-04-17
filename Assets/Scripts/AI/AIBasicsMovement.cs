@@ -14,8 +14,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     protected Node _nextNode = null;
     protected NodeController _nodeController;
 
-    [SerializeField]
-    private float _speed = 1;
+    private float _speed = 0;
     public float Speed { get { return _speed; } set { _speed = value; } }
 
     private bool _canMove = true;

@@ -23,18 +23,19 @@ public class AITargetMove : AIBasicsMovement
 
     void Start()
     {
+        var field = GameObject.Find("Field");
+        _roadPathManager = field.GetComponent<RoadPathManager>();
+        _nodeManager = field.GetComponent<NodeManager>();
+        _nodeController = field.GetComponent<NodeController>();
+        _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
+
+        Speed = GetComponent<AIController>().HurryUpSpeed;
+
         MoveSetup();
     }
 
     public override void MoveSetup()
     {
-        var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeManager = field.GetComponent<NodeManager>();
-        _nodeController = field.GetComponent<NodeController>();
-
-        _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
-
         _currentNode = GetComponent<AIController>().CurrentNode;
         _searchNode = _currentNode;
 
@@ -52,7 +53,6 @@ public class AITargetMove : AIBasicsMovement
         }
 
         _nodeController.ReFootPrint(gameObject, _currentNode);
-        _roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
@@ -61,7 +61,6 @@ public class AITargetMove : AIBasicsMovement
             Destroy(this);
         }
 
-        _roadPathManager.AllUnDone();
         _searchNode = _currentNode;
 
         // 道を可視化してみる
@@ -70,12 +69,11 @@ public class AITargetMove : AIBasicsMovement
     }
 
     // ランダムに道を選んでみる 
-    public void TargetMoveRandomTest()
+    private void TargetMoveRandomTest()
     {
         _targetNode = TargetRandomSelect();
 
         _nodeController.ReFootPrint(gameObject, _currentNode);
-        _roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
@@ -84,7 +82,6 @@ public class AITargetMove : AIBasicsMovement
             Destroy(this);
         }
 
-        _roadPathManager.AllUnDone();
         _searchNode = _currentNode;
 
         // 道を可視化してみる
@@ -162,8 +159,8 @@ public class AITargetMove : AIBasicsMovement
             return false;
         }
 
-        if (current_node == _targetNode)
-            return true;
+        //if (current_node == _targetNode)
+        //return true;
 
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
 
@@ -173,15 +170,15 @@ public class AITargetMove : AIBasicsMovement
 
         foreach (var node in current_node.LinkNodes)
         {
-            if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
+            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
 
             loadpath.Add(gameObject, node);
-            loadpath._isDone = true;
-            if (WriteRoadPath(node))
+            if (node == _targetNode)
                 return true;
+            return WriteRoadPath(node);
         }
         return false;
     }

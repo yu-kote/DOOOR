@@ -7,9 +7,7 @@ using System.Linq;
 public class AIBeware : MonoBehaviour
 {
     private RoadPathManager _roadPathManager;
-
-    private Node _currentNode;
-
+    
     [SerializeField]
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
@@ -37,17 +35,21 @@ public class AIBeware : MonoBehaviour
             }
 
             var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
+
+            if (GetComponent<AITargetMove>() == null)
+                _roadPathManager.RoadPathReset(gameObject);
+
             if (find_humans != null &&
                 find_humans.First() != null)
             {
-                var find_human_node = find_humans.First().GetComponent<AIController>().CurrentNode;
+                var find_human = find_humans.First().GetComponent<AIController>();
                 if (gameObject.tag == "Killer")
                 {
                     if (GetComponent<AITargetMove>() == null)
                     {
                         var mover = gameObject.AddComponent<AITargetMove>();
-                        mover.SetTargetNode(find_human_node);
-                        mover.Speed = 3f;
+                        mover.SetTargetNode(find_human.CurrentNode);
+                        mover.Speed = GetComponent<AIController>().HurryUpSpeed;
                     }
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
@@ -57,14 +59,14 @@ public class AIBeware : MonoBehaviour
                     if (GetComponent<AIRunAway>() == null)
                     {
                         var mover = gameObject.AddComponent<AIRunAway>();
-                        mover.SetTargetNode(find_human_node);
-                        mover.Speed = 5f;
+                        mover.SetTargetNode(find_human.CurrentNode);
+                        mover.Speed = GetComponent<AIController>().HurryUpSpeed;
                     }
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
                 }
             }
-            _roadPathManager.AllUnDone();
+
         }
     }
 
@@ -95,7 +97,7 @@ public class AIBeware : MonoBehaviour
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
+            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
                 continue;
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
@@ -115,7 +117,6 @@ public class AIBeware : MonoBehaviour
                 return null;
 
             loadpath.Add(gameObject, node);
-            loadpath._isDone = true;
             var found_human = SearchHuman(node);
             if (found_human != null)
                 return found_human;

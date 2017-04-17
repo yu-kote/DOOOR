@@ -18,16 +18,17 @@ public class AIRunAway : AIBasicsMovement
 
     void Start()
     {
+        var field = GameObject.Find("Field");
+        _nodeController = field.GetComponent<NodeController>();
+        Speed = GetComponent<AIController>().HurryUpSpeed;
+
         MoveSetup();
     }
 
     public override void MoveSetup()
     {
-        var field = GameObject.Find("Field");
-        _nodeController = field.GetComponent<NodeController>();
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
-
         _nodeController.ReFootPrint(gameObject, _currentNode);
     }
 

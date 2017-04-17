@@ -19,19 +19,6 @@ public class RoadPathManager : MonoBehaviour
             {
                 var roadpath = node.GetComponent<RoadPath>();
                 roadpath.Remove(human);
-                roadpath._isDone = false;
-            }
-        }
-    }
-
-    public void AllUnDone()
-    {
-        foreach (var y in _nodeManager.Nodes)
-        {
-            foreach (var node in y)
-            {
-                var roadpath = node.GetComponent<RoadPath>();
-                roadpath._isDone = false;
             }
         }
     }
@@ -40,18 +27,6 @@ public class RoadPathManager : MonoBehaviour
     {
         var roadpath = node.GetComponent<RoadPath>();
         roadpath.Add(human, node);
-    }
-
-    public void RemoveRoadPath(GameObject human)
-    {
-        foreach (var y in _nodeManager.Nodes)
-        {
-            foreach (var node in y)
-            {
-                var roadpath = node.GetComponent<RoadPath>();
-                roadpath.Remove(human);
-            }
-        }
     }
 
 }
