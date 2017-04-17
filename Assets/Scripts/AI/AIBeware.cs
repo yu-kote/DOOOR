@@ -7,7 +7,7 @@ using System.Linq;
 public class AIBeware : MonoBehaviour
 {
     private RoadPathManager _roadPathManager;
-    
+
     [SerializeField]
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
@@ -85,6 +85,7 @@ public class AIBeware : MonoBehaviour
         {
             foreach (var human in humans)
             {
+                if (human == null) continue;
                 if (gameObject.tag == "Victim")
                     if (human.tag == "Victim")
                         continue;
