@@ -7,6 +7,7 @@ using UniRx.Triggers;
 
 public abstract class AIBasicsMovement : MonoBehaviour
 {
+    public abstract void MoveSetup();
     protected abstract void NextNodeSearch();
 
     protected Node _currentNode;

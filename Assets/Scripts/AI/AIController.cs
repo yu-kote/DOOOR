@@ -32,6 +32,18 @@ public class AIController : MonoBehaviour
         }
     }
 
+    public AIBasicsMovement GetMovement()
+    {
+        AIBasicsMovement movement = null;
+        if (GetComponent<AISearchMove>())
+            movement = GetComponent<AISearchMove>();
+        if (GetComponent<AITargetMove>())
+            movement = GetComponent<AITargetMove>();
+        if (GetComponent<AIRunAway>())
+            movement = GetComponent<AIRunAway>();
+        return movement;
+    }
+
     private void OnTriggerStay(Collider other)
     {
         if (gameObject.tag != "Killer") return;

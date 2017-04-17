@@ -29,11 +29,7 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
-            AIBasicsMovement movement = null;
-            if (GetComponent<AISearchMove>())
-                movement = GetComponent<AISearchMove>();
-            if (GetComponent<AITargetMove>())
-                movement = GetComponent<AITargetMove>();
+            AIBasicsMovement movement = GetComponent<AIController>().GetMovement();
             if (movement)
             {
                 if (movement.MoveComplete() == false)

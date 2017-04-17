@@ -23,6 +23,11 @@ public class AITargetMove : AIBasicsMovement
 
     void Start()
     {
+        MoveSetup();
+    }
+
+    public override void MoveSetup()
+    {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
         _nodeManager = field.GetComponent<NodeManager>();
@@ -34,7 +39,6 @@ public class AITargetMove : AIBasicsMovement
         _searchNode = _currentNode;
 
         TargetMoveStart(_targetNode);
-        //TargetMoveRandomTest();
     }
 
     // 引数のノードに移動を始める

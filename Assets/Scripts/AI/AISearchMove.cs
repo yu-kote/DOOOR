@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UniRx;
+using System;
 
 public class AISearchMove : AIBasicsMovement
 {
     private MyNumber _myNumber;
 
     public void Start()
+    {
+        MoveSetup();
+    }
+
+    public override void MoveSetup()
     {
         var field = GameObject.Find("Field");
         _nodeController = field.GetComponent<NodeController>();
@@ -29,7 +35,7 @@ public class AISearchMove : AIBasicsMovement
             candidate = CanMoveNode();
         }
 
-        var next_node_num = Random.Range(0, candidate.Count);
+        var next_node_num = UnityEngine.Random.Range(0, candidate.Count);
         _nextNode = candidate[next_node_num];
     }
 

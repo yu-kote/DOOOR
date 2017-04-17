@@ -30,17 +30,17 @@ public class AITrapEffect : MonoBehaviour
                             target_node.transform.position.z);
 
 
-        var movement = GetComponent<AISearchMove>();
+        var movement = GetComponent<AIController>().GetMovement();
         if (movement == null) return;
-        movement.Start();
+        movement.MoveSetup();
     }
 
-	//ロープの罠にかかった時の処理
-	public void ToOverturn()
-	{
-		//人が転ぶアニメーション記述
-		//未実装
+    //ロープの罠にかかった時の処理
+    public void ToOverturn()
+    {
+        //人が転ぶアニメーション記述
+        //未実装
 
 
-	}
+    }
 }

@@ -18,6 +18,11 @@ public class AIRunAway : AIBasicsMovement
 
     void Start()
     {
+        MoveSetup();
+    }
+
+    public override void MoveSetup()
+    {
         var field = GameObject.Find("Field");
         _nodeController = field.GetComponent<NodeController>();
         _currentNode = GetComponent<AIController>().CurrentNode;
@@ -35,6 +40,7 @@ public class AIRunAway : AIBasicsMovement
         if (distance > _endDistance)
             return true;
 
+        // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
         AITargetMove.SortByNodeLength(_targetNode, _currentNode.LinkNodes);
         if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
             return false;
