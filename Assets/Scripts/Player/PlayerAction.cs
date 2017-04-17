@@ -10,6 +10,9 @@ public class PlayerAction : MonoBehaviour
 	//選択しているトラップのタイプ
 	[SerializeField]
 	private TrapType _selectTrapType = TrapType.PITFALLS;
+	//ドアの状態固定時間
+	[SerializeField]
+	private float _statusLockTime = 2.0f;
 
 	private TrapSpawnManager _trapSpawnManager = null;
 
@@ -57,13 +60,13 @@ public class PlayerAction : MonoBehaviour
 		trapStatus.IsSpawn = true;
 	}
 
-	private void CraftTheInstallation(GameObject installation)
+	private void CraftTheInstallation(GameObject attribute)
 	{
-		switch (installation.name)
+		switch (attribute.name)
 		{
-			case "Door":
-				//数秒間開けれなくなったりするとかの処理
-				//未実装
+			case "Door" + "(Clone)":
+
+				attribute.transform.parent.GetComponent<Door>().LockDoorStatus(_statusLockTime);
 				break;
 		}
 	}

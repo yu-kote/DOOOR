@@ -36,8 +36,5 @@ public class MapLoader : MonoBehaviour
 			string line = reader.ReadLine();
 			_mapDatas.Add(line.Split(','));
 		}
-
-		Debug.Log("sizeY : " + _mapDatas.Count);
-		Debug.Log("sizeX : " + _mapDatas[0].Length);
 	}
 }
