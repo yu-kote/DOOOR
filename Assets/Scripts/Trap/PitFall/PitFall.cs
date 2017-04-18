@@ -36,7 +36,7 @@ public class PitFall : MonoBehaviour
 		if (_isUsed)
 			return;
 		//一階だったらはじく
-		if (_nodeCell.y == 0)
+		if (_nodeCell.y == _nodeManager.Nodes.Count - 1)
 			return;
 		//ノードに人が一人もいなければはじく
 		if (_footPrint.HumansOnNode.Count == 0)
@@ -51,7 +51,7 @@ public class PitFall : MonoBehaviour
 		//未実装
 
 		List<List<GameObject>> nodes = _nodeManager.Nodes;
-		GameObject underNode = nodes[(int)_nodeCell.y - 1][(int)_nodeCell.x];
+		GameObject underNode = nodes[(int)_nodeCell.y + 1][(int)_nodeCell.x];
 		//下に壁があれば落ちない
 		if (underNode.GetComponent<Wall>() != null)
 			return;
@@ -65,5 +65,6 @@ public class PitFall : MonoBehaviour
 		}
 
 		_isUsed = true;
+		Destroy(gameObject);
 	}
 }

@@ -34,10 +34,23 @@ public class NodeManager : MonoBehaviour
 
 	void Start()
 	{
-		List<string[]> mapDatas = GetComponent<MapLoader>()._mapDatas;
+		MapLoader mapLoader = GetComponent<MapLoader>();
+		List<string[]> mapDatas = mapLoader._mapDatas;
 		NodesInitialize(mapDatas.Count, mapDatas[0].Length);
 		NodesLink();
 		CreateAttribute(mapDatas);
+		SetTrapStatus(mapLoader._trapDatas);
+	}
+
+	private void SetTrapStatus(List<string[]> trapDatas)
+	{
+		for (int y = 0; y < _nodes.Count; y++)
+		{
+			for (int x = 0; x < _nodes[y].Count; x++)
+			{
+				_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = uint.Parse(trapDatas[y][x]);
+			}
+		}
 	}
 
 	public void NodesInitialize(int topFloor, int loadNum)
