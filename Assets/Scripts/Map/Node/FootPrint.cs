@@ -43,4 +43,9 @@ public class FootPrint : MonoBehaviour
     {
         _traces.Remove(mynumber);
     }
+
+    public void EraseHumanOnNode(GameObject human)
+    {
+        _humansOnNode.Remove(human);
+    }
 }
