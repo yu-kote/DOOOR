@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UniRx;
 
 public class AITargetMove : AIBasicsMovement
 {
@@ -21,6 +22,8 @@ public class AITargetMove : AIBasicsMovement
     private GameObject _testSymbol;
     private List<GameObject> _testSymbolList = new List<GameObject>();
 
+    private bool _arriveAtTarget = false;
+
     void Start()
     {
         var field = GameObject.Find("Field");
@@ -38,6 +41,7 @@ public class AITargetMove : AIBasicsMovement
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _searchNode = _currentNode;
+        _arriveAtTarget = false;
         MoveReset();
         _roadPathManager.RoadPathReset(gameObject);
         TargetMoveStart(_targetNode);
@@ -54,13 +58,17 @@ public class AITargetMove : AIBasicsMovement
         }
 
         _nodeController.ReFootPrint(gameObject, _currentNode);
-        //_roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
             Debug.Log("not search");
-            gameObject.AddComponent<AISearchMove>();
+
+            Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(_ =>
+            {
+                gameObject.AddComponent<AISearchMove>();
+            });
+
             Destroy(this);
             return;
         }
@@ -141,12 +149,35 @@ public class AITargetMove : AIBasicsMovement
 
     void Update()
     {
+        if (_arriveAtTarget) return;
+
         if (MoveComplete() &&
             _currentNode == _targetNode)
         {
-            gameObject.AddComponent<AISearchMove>();
+            _arriveAtTarget = true;
+            if (IsDoorAround())
+            {
+                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+                {
+                    gameObject.AddComponent<AISearchMove>();
+                    Destroy(this);
+                }).AddTo(this);
+                return;
+            }
             Destroy(this);
+            gameObject.AddComponent<AISearchMove>();
         }
+    }
+
+    // 周囲にドアがあるかどうか
+    bool IsDoorAround()
+    {
+        foreach (var node in _currentNode.LinkNodes)
+        {
+            if (node.GetComponent<Door>())
+                return true;
+        }
+        return false;
     }
 
     protected override void NextNodeSearch()

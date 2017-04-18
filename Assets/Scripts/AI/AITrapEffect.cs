@@ -29,7 +29,6 @@ public class AITrapEffect : MonoBehaviour
 
         foot_print = target_node.GetComponent<FootPrint>();
         foot_print.StepIn(gameObject);
-        ai_controller.CurrentNode = target_node;
 
         gameObject.transform.position =
                 new Vector3(target_node.transform.position.x,
@@ -62,11 +61,6 @@ public class AITrapEffect : MonoBehaviour
     private void Update()
     {
         DoorControl();
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            Debug.Log("move");
-            ToMove(_nodeManager.Nodes[0][0].GetComponent<Node>());
-        }
     }
 
     private void DoorControl()
@@ -78,7 +72,7 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(_ =>
         {
             door.StartClosing();
         });
