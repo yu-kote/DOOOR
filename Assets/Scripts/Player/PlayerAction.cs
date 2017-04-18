@@ -7,9 +7,18 @@ public class PlayerAction : MonoBehaviour
 	// プレイヤーがマップに対してアクションを起こす時に押すボタン
 	[SerializeField]
 	private string _actionButton = "Action";
+	[SerializeField]
+	private string _upButton = "Up";
+	[SerializeField]
+	private string _downButton = "Down";
 	//選択しているトラップのタイプ
 	[SerializeField]
 	private TrapType _selectTrapType = TrapType.PITFALLS;
+	public TrapType SelectTrapType
+	{
+		get { return _selectTrapType; }
+		set { _selectTrapType = value; }
+	}
 	//ドアの状態固定時間
 	[SerializeField]
 	private float _statusLockTime = 2.0f;
@@ -22,6 +31,20 @@ public class PlayerAction : MonoBehaviour
 			= GameObject.Find("TrapSpawnManager").GetComponent<TrapSpawnManager>();
 		if (_trapSpawnManager == null)
 			Debug.Log("_trapSpawnManager is null");
+	}
+
+	void Update()
+	{
+		if (Input.GetButtonDown(_upButton))
+		{
+			_selectTrapType = (TrapType)(Mathf.Max(1, ((uint)_selectTrapType >> 1)));
+			Debug.Log("up");
+		}
+		if (Input.GetButtonDown(_downButton))
+		{
+			_selectTrapType = (TrapType)(Mathf.Min((uint)TrapType.MAX >> 1, ((uint)_selectTrapType << 1)));
+			Debug.Log("down");
+		}
 	}
 
 	//プレイヤーのトリガーの範囲内に入ったノードのトラップステータスの情報を見て
