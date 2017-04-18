@@ -22,6 +22,9 @@ public class Rope : MonoBehaviour
 		int overturnNum = 0;
 		for (int i = 0; i < _footPrint.HumansOnNode.Count; i++)
 		{
+			if (_footPrint.HumansOnNode[i].tag == "Killer")
+				continue;
+
 			if (_footPrint.HumansOnNode[i].GetComponent<AIController>().GetMovement().MoveComplete())
 			{
 				_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToOverturn();
