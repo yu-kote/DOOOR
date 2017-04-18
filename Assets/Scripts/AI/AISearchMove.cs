@@ -45,6 +45,13 @@ public class AISearchMove : AIBasicsMovement
         return _currentNode.LinkNodes
             .Where(node => node.GetComponent<FootPrint>().Traces.Contains(_myNumber) == false)
             .Where(node => node.GetComponent<Wall>() == null)
+            .Where(node =>
+            {
+                // 殺人鬼の時にドアがあったら通れなくする
+                if (tag != "Killer") return true;
+                if (node.GetComponent<Door>() == null) return true;
+                return false;
+            })
             .ToList();
     }
 }

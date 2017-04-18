@@ -51,7 +51,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
                 if (_nextNode != null && _nextNode != _currentNode)
                 {
                     // 進む方向を決めるためベクトルを出す
-                    var distance = _nextNode.transform.position - _currentNode.transform.position;//gameObject.transform.position + HeightCorrection();
+                    var distance = _nextNode.transform.position - gameObject.transform.position + HeightCorrection();
                     _moveLength = new Vector3(Mathf.Abs(distance.x), Mathf.Abs(distance.z), Mathf.Abs(distance.z));
 
                     // 値が小さいほど速度の調整がしやすいので0.01fをかける
@@ -82,6 +82,17 @@ public abstract class AIBasicsMovement : MonoBehaviour
             _moveLength = Vector3.zero;
             NextNodeSearch();
         }
+    }
+
+    bool CanNextNodeMove()
+    {
+        var ai_controller = GetComponent<AIController>();
+        if (ai_controller) return false;
+
+
+
+
+        return true;
     }
 
     Vector3 HeightCorrection()

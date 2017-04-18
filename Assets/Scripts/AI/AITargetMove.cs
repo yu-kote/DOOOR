@@ -6,8 +6,8 @@ using System.Linq;
 
 public class AITargetMove : AIBasicsMovement
 {
-    private RoadPathManager _roadPathManager;
-    private NodeManager _nodeManager;
+    //private RoadPathManager _roadPathManager;
+    //private NodeManager _nodeManager;
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
@@ -15,7 +15,7 @@ public class AITargetMove : AIBasicsMovement
 
     private Node _searchNode;
 
-    private int searchLimit = 1000;
+    private int searchLimit = 150;
     private int searchCount = 0;
 
     private GameObject _testSymbol;
@@ -24,8 +24,8 @@ public class AITargetMove : AIBasicsMovement
     void Start()
     {
         var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeManager = field.GetComponent<NodeManager>();
+        //_roadPathManager = field.GetComponent<RoadPathManager>();
+        //_nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
 
@@ -58,8 +58,10 @@ public class AITargetMove : AIBasicsMovement
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
+            Debug.Log("not search");
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
+            return;
         }
 
         _searchNode = _currentNode;
@@ -167,19 +169,26 @@ public class AITargetMove : AIBasicsMovement
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
         SortByNodeLength(_targetNode, current_node.LinkNodes);
 
+        var is_done = false;
+
         foreach (var node in current_node.LinkNodes)
         {
+            if (tag == "Killer" &&
+                node.gameObject.GetComponent<Door>() != null)
+                continue;
             if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
-
+            
             loadpath.Add(gameObject, node);
             if (node == _targetNode)
                 return true;
-            return WriteRoadPath(node);
+            is_done = WriteRoadPath(node);
+            if (is_done == true)
+                return true;
         }
-        return false;
+        return is_done;
     }
 
     // 目標地点のノードまでの距離を短い順でソートする（バブルソート）

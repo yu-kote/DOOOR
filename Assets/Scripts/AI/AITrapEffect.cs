@@ -1,16 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using System.Linq;
+using System;
 
 public class AITrapEffect : MonoBehaviour
 {
     private NodeManager _nodeManager;
     private Node _currentNode;
+    private AIController _aiController;
 
     void Start()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
+        _aiController = GetComponent<AIController>();
     }
 
     // 今のところは瞬間移動になる
@@ -43,4 +48,26 @@ public class AITrapEffect : MonoBehaviour
 
 
     }
+
+    private void Update()
+    {
+        DoorControl();
+    }
+
+    private void DoorControl()
+    {
+        if (tag != "Victim") return;
+
+        var door = _aiController.CurrentNode.GetComponent<Door>();
+        if (door == null) return;
+        if (door._doorStatus == Door.DoorStatus.OPEN) return;
+
+        door.StartOpening();
+        Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
+        {
+            door.StartClosing();
+        });
+
+    }
+
 }
