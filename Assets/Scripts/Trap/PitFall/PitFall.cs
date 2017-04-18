@@ -56,13 +56,21 @@ public class PitFall : MonoBehaviour
 		if (underNode.GetComponent<Wall>() != null)
 			return;
 
+		int fallNum = 0;
 		for(int i = 0; i < _footPrint.HumansOnNode.Count; i++)
 		{
 			if (_footPrint.HumansOnNode[i].tag == "Killer")
 				continue;
 
-			_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
+			if(_footPrint.HumansOnNode[i].GetComponent<AIController>().GetMovement().MoveComplete())
+			{
+				_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
+				fallNum++;
+			}
 		}
+
+		if (fallNum == 0)
+			return;
 
 		_isUsed = true;
 		Destroy(gameObject);
