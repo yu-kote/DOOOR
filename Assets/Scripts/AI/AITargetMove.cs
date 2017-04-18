@@ -64,12 +64,12 @@ public class AITargetMove : AIBasicsMovement
         {
             Debug.Log("not search");
 
-            Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(_ =>
+            Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
                 gameObject.AddComponent<AISearchMove>();
+                Destroy(this);
             });
 
-            Destroy(this);
             return;
         }
 
@@ -161,7 +161,7 @@ public class AITargetMove : AIBasicsMovement
                 {
                     gameObject.AddComponent<AISearchMove>();
                     Destroy(this);
-                }).AddTo(this);
+                });
                 return;
             }
             Destroy(this);

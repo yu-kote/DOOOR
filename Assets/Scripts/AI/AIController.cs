@@ -8,6 +8,9 @@ public class AIController : MonoBehaviour
     public Node CurrentNode { get { return _currentNode; } set { _currentNode = value; } }
 
     private NodeManager _nodeManager;
+    private NodeController _nodeController;
+    private RoadPathManager _roadPathManager;
+
 
     [SerializeField]
     private float _defaultSpeed;
@@ -22,6 +25,9 @@ public class AIController : MonoBehaviour
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
+        _nodeController = field.GetComponent<NodeController>();
+        _roadPathManager = field.GetComponent<RoadPathManager>();
+
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
     }
 
@@ -37,6 +43,11 @@ public class AIController : MonoBehaviour
             if (human == null) continue;
             if (human.tag != "Victim") continue;
             Debug.Log(human.tag + "Destroy");
+
+            _nodeController.EraseTraces(human.GetComponent<MyNumber>());
+            _roadPathManager.RoadPathReset(human);
+            _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(human);
+
             Destroy(human);
             break;
         }
@@ -54,23 +65,23 @@ public class AIController : MonoBehaviour
         return movement;
     }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (gameObject.tag != "Killer") return;
-        if (other.gameObject.tag != "Victim") return;
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    if (gameObject.tag != "Killer") return;
+    //    if (other.gameObject.tag != "Victim") return;
 
-        Debug.Log("Kill Enter" + other.gameObject.tag);
-        //Destroy(other.gameObject);
-    }
+    //    Debug.Log("Kill Enter" + other.gameObject.tag);
+    //    //Destroy(other.gameObject);
+    //}
 
 
-    private void OnCollisionStay(Collision collision)
-    {
-        if (gameObject.tag != "Killer") return;
-        if (collision.gameObject.tag != "Victim") return;
+    //private void OnCollisionStay(Collision collision)
+    //{
+    //    if (gameObject.tag != "Killer") return;
+    //    if (collision.gameObject.tag != "Victim") return;
 
-        Debug.Log("Kill Collder" + collision.gameObject.tag);
-        //Destroy(collision.gameObject);
-    }
+    //    Debug.Log("Kill Collder" + collision.gameObject.tag);
+    //    //Destroy(collision.gameObject);
+    //}
 
 }

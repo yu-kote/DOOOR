@@ -55,7 +55,7 @@ public class AITrapEffect : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             movement.CanMove = true;
-        });
+        }).AddTo(this);
     }
 
     private void Update()
@@ -72,7 +72,7 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             door.StartClosing();
         });
