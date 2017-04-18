@@ -62,7 +62,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
                     // 今いるノードを更新する
                     _currentNode = _nextNode;
-                    _canMove = true;
                 }
                 Move();
             }).AddTo(this);
@@ -77,7 +76,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
         if (MoveComplete())
         {
             transform.position = _currentNode.transform.position + HeightCorrection();
-            //_canMove = false;
+
             _moveDirection = Vector3.zero;
             _moveLength = Vector3.zero;
             NextNodeSearch();
