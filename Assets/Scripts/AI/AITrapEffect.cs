@@ -46,7 +46,15 @@ public class AITrapEffect : MonoBehaviour
         //人が転ぶアニメーション記述
         //未実装
 
+        var movement = GetComponent<AIController>().GetMovement();
+        if (movement == null) return;
 
+        movement.CanMove = false;
+        // 時間はまだ決め打ち　　　　　　　　　　↓
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        {
+            movement.CanMove = true;
+        });
     }
 
     private void Update()
@@ -63,11 +71,10 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             door.StartClosing();
         });
-
     }
 
 }
