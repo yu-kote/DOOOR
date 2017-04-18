@@ -73,6 +73,11 @@ public class Door : AttributeBase
 		return true;
 	}
 
+	public bool IsDoorLock()
+	{
+		return _statusLockTime > 0.0f;
+	}
+
 	public void LockDoorStatus(float statusLockTime)
 	{
 		if (_statusLockTime > 0.0f)
