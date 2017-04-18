@@ -84,15 +84,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
         }
     }
 
-    bool CanNextNodeMove()
+    protected void MoveReset()
     {
-        var ai_controller = GetComponent<AIController>();
-        if (ai_controller) return false;
-
-
-
-
-        return true;
+        _nextNode = null;
+        _moveDirection = Vector3.zero;
+        _moveLength = Vector3.zero;
     }
 
     Vector3 HeightCorrection()
