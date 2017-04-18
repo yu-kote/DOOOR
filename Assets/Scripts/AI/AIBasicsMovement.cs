@@ -48,11 +48,10 @@ public abstract class AIBasicsMovement : MonoBehaviour
             .Subscribe(_ =>
             {
                 // 次の移動先が決まったら
-                if (_nextNode != null &&
-                _nextNode != _currentNode)
+                if (_nextNode != null && _nextNode != _currentNode)
                 {
                     // 進む方向を決めるためベクトルを出す
-                    var distance = _nextNode.transform.position - _currentNode.transform.position;
+                    var distance = _nextNode.transform.position - _currentNode.transform.position;//gameObject.transform.position + HeightCorrection();
                     _moveLength = new Vector3(Mathf.Abs(distance.x), Mathf.Abs(distance.z), Mathf.Abs(distance.z));
 
                     // 値が小さいほど速度の調整がしやすいので0.01fをかける
@@ -77,15 +76,17 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
         if (MoveComplete())
         {
-            transform.position =
-                new Vector3(_currentNode.transform.position.x,
-                            _currentNode.transform.position.y + transform.localScale.y,
-                            _currentNode.transform.position.z);
+            transform.position = _currentNode.transform.position + HeightCorrection();
             //_canMove = false;
             _moveDirection = Vector3.zero;
             _moveLength = Vector3.zero;
             NextNodeSearch();
         }
+    }
+
+    Vector3 HeightCorrection()
+    {
+        return new Vector3(0, transform.localScale.y, 0);
     }
 
     Vector3 Vector3Abs(Vector3 value)

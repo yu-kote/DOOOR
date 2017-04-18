@@ -53,6 +53,7 @@ public class AITargetMove : AIBasicsMovement
         }
 
         _nodeController.ReFootPrint(gameObject, _currentNode);
+        //_roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
@@ -69,37 +70,38 @@ public class AITargetMove : AIBasicsMovement
     }
 
     // ランダムに道を選んでみる 
-    private void TargetMoveRandomTest()
-    {
-        _targetNode = TargetRandomSelect();
+    //private void TargetMoveRandomTest()
+    //{
+    //    _targetNode = TargetRandomSelect();
 
-        _nodeController.ReFootPrint(gameObject, _currentNode);
+    //    _nodeController.ReFootPrint(gameObject, _currentNode);
+    //    _roadPathManager.RoadPathReset(gameObject);
 
-        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        if (WriteRoadPath(_searchNode) == false)
-        {
-            gameObject.AddComponent<AISearchMove>();
-            Destroy(this);
-        }
+    //    // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
+    //    if (WriteRoadPath(_searchNode) == false)
+    //    {
+    //        gameObject.AddComponent<AISearchMove>();
+    //        Destroy(this);
+    //    }
 
-        _searchNode = _currentNode;
+    //    _searchNode = _currentNode;
 
-        // 道を可視化してみる
-        StartCoroutine(SearchRoad(_searchNode));
-        _searchNode = _currentNode;
-    }
+    //    // 道を可視化してみる
+    //    StartCoroutine(SearchRoad(_searchNode));
+    //    _searchNode = _currentNode;
+    //}
 
-    Node TargetRandomSelect()
-    {
-        while (true)
-        {
-            var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
-            var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
-            if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
-                continue;
-            return _nodeManager.Nodes[y][x].GetComponent<Node>();
-        }
-    }
+    //Node TargetRandomSelect()
+    //{
+    //    while (true)
+    //    {
+    //        var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
+    //        var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
+    //        if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
+    //            continue;
+    //        return _nodeManager.Nodes[y][x].GetComponent<Node>();
+    //    }
+    //}
 
     private IEnumerator SearchRoad(Node current_node)
     {
@@ -158,9 +160,6 @@ public class AITargetMove : AIBasicsMovement
             Debug.Log("search limit");
             return false;
         }
-
-        //if (current_node == _targetNode)
-        //return true;
 
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
 

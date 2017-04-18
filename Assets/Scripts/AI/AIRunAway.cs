@@ -10,9 +10,13 @@ public class AIRunAway : AIBasicsMovement
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
 
-    private Node _targetNode;
-    public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
-    public void SetTargetNode(Node target_node) { _targetNode = target_node; }
+    //private Node _targetNode;
+    //public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
+    //public void SetTargetNode(Node target_node) { _targetNode = target_node; }
+
+    private GameObject _targetHuman;
+    public GameObject TargetNode { get { return _targetHuman; } set { _targetHuman = value; } }
+    public void SetTargetNode(GameObject target_node) { _targetHuman = target_node; }
 
     private bool _isEscape = false;
 
@@ -34,7 +38,8 @@ public class AIRunAway : AIBasicsMovement
 
     bool RunAway()
     {
-        var vec = _targetNode.transform.position - _currentNode.transform.position;
+        if (_targetHuman == null) return true;
+        var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
 
         // 逃げ切ったら終わり
@@ -42,7 +47,10 @@ public class AIRunAway : AIBasicsMovement
             return true;
 
         // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
-        AITargetMove.SortByNodeLength(_targetNode, _currentNode.LinkNodes);
+        AITargetMove.SortByNodeLength(
+            _targetHuman.GetComponent<AIController>().CurrentNode,
+            _currentNode.LinkNodes);
+
         if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
             return false;
         _nextNode = _currentNode.LinkNodes.Last();

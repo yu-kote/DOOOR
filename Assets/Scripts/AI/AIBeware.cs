@@ -13,6 +13,8 @@ public class AIBeware : MonoBehaviour
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
     private int _searchCount;
+    //private bool _isFindHuman = false;
+    private GameObject _targetHuman;
 
     void Start()
     {
@@ -27,46 +29,48 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
-            AIBasicsMovement movement = GetComponent<AIController>().GetMovement();
-            if (movement)
+
+            if (GetComponent<AISearchMove>() == null)
+                continue;
+            if (_targetHuman == null)
             {
-                if (movement.MoveComplete() == false)
-                    continue;
-            }
-
-            var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
-
-            if (GetComponent<AITargetMove>() == null)
+                var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
                 _roadPathManager.RoadPathReset(gameObject);
-
-            if (find_humans != null &&
-                find_humans.First() != null)
-            {
-                var find_human = find_humans.First().GetComponent<AIController>();
-                if (gameObject.tag == "Killer")
+                if (find_humans != null &&
+                    find_humans.First() != null)
                 {
-                    if (GetComponent<AITargetMove>() == null)
-                    {
-                        var mover = gameObject.AddComponent<AITargetMove>();
-                        mover.SetTargetNode(find_human.CurrentNode);
-                        mover.Speed = GetComponent<AIController>().HurryUpSpeed;
-                    }
-                    if (GetComponent<AISearchMove>())
-                        Destroy(GetComponent<AISearchMove>());
+                    var find_human = find_humans.First();
+                    _targetHuman = find_human;
                 }
-                if (gameObject.tag == "Victim")
+            }
+            if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                continue;
+            if (_targetHuman == null)
+                continue;
+
+            if (gameObject.tag == "Killer")
+            {
+                if (GetComponent<AITargetMove>() == null)
                 {
-                    if (GetComponent<AIRunAway>() == null)
-                    {
-                        var mover = gameObject.AddComponent<AIRunAway>();
-                        mover.SetTargetNode(find_human.CurrentNode);
-                        mover.Speed = GetComponent<AIController>().HurryUpSpeed;
-                    }
+                    var mover = gameObject.AddComponent<AITargetMove>();
+                    mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
+                    mover.Speed = GetComponent<AIController>().HurryUpSpeed;
                     if (GetComponent<AISearchMove>())
                         Destroy(GetComponent<AISearchMove>());
                 }
             }
-
+            if (gameObject.tag == "Victim")
+            {
+                if (GetComponent<AIRunAway>() == null)
+                {
+                    var mover = gameObject.AddComponent<AIRunAway>();
+                    mover.SetTargetNode(_targetHuman);
+                    mover.Speed = GetComponent<AIController>().HurryUpSpeed;
+                    if (GetComponent<AISearchMove>())
+                        Destroy(GetComponent<AISearchMove>());
+                }
+            }
+            _targetHuman = null;
         }
     }
 

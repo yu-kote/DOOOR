@@ -36,6 +36,7 @@ public class AIController : MonoBehaviour
         {
             if (human == null) continue;
             if (human.tag != "Victim") continue;
+            Debug.Log(human.tag + "Destroy");
             Destroy(human);
             break;
         }
