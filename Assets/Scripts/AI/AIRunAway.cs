@@ -34,6 +34,7 @@ public class AIRunAway : AIBasicsMovement
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
         _nodeController.ReFootPrint(gameObject, _currentNode);
+        MoveReset();
     }
 
     bool RunAway()

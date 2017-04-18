@@ -22,6 +22,7 @@ public class AISearchMove : AIBasicsMovement
         _myNumber = GetComponent<MyNumber>();
         var node_manager = field.GetComponent<NodeManager>();
         _currentNode = node_manager.SearchOnNodeHuman(gameObject);
+        MoveReset();
     }
 
     protected override void NextNodeSearch()

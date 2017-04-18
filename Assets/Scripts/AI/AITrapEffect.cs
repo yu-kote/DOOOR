@@ -21,7 +21,8 @@ public class AITrapEffect : MonoBehaviour
     // 今のところは瞬間移動になる
     public void ToMove(Node target_node)
     {
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        var ai_controller = GetComponent<AIController>();
+        _currentNode = ai_controller.CurrentNode;
 
         var foot_print = _currentNode.GetComponent<FootPrint>();
         foot_print.StepOut(gameObject);
@@ -71,7 +72,7 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(1)).Subscribe(_ =>
         {
             door.StartClosing();
         });
