@@ -6,8 +6,8 @@ using System.Linq;
 
 public class AITargetMove : AIBasicsMovement
 {
-    private RoadPathManager _roadPathManager;
-    private NodeManager _nodeManager;
+    //private RoadPathManager _roadPathManager;
+    //private NodeManager _nodeManager;
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
@@ -15,7 +15,7 @@ public class AITargetMove : AIBasicsMovement
 
     private Node _searchNode;
 
-    private int searchLimit = 1000;
+    private int searchLimit = 150;
     private int searchCount = 0;
 
     private GameObject _testSymbol;
@@ -24,17 +24,22 @@ public class AITargetMove : AIBasicsMovement
     void Start()
     {
         var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeManager = field.GetComponent<NodeManager>();
+        //_roadPathManager = field.GetComponent<RoadPathManager>();
+        //_nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
-
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
 
+        Speed = GetComponent<AIController>().HurryUpSpeed;
+
+        MoveSetup();
+    }
+
+    public override void MoveSetup()
+    {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _searchNode = _currentNode;
 
         TargetMoveStart(_targetNode);
-        //TargetMoveRandomTest();
     }
 
     // 引数のノードに移動を始める
@@ -48,16 +53,17 @@ public class AITargetMove : AIBasicsMovement
         }
 
         _nodeController.ReFootPrint(gameObject, _currentNode);
-        _roadPathManager.RoadPathReset(gameObject);
+        //_roadPathManager.RoadPathReset(gameObject);
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (WriteRoadPath(_searchNode) == false)
         {
+            Debug.Log("not search");
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
+            return;
         }
 
-        _roadPathManager.AllUnDone();
         _searchNode = _currentNode;
 
         // 道を可視化してみる
@@ -66,39 +72,38 @@ public class AITargetMove : AIBasicsMovement
     }
 
     // ランダムに道を選んでみる 
-    public void TargetMoveRandomTest()
-    {
-        _targetNode = TargetRandomSelect();
+    //private void TargetMoveRandomTest()
+    //{
+    //    _targetNode = TargetRandomSelect();
 
-        _nodeController.ReFootPrint(gameObject, _currentNode);
-        _roadPathManager.RoadPathReset(gameObject);
+    //    _nodeController.ReFootPrint(gameObject, _currentNode);
+    //    _roadPathManager.RoadPathReset(gameObject);
 
-        // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        if (WriteRoadPath(_searchNode) == false)
-        {
-            gameObject.AddComponent<AISearchMove>();
-            Destroy(this);
-        }
+    //    // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
+    //    if (WriteRoadPath(_searchNode) == false)
+    //    {
+    //        gameObject.AddComponent<AISearchMove>();
+    //        Destroy(this);
+    //    }
 
-        _roadPathManager.AllUnDone();
-        _searchNode = _currentNode;
+    //    _searchNode = _currentNode;
 
-        // 道を可視化してみる
-        StartCoroutine(SearchRoad(_searchNode));
-        _searchNode = _currentNode;
-    }
+    //    // 道を可視化してみる
+    //    StartCoroutine(SearchRoad(_searchNode));
+    //    _searchNode = _currentNode;
+    //}
 
-    Node TargetRandomSelect()
-    {
-        while (true)
-        {
-            var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
-            var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
-            if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
-                continue;
-            return _nodeManager.Nodes[y][x].GetComponent<Node>();
-        }
-    }
+    //Node TargetRandomSelect()
+    //{
+    //    while (true)
+    //    {
+    //        var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
+    //        var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
+    //        if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
+    //            continue;
+    //        return _nodeManager.Nodes[y][x].GetComponent<Node>();
+    //    }
+    //}
 
     private IEnumerator SearchRoad(Node current_node)
     {
@@ -158,28 +163,32 @@ public class AITargetMove : AIBasicsMovement
             return false;
         }
 
-        if (current_node == _targetNode)
-            return true;
-
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
 
         // 目標地点までの長さを評価点とする
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
         SortByNodeLength(_targetNode, current_node.LinkNodes);
 
+        var is_done = false;
+
         foreach (var node in current_node.LinkNodes)
         {
-            if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
+            if (tag == "Killer" &&
+                node.gameObject.GetComponent<Door>() != null)
+                continue;
+            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
-
+            
             loadpath.Add(gameObject, node);
-            loadpath._isDone = true;
-            if (WriteRoadPath(node))
+            if (node == _targetNode)
+                return true;
+            is_done = WriteRoadPath(node);
+            if (is_done == true)
                 return true;
         }
-        return false;
+        return is_done;
     }
 
     // 目標地点のノードまでの距離を短い順でソートする（バブルソート）

@@ -8,13 +8,13 @@ public class AIBeware : MonoBehaviour
 {
     private RoadPathManager _roadPathManager;
 
-    private Node _currentNode;
-
     [SerializeField]
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
     private int _searchCount;
+    //private bool _isFindHuman = false;
+    private GameObject _targetHuman;
 
     void Start()
     {
@@ -29,45 +29,71 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
-            AIBasicsMovement movement = null;
-            if (GetComponent<AISearchMove>())
-                movement = GetComponent<AISearchMove>();
-            if (GetComponent<AITargetMove>())
-                movement = GetComponent<AITargetMove>();
-            if (movement)
-            {
-                if (movement.MoveComplete() == false)
-                    continue;
-            }
 
-            var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
-            if (find_humans != null)
+            // 普通の移動をしている場合しか周囲を見ない
+            if (GetComponent<AISearchMove>() == null)
+                continue;
+
+            // 標的が見つかっているかどうか
+            if (_targetHuman == null)
             {
-                var find_human_node = find_humans.First().GetComponent<AIController>().CurrentNode;
-                if (gameObject.tag == "Killer")
+                // 探す
+                var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
+                // 探した跡を消す
+                _roadPathManager.RoadPathReset(gameObject);
+                // 見つけたかどうかと、先頭があるかどうか
+                if (find_humans != null && find_humans.First() != null)
                 {
-                    if (GetComponent<AITargetMove>() == null)
-                    {
-                        var mover = gameObject.AddComponent<AITargetMove>();
-                        mover.SetTargetNode(find_human_node);
-                        mover.Speed = 3f;
-                    }
-                    if (GetComponent<AISearchMove>())
-                        Destroy(GetComponent<AISearchMove>());
-                }
-                if (gameObject.tag == "Victim")
-                {
-                    if (GetComponent<AIRunAway>() == null)
-                    {
-                        var mover = gameObject.AddComponent<AIRunAway>();
-                        mover.SetTargetNode(find_human_node);
-                        mover.Speed = 5f;
-                    }
-                    if (GetComponent<AISearchMove>())
-                        Destroy(GetComponent<AISearchMove>());
+                    var find_human = find_humans.First();
+                    // 見つけた場合は標的にする
+                    _targetHuman = find_human;
                 }
             }
-            _roadPathManager.AllUnDone();
+            // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
+            if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                continue;
+            // 標的が見つかっているかどうか
+            if (_targetHuman == null)
+                continue;
+            if (CanMove(_targetHuman) == false)
+                continue;
+
+            // 殺人鬼の場合
+            if (gameObject.tag == "Killer")
+            {
+                // 目標地点を目指している途中ならはじく
+                if (GetComponent<AITargetMove>() != null)
+                    continue;
+
+                var mover = gameObject.AddComponent<AITargetMove>();
+
+                // どこを目指すかを教える
+                mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
+                mover.Speed = GetComponent<AIController>().HurryUpSpeed;
+
+                // 普通の移動をしていたら普通の移動をやめる
+                if (GetComponent<AISearchMove>())
+                    Destroy(GetComponent<AISearchMove>());
+            }
+            // 犠牲者の場合
+            if (gameObject.tag == "Victim")
+            {
+                // 逃げている最中だったらはじく
+                if (GetComponent<AIRunAway>() != null)
+                    continue;
+
+                var mover = gameObject.AddComponent<AIRunAway>();
+
+                // どいつから逃げなければいけないかを教える
+                mover.SetTargetNode(_targetHuman);
+                mover.Speed = GetComponent<AIController>().HurryUpSpeed;
+
+                // 普通の移動をしていたらやめる
+                if (GetComponent<AISearchMove>())
+                    Destroy(GetComponent<AISearchMove>());
+
+            }
+            _targetHuman = null;
         }
     }
 
@@ -86,6 +112,7 @@ public class AIBeware : MonoBehaviour
         {
             foreach (var human in humans)
             {
+                if (human == null) continue;
                 if (gameObject.tag == "Victim")
                     if (human.tag == "Victim")
                         continue;
@@ -98,7 +125,7 @@ public class AIBeware : MonoBehaviour
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.gameObject.GetComponent<RoadPath>()._isDone == true)
+            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
                 continue;
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
@@ -118,7 +145,6 @@ public class AIBeware : MonoBehaviour
                 return null;
 
             loadpath.Add(gameObject, node);
-            loadpath._isDone = true;
             var found_human = SearchHuman(node);
             if (found_human != null)
                 return found_human;
@@ -127,7 +153,16 @@ public class AIBeware : MonoBehaviour
         return null;
     }
 
-
+    bool CanMove(GameObject human)
+    {
+        if (tag == "Killer")
+        {
+            var human_node = human.GetComponent<AIController>().CurrentNode;
+            if (human_node.GetComponent<Door>() != null)
+                return false;
+        }
+        return true;
+    }
 
     void Update()
     {

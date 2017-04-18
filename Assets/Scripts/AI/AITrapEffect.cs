@@ -1,16 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using System.Linq;
+using System;
 
 public class AITrapEffect : MonoBehaviour
 {
     private NodeManager _nodeManager;
     private Node _currentNode;
+    private AIController _aiController;
 
     void Start()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
+        _aiController = GetComponent<AIController>();
     }
 
     // 今のところは瞬間移動になる
@@ -30,17 +35,46 @@ public class AITrapEffect : MonoBehaviour
                             target_node.transform.position.z);
 
 
-        var movement = GetComponent<AISearchMove>();
+        var movement = GetComponent<AIController>().GetMovement();
         if (movement == null) return;
-        movement.Start();
+        movement.MoveSetup();
     }
 
-	//ロープの罠にかかった時の処理
-	public void ToOverturn()
-	{
-		//人が転ぶアニメーション記述
-		//未実装
+    //ロープの罠にかかった時の処理
+    public void ToOverturn()
+    {
+        //人が転ぶアニメーション記述
+        //未実装
 
+        var movement = GetComponent<AIController>().GetMovement();
+        if (movement == null) return;
 
-	}
+        movement.CanMove = false;
+        // 時間はまだ決め打ち　　　　　　　　　　↓
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        {
+            movement.CanMove = true;
+        });
+    }
+
+    private void Update()
+    {
+        DoorControl();
+    }
+
+    private void DoorControl()
+    {
+        if (tag != "Victim") return;
+
+        var door = _aiController.CurrentNode.GetComponent<Door>();
+        if (door == null) return;
+        if (door._doorStatus == Door.DoorStatus.OPEN) return;
+
+        door.StartOpening();
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        {
+            door.StartClosing();
+        });
+    }
+
 }

@@ -9,6 +9,15 @@ public class AIController : MonoBehaviour
 
     private NodeManager _nodeManager;
 
+    [SerializeField]
+    private float _defaultSpeed;
+    public float DefaultSpeed { get { return _defaultSpeed; } set { _defaultSpeed = value; } }
+    [SerializeField]
+    private float _hurryUpSpeed;
+    public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
+
+
+
     void Start()
     {
         var field = GameObject.Find("Field");
@@ -18,6 +27,50 @@ public class AIController : MonoBehaviour
 
     void Update()
     {
+        if (tag != "Killer") return;
 
+        var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
+        if (humans.Count < 2) return;
+
+        foreach (var human in humans)
+        {
+            if (human == null) continue;
+            if (human.tag != "Victim") continue;
+            Debug.Log(human.tag + "Destroy");
+            Destroy(human);
+            break;
+        }
     }
+
+    public AIBasicsMovement GetMovement()
+    {
+        AIBasicsMovement movement = null;
+        if (GetComponent<AISearchMove>())
+            movement = GetComponent<AISearchMove>();
+        if (GetComponent<AITargetMove>())
+            movement = GetComponent<AITargetMove>();
+        if (GetComponent<AIRunAway>())
+            movement = GetComponent<AIRunAway>();
+        return movement;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (gameObject.tag != "Killer") return;
+        if (other.gameObject.tag != "Victim") return;
+
+        Debug.Log("Kill Enter" + other.gameObject.tag);
+        //Destroy(other.gameObject);
+    }
+
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (gameObject.tag != "Killer") return;
+        if (collision.gameObject.tag != "Victim") return;
+
+        Debug.Log("Kill Collder" + collision.gameObject.tag);
+        //Destroy(collision.gameObject);
+    }
+
 }
