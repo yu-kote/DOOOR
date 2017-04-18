@@ -21,13 +21,15 @@ public class AITrapEffect : MonoBehaviour
     // 今のところは瞬間移動になる
     public void ToMove(Node target_node)
     {
-        _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        var ai_controller = GetComponent<AIController>();
+        _currentNode = ai_controller.CurrentNode;
 
         var foot_print = _currentNode.GetComponent<FootPrint>();
         foot_print.StepOut(gameObject);
 
         foot_print = target_node.GetComponent<FootPrint>();
         foot_print.StepIn(gameObject);
+        ai_controller.CurrentNode = target_node;
 
         gameObject.transform.position =
                 new Vector3(target_node.transform.position.x,
@@ -60,6 +62,11 @@ public class AITrapEffect : MonoBehaviour
     private void Update()
     {
         DoorControl();
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log("move");
+            ToMove(_nodeManager.Nodes[0][0].GetComponent<Node>());
+        }
     }
 
     private void DoorControl()

@@ -6,7 +6,7 @@ using System.Linq;
 
 public class AITargetMove : AIBasicsMovement
 {
-    //private RoadPathManager _roadPathManager;
+    private RoadPathManager _roadPathManager;
     //private NodeManager _nodeManager;
 
     private Node _targetNode;
@@ -24,7 +24,7 @@ public class AITargetMove : AIBasicsMovement
     void Start()
     {
         var field = GameObject.Find("Field");
-        //_roadPathManager = field.GetComponent<RoadPathManager>();
+        _roadPathManager = field.GetComponent<RoadPathManager>();
         //_nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
@@ -38,7 +38,8 @@ public class AITargetMove : AIBasicsMovement
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _searchNode = _currentNode;
-
+        MoveReset();
+        _roadPathManager.RoadPathReset(gameObject);
         TargetMoveStart(_targetNode);
     }
 
@@ -180,7 +181,7 @@ public class AITargetMove : AIBasicsMovement
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
-            
+
             loadpath.Add(gameObject, node);
             if (node == _targetNode)
                 return true;
