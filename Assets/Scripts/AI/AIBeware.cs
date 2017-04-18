@@ -130,6 +130,10 @@ public class AIBeware : MonoBehaviour
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
                 continue;
+            // 殺人鬼は扉の向こうを見れない
+            if (tag == "Killer")
+                if (node.gameObject.GetComponent<Door>())
+                    continue;
             // ほかの階は探索しない
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())

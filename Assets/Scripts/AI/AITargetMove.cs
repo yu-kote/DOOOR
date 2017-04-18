@@ -15,7 +15,7 @@ public class AITargetMove : AIBasicsMovement
 
     private Node _searchNode;
 
-    private int searchLimit = 150;
+    private int searchLimit = 1000;
     private int searchCount = 0;
 
     private GameObject _testSymbol;
