@@ -18,12 +18,20 @@ public class Rope : MonoBehaviour
 		if (_footPrint.HumansOnNode.Count == 0)
 			return;
 
-		//殺人鬼だったらはじくカモ
-		//未実装
-
 		//同時に引っかかった時のためにfor文
+		int overturnNum = 0;
 		for (int i = 0; i < _footPrint.HumansOnNode.Count; i++)
-			_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToOverturn();
+		{
+			if (_footPrint.HumansOnNode[i].GetComponent<AIController>().GetMovement().MoveComplete())
+			{
+				_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToOverturn();
+				overturnNum++;
+			}
+				
+		}
+
+		if (overturnNum == 0)
+			return;
 
 		//今のところ一度発動したら消えるようにしている
 		Destroy(gameObject);
