@@ -212,6 +212,11 @@ public class NodeManager : MonoBehaviour
 
 						_victimStartPos = new Vector2(node.CellX, node.CellY);
 						break;
+
+					case MapID.DUMMYWALL:
+
+						node.gameObject.AddComponent<DummyWall>();
+						break;
 				}
 			}
 		}
