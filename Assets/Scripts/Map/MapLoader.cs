@@ -22,6 +22,7 @@ public class MapLoader : MonoBehaviour
 
 	public List<string[]> _mapDatas = new List<string[]>();
 	public List<string[]> _trapDatas = new List<string[]>();
+	public List<string[]> _itemDatas = new List<string[]>();
 
 	void Awake()
 	{
@@ -44,6 +45,14 @@ public class MapLoader : MonoBehaviour
 		{
 			string line = reader.ReadLine();
 			_trapDatas.Add(line.Split(','));
+		}
+
+		csvFile = Resources.Load(_mapDirectoryPath + "ItemStatus") as TextAsset;
+		reader = new StringReader(csvFile.text);
+		while (reader.Peek() > -1)
+		{
+			string line = reader.ReadLine();
+			_itemDatas.Add(line.Split(','));
 		}
 	}
 }

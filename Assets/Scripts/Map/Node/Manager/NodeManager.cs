@@ -40,6 +40,18 @@ public class NodeManager : MonoBehaviour
 		NodesLink();
 		CreateAttribute(mapDatas);
 		SetTrapStatus(mapLoader._trapDatas);
+		CreateItem(mapLoader._itemDatas);
+	}
+
+	private void CreateItem(List<string[]> itemDatas)
+	{
+		for (int y = 0; y < _nodes.Count; y++)
+		{
+			for (int x = 0; x < _nodes[y].Count; x++)
+			{
+				_nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(itemDatas[y][x]));
+			}
+		}
 	}
 
 	private void SetTrapStatus(List<string[]> trapDatas)
