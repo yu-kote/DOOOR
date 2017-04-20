@@ -11,7 +11,8 @@ public enum MapID
 	WALL,
 	LEFTDOOR,
 	RIGHTDOOR,
-	START
+	START,
+	DUMMYWALL
 }
 
 public class MapLoader : MonoBehaviour
