@@ -11,15 +11,12 @@ public class AIController : MonoBehaviour
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
 
-
     [SerializeField]
     private float _defaultSpeed;
     public float DefaultSpeed { get { return _defaultSpeed; } set { _defaultSpeed = value; } }
     [SerializeField]
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
-
-
 
     void Start()
     {
@@ -44,6 +41,7 @@ public class AIController : MonoBehaviour
             if (human.tag != "Victim") continue;
             Debug.Log(human.tag + "Destroy");
 
+            // この世界に残した跡をすべて消し去る
             _nodeController.EraseTraces(human.GetComponent<MyNumber>());
             _roadPathManager.RoadPathReset(human);
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(human);

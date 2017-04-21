@@ -6,13 +6,8 @@ using System.Linq;
 
 public class AIRunAway : AIBasicsMovement
 {
-    [SerializeField]
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
-
-    //private Node _targetNode;
-    //public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
-    //public void SetTargetNode(Node target_node) { _targetNode = target_node; }
 
     private GameObject _targetHuman;
     public GameObject TargetNode { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -24,7 +19,6 @@ public class AIRunAway : AIBasicsMovement
     {
         var field = GameObject.Find("Field");
         _nodeController = field.GetComponent<NodeController>();
-        Speed = GetComponent<AIController>().HurryUpSpeed;
 
         MoveSetup();
     }
@@ -33,12 +27,13 @@ public class AIRunAway : AIBasicsMovement
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
-        _nodeController.ReFootPrint(gameObject, _currentNode);
+
         MoveReset();
     }
 
     bool RunAway()
     {
+        if (_isEscape) return true;
         if (_targetHuman == null) return true;
         var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
@@ -65,7 +60,7 @@ public class AIRunAway : AIBasicsMovement
 
     void Update()
     {
-        if (_isEscape)
+        if (MoveComplete() && _isEscape)
         {
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
