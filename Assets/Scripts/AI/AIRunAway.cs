@@ -40,6 +40,7 @@ public class AIRunAway : AIBasicsMovement
     {
         if (_isEscape) return true;
         if (_targetHuman == null) return true;
+        //if (_targetHuman.GetComponent<AITargetMove>() == null) return true;
         var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
 
@@ -47,13 +48,46 @@ public class AIRunAway : AIBasicsMovement
         if (distance > _endDistance)
             return true;
 
+        if (_currentNode.GetComponent<Stairs>())
+        {
+            StairsPoint();
+        }
+        else
+        {
+            GoAway();
+        }
+        return false;
+    }
+
+    void GoAway()
+    {
+        // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
+        AITargetMove.SortByNodeLength(
+            _targetHuman.GetComponent<AIController>().CurrentNode,
+            _currentNode.LinkNodes);
+
+        var next_candidate_node = _currentNode.LinkNodes.Last();
+
+        // 壁かどうか
+        if (next_candidate_node.GetComponent<Wall>() != null)
+            return;
+
+        // ドアの鍵が閉まっているかどうか
+        if (IsDoorLock(next_candidate_node))
+            return;
+
+        _nextNode = _currentNode.LinkNodes.Last();
+    }
+
+    // 階段が来たらどっちに進めば壁がないか調べる
+    void StairsPoint()
+    {
         // つながっているノードを見る
         // ある方向に逃げた場合どのぐらいの距離逃げることが出来るのかを割り出す
         // それを比べて、逃げるノードを選択する
 
         int select_node_num = -1;
         int most_node_route = -1;
-
         for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
         {
             var roadpath = _currentNode.GetComponent<RoadPath>();
@@ -73,17 +107,11 @@ public class AIRunAway : AIBasicsMovement
             // 逃げる道の数が同じだった場合は敵から遠ざかる方に逃げる
             if (route_count == most_node_route)
             {
-                //Debug.Log("被った");
-                //Debug.Log("i:" + i + " best:" + select_node_num);
-
                 var candidate_pos = _currentNode.LinkNodes[i].transform.position;
                 var candidate_distance = candidate_pos - _targetHuman.transform.position;
 
                 var best_pos = _currentNode.LinkNodes[select_node_num].transform.position;
                 var best_distance = best_pos - _targetHuman.transform.position;
-
-                Debug.Log(best_distance.magnitude);
-                Debug.Log(candidate_distance.magnitude);
 
                 if (best_distance.magnitude > candidate_distance.magnitude)
                 {
@@ -100,36 +128,16 @@ public class AIRunAway : AIBasicsMovement
             }
         }
 
-        //Debug.Log(select_node_num);
-
         var next_candidate_node = _currentNode.LinkNodes[select_node_num];
-
-        var door = next_candidate_node.GetComponent<Door>();
-        if (door)
-        {
-            if (door.IsDoorLock())
-            {
-                Debug.Log("通れません");
-                return false;
-            }
-        }
+        // ドアの鍵が閉まっているかどうか
+        if (IsDoorLock(next_candidate_node))
+            return;
 
         if (select_node_num > -1 &&
             next_candidate_node.GetComponent<Wall>() == null)
         {
             _nextNode = _currentNode.LinkNodes[select_node_num];
         }
-
-        //Debug.Log(_nextNode.CellX + " " + _nextNode.CellY);
-
-        // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
-        //AITargetMove.SortByNodeLength(
-        //    _targetHuman.GetComponent<AIController>().CurrentNode,
-        //    _currentNode.LinkNodes);
-        //if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
-        //    return false;
-        //_nextNode = _currentNode.LinkNodes.Last();
-        return false;
     }
 
     int SearchNumOfEscapeRoutes(Node current_node, int route_count)
@@ -152,6 +160,20 @@ public class AIRunAway : AIBasicsMovement
                 return 0;
         }
         return route_count;
+    }
+
+    bool IsDoorLock(Node node)
+    {
+        var door = node.GetComponent<Door>();
+        if (door)
+        {
+            if (door.IsDoorLock())
+            {
+                Debug.Log("通れません");
+                return true;
+            }
+        }
+        return false;
     }
 
     protected override void NextNodeSearch()
