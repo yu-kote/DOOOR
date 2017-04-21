@@ -40,7 +40,6 @@ public class AIRunAway : AIBasicsMovement
     {
         if (_isEscape) return true;
         if (_targetHuman == null) return true;
-        //if (_targetHuman.GetComponent<AITargetMove>() == null) return true;
         var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
 
@@ -48,18 +47,28 @@ public class AIRunAway : AIBasicsMovement
         if (distance > _endDistance)
             return true;
 
+        Node next_node = null;
+
+        // 一方通行なら遠くへ、階段があったら行き止まりの無いほうに逃げる
         if (_currentNode.GetComponent<Stairs>())
-        {
-            StairsPoint();
-        }
+            next_node = StairsPoint();
         else
-        {
-            GoAway();
-        }
+            next_node = GoAway();
+
+        // 壁かどうか
+        if (next_node.GetComponent<Wall>() != null)
+            return false;
+
+        // ドアの鍵が閉まっているかどうか
+        if (IsDoorLock(next_node))
+            return false;
+        _nextNode = next_node;
+
         return false;
     }
 
-    void GoAway()
+    // 遠くに逃げる
+    Node GoAway()
     {
         // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
         AITargetMove.SortByNodeLength(
@@ -68,19 +77,11 @@ public class AIRunAway : AIBasicsMovement
 
         var next_candidate_node = _currentNode.LinkNodes.Last();
 
-        // 壁かどうか
-        if (next_candidate_node.GetComponent<Wall>() != null)
-            return;
-
-        // ドアの鍵が閉まっているかどうか
-        if (IsDoorLock(next_candidate_node))
-            return;
-
-        _nextNode = _currentNode.LinkNodes.Last();
+        return next_candidate_node;
     }
 
     // 階段が来たらどっちに進めば壁がないか調べる
-    void StairsPoint()
+    Node StairsPoint()
     {
         // つながっているノードを見る
         // ある方向に逃げた場合どのぐらいの距離逃げることが出来るのかを割り出す
@@ -88,6 +89,7 @@ public class AIRunAway : AIBasicsMovement
 
         int select_node_num = -1;
         int most_node_route = -1;
+
         for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
         {
             var roadpath = _currentNode.GetComponent<RoadPath>();
@@ -95,14 +97,13 @@ public class AIRunAway : AIBasicsMovement
 
             int route_count = 0;
 
-            SearchNumOfEscapeRoutes(_currentNode.LinkNodes[i], route_count);
+            SearchNumOfEscapeRoutes(_currentNode.LinkNodes[i]);
 
             route_count = _routeCount;
             _routeCount = 0;
             //Debug.Log(i + "本目の" + "逃げ道の数:" + route_count);
 
             _roadPathManager.RoadPathReset(gameObject);
-
 
             // 逃げる道の数が同じだった場合は敵から遠ざかる方に逃げる
             if (route_count == most_node_route)
@@ -129,37 +130,36 @@ public class AIRunAway : AIBasicsMovement
         }
 
         var next_candidate_node = _currentNode.LinkNodes[select_node_num];
-        // ドアの鍵が閉まっているかどうか
-        if (IsDoorLock(next_candidate_node))
-            return;
-
-        if (select_node_num > -1 &&
-            next_candidate_node.GetComponent<Wall>() == null)
-        {
-            _nextNode = _currentNode.LinkNodes[select_node_num];
-        }
+        if (select_node_num > -1 && most_node_route > -1)
+            return next_candidate_node;
+        return _currentNode;
     }
 
-    int SearchNumOfEscapeRoutes(Node current_node, int route_count)
+    int SearchNumOfEscapeRoutes(Node current_node)
     {
+        // 道の数を数える
         _routeCount++;
+
         var roadpath = current_node.GetComponent<RoadPath>();
 
         foreach (var node in current_node.LinkNodes)
         {
+            // 検索済みは飛ばし
             if (node.GetComponent<RoadPath>().PathCheck(gameObject))
                 continue;
+            // 敵がいるノードに到達した場合はその先の検索をやめる
             if (node == _targetHuman.GetComponent<AIController>().CurrentNode)
                 return 0;
+            // 壁が来た場合はその先の検索をやめる
             if (node.GetComponent<Wall>() != null)
                 return 0;
 
             roadpath.Add(gameObject, node);
-            int count = SearchNumOfEscapeRoutes(node, route_count);
+            int count = SearchNumOfEscapeRoutes(node);
             if (count == 0)
                 return 0;
         }
-        return route_count;
+        return 0;
     }
 
     bool IsDoorLock(Node node)

@@ -28,7 +28,7 @@ public class AISearchMove : AIBasicsMovement
 
     protected override void NextNodeSearch()
     {
-        // まだ足跡がついてないノードを探す
+        // まだ足跡がついてないノードをつながっているノードから探す
         var candidate = CanMoveNode();
 
         // 周りのノードが全部足跡ついていたら自分の足跡をすべて消して探しなおす
@@ -64,4 +64,7 @@ public class AISearchMove : AIBasicsMovement
             })
             .ToList();
     }
+
+
+
 }

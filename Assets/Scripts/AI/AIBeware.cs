@@ -13,7 +13,6 @@ public class AIBeware : MonoBehaviour
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
     private int _searchCount;
-    //private bool _isFindHuman = false;
     private GameObject _targetHuman;
 
     void Start()
@@ -93,12 +92,12 @@ public class AIBeware : MonoBehaviour
                 // 普通の移動をしていたらやめる
                 if (GetComponent<AISearchMove>())
                     Destroy(GetComponent<AISearchMove>());
-
             }
             _targetHuman = null;
         }
     }
 
+    // 自分と違う人間を探す
     List<GameObject> SearchHuman(Node current_node)
     {
         _searchCount++;
@@ -172,6 +171,7 @@ public class AIBeware : MonoBehaviour
         return true;
     }
 
+    // 犠牲者なら犠牲者以外、殺人鬼なら殺人鬼以外がノードにいるか探す
     List<GameObject> SearchHumanOnNode(List<GameObject> human_on_node, string exclude_tag = "")
     {
         foreach (var human in human_on_node)
@@ -184,7 +184,6 @@ public class AIBeware : MonoBehaviour
         }
         return null;
     }
-
 
     void Update()
     {
