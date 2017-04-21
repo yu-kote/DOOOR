@@ -201,8 +201,10 @@ public class AITargetMove : AIBasicsMovement
                 continue;
 
             loadpath.Add(gameObject, node);
+            // 目標地点だったら終了
             if (node == _targetNode)
                 return true;
+
             is_done = WriteRoadPath(node);
             if (is_done == true)
                 return true;

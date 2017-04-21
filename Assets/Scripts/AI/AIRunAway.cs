@@ -6,6 +6,8 @@ using System.Linq;
 
 public class AIRunAway : AIBasicsMovement
 {
+    private RoadPathManager _roadPathManager;
+
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
 
@@ -18,6 +20,7 @@ public class AIRunAway : AIBasicsMovement
     void Start()
     {
         var field = GameObject.Find("Field");
+        _roadPathManager = field.GetComponent<RoadPathManager>();
         _nodeController = field.GetComponent<NodeController>();
 
         MoveSetup();
@@ -42,14 +45,26 @@ public class AIRunAway : AIBasicsMovement
         if (distance > _endDistance)
             return true;
 
-        // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
-        AITargetMove.SortByNodeLength(
-            _targetHuman.GetComponent<AIController>().CurrentNode,
-            _currentNode.LinkNodes);
+        // つながっているノードを見る
+        // ある方向に逃げた場合どのぐらいの距離逃げることが出来るのかを割り出す
+        // それを比べて、逃げるノードを選択する
 
-        if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
-            return false;
-        _nextNode = _currentNode.LinkNodes.Last();
+        for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
+        {
+
+            _roadPathManager.RoadPathReset(gameObject);
+        }
+
+
+
+        // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
+        //AITargetMove.SortByNodeLength(
+        //    _targetHuman.GetComponent<AIController>().CurrentNode,
+        //    _currentNode.LinkNodes);
+
+        //if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
+        //    return false;
+        //_nextNode = _currentNode.LinkNodes.Last();
         return false;
     }
 

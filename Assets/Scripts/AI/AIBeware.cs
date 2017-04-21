@@ -51,8 +51,8 @@ public class AIBeware : MonoBehaviour
             }
 
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            //if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
-            //continue;
+            if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                continue;
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
                 continue;
@@ -79,6 +79,9 @@ public class AIBeware : MonoBehaviour
             // 犠牲者の場合
             if (gameObject.tag == "Victim")
             {
+                // 犠牲者だったらはじく
+                if (_targetHuman.tag == "Victim")
+                    continue;
                 // 逃げている最中だったらはじく
                 if (GetComponent<AIRunAway>() != null)
                     continue;
