@@ -16,6 +16,8 @@ public class AIRunAway : AIBasicsMovement
     public void SetTargetNode(GameObject target_node) { _targetHuman = target_node; }
 
     private bool _isEscape = false;
+    private int _routeCount;
+
 
     void Start()
     {
@@ -49,23 +51,107 @@ public class AIRunAway : AIBasicsMovement
         // ある方向に逃げた場合どのぐらいの距離逃げることが出来るのかを割り出す
         // それを比べて、逃げるノードを選択する
 
+        int select_node_num = -1;
+        int most_node_route = -1;
+
         for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
         {
+            var roadpath = _currentNode.GetComponent<RoadPath>();
+            roadpath.Add(gameObject, _currentNode);
+
+            int route_count = 0;
+
+            SearchNumOfEscapeRoutes(_currentNode.LinkNodes[i], route_count);
+
+            route_count = _routeCount;
+            _routeCount = 0;
+            //Debug.Log(i + "本目の" + "逃げ道の数:" + route_count);
 
             _roadPathManager.RoadPathReset(gameObject);
+
+
+            // 逃げる道の数が同じだった場合は敵から遠ざかる方に逃げる
+            if (route_count == most_node_route)
+            {
+                //Debug.Log("被った");
+                //Debug.Log("i:" + i + " best:" + select_node_num);
+
+                var candidate_pos = _currentNode.LinkNodes[i].transform.position;
+                var candidate_distance = candidate_pos - _targetHuman.transform.position;
+
+                var best_pos = _currentNode.LinkNodes[select_node_num].transform.position;
+                var best_distance = best_pos - _targetHuman.transform.position;
+
+                Debug.Log(best_distance.magnitude);
+                Debug.Log(candidate_distance.magnitude);
+
+                if (best_distance.magnitude > candidate_distance.magnitude)
+                {
+                    select_node_num = i;
+                    continue;
+                }
+            }
+
+            // 最も逃げ道が多いものを選ぶ
+            if (route_count > most_node_route)
+            {
+                most_node_route = route_count;
+                select_node_num = i;
+            }
         }
 
+        //Debug.Log(select_node_num);
 
+        var next_candidate_node = _currentNode.LinkNodes[select_node_num];
+
+        var door = next_candidate_node.GetComponent<Door>();
+        if (door)
+        {
+            if (door.IsDoorLock())
+            {
+                Debug.Log("通れません");
+                return false;
+            }
+        }
+
+        if (select_node_num > -1 &&
+            next_candidate_node.GetComponent<Wall>() == null)
+        {
+            _nextNode = _currentNode.LinkNodes[select_node_num];
+        }
+
+        //Debug.Log(_nextNode.CellX + " " + _nextNode.CellY);
 
         // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
         //AITargetMove.SortByNodeLength(
         //    _targetHuman.GetComponent<AIController>().CurrentNode,
         //    _currentNode.LinkNodes);
-
         //if (_currentNode.LinkNodes.Last().GetComponent<Wall>() != null)
         //    return false;
         //_nextNode = _currentNode.LinkNodes.Last();
         return false;
+    }
+
+    int SearchNumOfEscapeRoutes(Node current_node, int route_count)
+    {
+        _routeCount++;
+        var roadpath = current_node.GetComponent<RoadPath>();
+
+        foreach (var node in current_node.LinkNodes)
+        {
+            if (node.GetComponent<RoadPath>().PathCheck(gameObject))
+                continue;
+            if (node == _targetHuman.GetComponent<AIController>().CurrentNode)
+                return 0;
+            if (node.GetComponent<Wall>() != null)
+                return 0;
+
+            roadpath.Add(gameObject, node);
+            int count = SearchNumOfEscapeRoutes(node, route_count);
+            if (count == 0)
+                return 0;
+        }
+        return route_count;
     }
 
     protected override void NextNodeSearch()
@@ -77,6 +163,7 @@ public class AIRunAway : AIBasicsMovement
     {
         if (MoveComplete() && _isEscape)
         {
+            _roadPathManager.RoadPathReset(gameObject);
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
         }

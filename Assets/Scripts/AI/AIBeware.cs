@@ -51,7 +51,8 @@ public class AIBeware : MonoBehaviour
             }
 
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
+            if (tag == "Killer" &&
+                GetComponent<AIController>().GetMovement().MoveComplete() == false)
                 continue;
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
@@ -79,9 +80,6 @@ public class AIBeware : MonoBehaviour
             // 犠牲者の場合
             if (gameObject.tag == "Victim")
             {
-                // 犠牲者だったらはじく
-                if (_targetHuman.tag == "Victim")
-                    continue;
                 // 逃げている最中だったらはじく
                 if (GetComponent<AIRunAway>() != null)
                     continue;
@@ -114,14 +112,9 @@ public class AIBeware : MonoBehaviour
         if (!humans.Contains(gameObject) &&
             humans.Count > 0)
         {
-            foreach (var human in humans)
-            {
-                if (human == null) continue;
-                if (gameObject.tag == "Victim")
-                    if (human.tag == "Victim")
-                        continue;
-                return humans;
-            }
+            var human = SearchHumanOnNode(humans, "Victim");
+            if (human != null)
+                return human;
         }
 
         var loadpath = current_node.gameObject.GetComponent<RoadPath>();
@@ -145,7 +138,11 @@ public class AIBeware : MonoBehaviour
                 var stairs_humans = node.gameObject.GetComponent<FootPrint>().HumansOnNode;
                 if (!stairs_humans.Contains(gameObject) &&
                      stairs_humans.Count > 0)
-                    return stairs_humans;
+                {
+                    var human = SearchHumanOnNode(stairs_humans, "Victim");
+                    if (human != null)
+                        return human;
+                }
                 continue;
             }
 
@@ -174,6 +171,20 @@ public class AIBeware : MonoBehaviour
         }
         return true;
     }
+
+    List<GameObject> SearchHumanOnNode(List<GameObject> human_on_node, string exclude_tag = "")
+    {
+        foreach (var human in human_on_node)
+        {
+            if (human == null) continue;
+            if (gameObject.tag == exclude_tag)
+                if (human.tag == exclude_tag)
+                    continue;
+            return human_on_node;
+        }
+        return null;
+    }
+
 
     void Update()
     {

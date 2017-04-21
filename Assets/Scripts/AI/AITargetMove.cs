@@ -182,7 +182,7 @@ public class AITargetMove : AIBasicsMovement
             return false;
         }
 
-        var loadpath = current_node.gameObject.GetComponent<RoadPath>();
+        var roadpath = current_node.gameObject.GetComponent<RoadPath>();
 
         // 目標地点までの長さを評価点とする
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
@@ -200,7 +200,7 @@ public class AITargetMove : AIBasicsMovement
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
 
-            loadpath.Add(gameObject, node);
+            roadpath.Add(gameObject, node);
             // 目標地点だったら終了
             if (node == _targetNode)
                 return true;
