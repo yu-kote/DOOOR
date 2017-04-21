@@ -49,9 +49,10 @@ public class AIBeware : MonoBehaviour
                     _targetHuman = find_human;
                 }
             }
+
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
-                continue;
+            //if (GetComponent<AIController>().GetMovement().MoveComplete() == false)
+            //continue;
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
                 continue;
@@ -144,14 +145,17 @@ public class AIBeware : MonoBehaviour
                     return stairs_humans;
                 continue;
             }
-            // 角の場合は終了
-            if (node.gameObject.GetComponent<Corner>())
-                return null;
 
             loadpath.Add(gameObject, node);
+
+
             var found_human = SearchHuman(node);
             if (found_human != null)
                 return found_human;
+
+            // 角の場合は終了
+            if (node.gameObject.GetComponent<Corner>())
+                return null;
         }
         _searchCount = 0;
         return null;

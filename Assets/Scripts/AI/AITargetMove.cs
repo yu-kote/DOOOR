@@ -8,13 +8,10 @@ using UniRx;
 public class AITargetMove : AIBasicsMovement
 {
     private RoadPathManager _roadPathManager;
-    //private NodeManager _nodeManager;
 
     private Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
     public void SetTargetNode(Node target_node) { _targetNode = target_node; }
-
-    private Node _searchNode;
 
     private int searchLimit = 1000;
     private int searchCount = 0;
@@ -28,11 +25,8 @@ public class AITargetMove : AIBasicsMovement
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
-        //_nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
-
-        Speed = GetComponent<AIController>().HurryUpSpeed;
 
         MoveSetup();
     }
@@ -40,11 +34,12 @@ public class AITargetMove : AIBasicsMovement
     public override void MoveSetup()
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
-        _searchNode = _currentNode;
+
         _arriveAtTarget = false;
-        MoveReset();
         _roadPathManager.RoadPathReset(gameObject);
         TargetMoveStart(_targetNode);
+
+        MoveReset();
     }
 
     // 引数のノードに移動を始める
@@ -57,27 +52,19 @@ public class AITargetMove : AIBasicsMovement
             return;
         }
 
-        _nodeController.ReFootPrint(gameObject, _currentNode);
-
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        if (WriteRoadPath(_searchNode) == false)
+        if (WriteRoadPath(_currentNode) == false)
         {
-            Debug.Log("not search");
-
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
                 gameObject.AddComponent<AISearchMove>();
                 Destroy(this);
             });
-
             return;
         }
 
-        _searchNode = _currentNode;
-
         // 道を可視化してみる
-        StartCoroutine(SearchRoad(_searchNode));
-        _searchNode = _currentNode;
+        StartCoroutine(SearchRoad(_currentNode));
     }
 
     // ランダムに道を選んでみる 

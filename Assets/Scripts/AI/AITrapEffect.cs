@@ -7,14 +7,14 @@ using System;
 
 public class AITrapEffect : MonoBehaviour
 {
-    private NodeManager _nodeManager;
+    //private NodeManager _nodeManager;
     private Node _currentNode;
     private AIController _aiController;
 
     void Start()
     {
-        var field = GameObject.Find("Field");
-        _nodeManager = field.GetComponent<NodeManager>();
+        //var field = GameObject.Find("Field");
+        //_nodeManager = field.GetComponent<NodeManager>();
         _aiController = GetComponent<AIController>();
     }
 
