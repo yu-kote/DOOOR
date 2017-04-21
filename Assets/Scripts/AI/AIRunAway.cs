@@ -166,13 +166,12 @@ public class AIRunAway : AIBasicsMovement
     {
         var door = node.GetComponent<Door>();
         if (door)
-        {
-            if (door.IsDoorLock())
-            {
-                Debug.Log("通れません");
-                return true;
-            }
-        }
+            if (door._doorStatus == Door.DoorStatus.CLOSE)
+                if (door.IsDoorLock())
+                {
+                    Debug.Log("通れません");
+                    return true;
+                }
         return false;
     }
 

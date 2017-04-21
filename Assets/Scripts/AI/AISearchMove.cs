@@ -52,9 +52,9 @@ public class AISearchMove : AIBasicsMovement
                 // ドアがロックされていたら通れない
                 var door = node.GetComponent<Door>();
                 if (door == null) return true;
-                if (door._doorStatus != Door.DoorStatus.CLOSE) return true;
-                if (door.IsDoorLock())
-                    return false;
+                if (door._doorStatus != Door.DoorStatus.CLOSE)
+                    if (door.IsDoorLock())
+                        return false;
 
                 // 殺人鬼の時にドアが開いてなかったら通れなくする
                 if (tag != "Killer") return true;
@@ -65,6 +65,13 @@ public class AISearchMove : AIBasicsMovement
             .ToList();
     }
 
+    Node SearchUnexploredNode(Node current_node)
+    {
 
+
+
+
+        return null;
+    }
 
 }
