@@ -12,7 +12,11 @@ public enum MapID
 	LEFTDOOR,
 	RIGHTDOOR,
 	START,
+<<<<<<< HEAD
+	KYUKEISPACE
+=======
 	DUMMYWALL
+>>>>>>> Attribute DummyWallを追加
 }
 
 public class MapLoader : MonoBehaviour

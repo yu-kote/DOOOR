@@ -213,9 +213,15 @@ public class NodeManager : MonoBehaviour
 						_victimStartPos = new Vector2(node.CellX, node.CellY);
 						break;
 
+<<<<<<< HEAD
+					case MapID.KYUKEISPACE:
+
+						node.gameObject.AddComponent<Kyukeispace>();
+=======
 					case MapID.DUMMYWALL:
 
 						node.gameObject.AddComponent<DummyWall>();
+>>>>>>> Attribute DummyWallを追加
 						break;
 				}
 			}
