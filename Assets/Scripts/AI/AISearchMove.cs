@@ -28,7 +28,7 @@ public class AISearchMove : AIBasicsMovement
 
     protected override void NextNodeSearch()
     {
-        // まだ足跡がついてないノードを探す
+        // まだ足跡がついてないノードをつながっているノードから探す
         var candidate = CanMoveNode();
 
         // 周りのノードが全部足跡ついていたら自分の足跡をすべて消して探しなおす
@@ -49,11 +49,29 @@ public class AISearchMove : AIBasicsMovement
             .Where(node => node.GetComponent<Wall>() == null)
             .Where(node =>
             {
-                // 殺人鬼の時にドアがあったら通れなくする
+                // ドアがロックされていたら通れない
+                var door = node.GetComponent<Door>();
+                if (door == null) return true;
+                if (door._doorStatus != Door.DoorStatus.CLOSE)
+                    if (door.IsDoorLock())
+                        return false;
+
+                // 殺人鬼の時にドアが開いてなかったら通れなくする
                 if (tag != "Killer") return true;
-                if (node.GetComponent<Door>() == null) return true;
+                if (door._doorStatus != Door.DoorStatus.CLOSE) return true;
+
                 return false;
             })
             .ToList();
     }
+
+    Node SearchUnexploredNode(Node current_node)
+    {
+
+
+
+
+        return null;
+    }
+
 }

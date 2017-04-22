@@ -69,13 +69,15 @@ public class AITrapEffect : MonoBehaviour
 
         var door = _aiController.CurrentNode.GetComponent<Door>();
         if (door == null) return;
-        if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
-        door.StartOpening();
         Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             door.StartClosing();
         });
+
+        if (door._doorStatus == Door.DoorStatus.OPEN) return;
+
+        door.StartOpening();
     }
 
 }
