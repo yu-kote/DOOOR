@@ -93,7 +93,7 @@ public class AIRunAway : AIBasicsMovement
         for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
         {
             var roadpath = _currentNode.GetComponent<RoadPath>();
-            roadpath.Add(gameObject, _currentNode);
+            roadpath.AddNextPath(gameObject, _currentNode);
 
             int route_count = 0;
 
@@ -145,7 +145,7 @@ public class AIRunAway : AIBasicsMovement
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.GetComponent<RoadPath>().PathCheck(gameObject))
+            if (node.GetComponent<RoadPath>().NextPathCheck(gameObject))
                 continue;
             // 敵がいるノードに到達した場合はその先の検索をやめる
             if (node == _targetHuman.GetComponent<AIController>().CurrentNode)
@@ -154,7 +154,7 @@ public class AIRunAway : AIBasicsMovement
             if (node.GetComponent<Wall>() != null)
                 return 0;
 
-            roadpath.Add(gameObject, node);
+            roadpath.AddNextPath(gameObject, node);
             int count = SearchNumOfEscapeRoutes(node);
             if (count == 0)
                 return 0;
@@ -169,7 +169,7 @@ public class AIRunAway : AIBasicsMovement
             if (door._doorStatus == Door.DoorStatus.CLOSE)
                 if (door.IsDoorLock())
                 {
-                    Debug.Log("通れません");
+                    //Debug.Log("通れません");
                     return true;
                 }
         return false;

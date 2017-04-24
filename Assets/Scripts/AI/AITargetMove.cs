@@ -53,7 +53,8 @@ public class AITargetMove : AIBasicsMovement
         }
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        if (WriteRoadPath(_currentNode) == false)
+        //if (WriteRoadPath(_currentNode) == false)
+        if (Search() == false)
         {
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
@@ -105,7 +106,7 @@ public class AITargetMove : AIBasicsMovement
     {
         while (current_node != _targetNode)
         {
-            var nextnode = current_node.GetComponent<RoadPath>().Direction(gameObject);
+            var nextnode = current_node.GetComponent<RoadPath>().NextNode(gameObject);
             if (nextnode == null ||
                 _currentNode == nextnode)
             {
@@ -169,7 +170,104 @@ public class AITargetMove : AIBasicsMovement
 
     protected override void NextNodeSearch()
     {
-        _nextNode = _currentNode.GetComponent<RoadPath>().Direction(gameObject);
+        _nextNode = _currentNode.GetComponent<RoadPath>().NextNode(gameObject);
+    }
+
+    bool Search()
+    {
+        SearchStart();
+        int limit = 100;
+        for (int i = 0; i < limit; i++)
+        {
+            if (SearchRoadPath())
+            {
+                SearchDirectionInvert(_targetNode);
+                return true;
+            }
+        }
+        _searchNodes.Clear();
+        return false;
+    }
+
+    ///<summary>
+    /// うっちー案
+    /// 探索を開始する地点を分岐地点に設定する
+    /// 関数開始
+    /// 分岐地点から左右どちらかを調べる
+    /// 階段を見つけた場合、階層を比較して上るか下るかを判定する
+    /// 階層を移動する場合移動先のノードを分岐地点に設定する
+    /// 
+    /// 敵を見つけた場合それまで通ったノードの数を分岐地点に保存して、
+    /// 右回りに調べていた場合、その階層の調べ済みを消して、左周りに調べる
+    /// 保存してある通った数の少ないほうをリターンする
+    /// 
+    /// 俺案
+    /// 起点につながっているノードの中で、探索していないノードを選択して保存する
+    /// 保存したノードを起点として、枝を伸ばす
+    /// 伸ばす時にどのノードから伸びてきたかを伸ばした後のノードに保存する
+    /// 伸ばす前のノードを消す
+    /// 見つけたら終了
+    ///</summary>
+    bool SearchRoadPath()
+    {
+        bool is_search_end = false;
+        List<Node> temp_search_nodes = new List<Node>();
+
+        foreach (var search_node in _searchNodes)
+        {
+            foreach (var node in search_node.LinkNodes)
+            {
+                if (node.gameObject.GetComponent<RoadPath>().PrevPathCheck(gameObject) == true)
+                    continue;
+                if (node.gameObject.GetComponent<Wall>() != null)
+                    continue;
+                if (tag == "Killer" &&
+                    node.gameObject.GetComponent<Door>() != null)
+                    continue;
+
+                temp_search_nodes.Add(node);
+
+                var roadpath = node.gameObject.GetComponent<RoadPath>();
+                roadpath.AddPrevPath(gameObject, search_node);
+
+                if (node == _targetNode)
+                {
+                    is_search_end = true;
+                    break;
+                }
+            }
+            if (temp_search_nodes.Contains(search_node))
+                temp_search_nodes.Remove(search_node);
+            if (is_search_end)
+                break;
+        }
+        _searchNodes = temp_search_nodes;
+
+        if (is_search_end)
+        {
+            temp_search_nodes.Clear();
+            _searchNodes.Clear();
+            return true;
+        }
+        return false;
+    }
+
+    List<Node> _searchNodes = new List<Node>();
+
+    void SearchStart()
+    {
+        _searchNodes.Add(GetComponent<AIController>().CurrentNode);
+    }
+
+    void SearchDirectionInvert(Node current_node)
+    {
+        if (current_node == GetComponent<AIController>().CurrentNode)
+            return;
+        var road_path = current_node.GetComponent<RoadPath>();
+        var prev_node = road_path.PrevNode(gameObject);
+
+        prev_node.GetComponent<RoadPath>().AddNextPath(gameObject, current_node);
+        SearchDirectionInvert(prev_node);
     }
 
     bool WriteRoadPath(Node current_node)
@@ -195,12 +293,12 @@ public class AITargetMove : AIBasicsMovement
             if (tag == "Killer" &&
                 node.gameObject.GetComponent<Door>() != null)
                 continue;
-            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
+            if (node.gameObject.GetComponent<RoadPath>().NextPathCheck(gameObject) == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;
 
-            roadpath.Add(gameObject, node);
+            roadpath.AddNextPath(gameObject, node);
             // 目標地点だったら終了
             if (node == _targetNode)
                 return true;

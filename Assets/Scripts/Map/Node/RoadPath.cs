@@ -4,40 +4,68 @@ using UnityEngine;
 
 public class RoadPath : MonoBehaviour
 {
-    // ダイクストラ法 http://www.deqnotes.net/acmicpc/dijkstra/
+    
+    // 次のノード
+    private Dictionary<MyNumber, Node> _nextPath = new Dictionary<MyNumber, Node>();
+    public Dictionary<MyNumber, Node> NextPath { get { return _nextPath; } set { _nextPath = value; } }
 
-    private Dictionary<MyNumber, Node> _path = new Dictionary<MyNumber, Node>();
-    public Dictionary<MyNumber, Node> Path { get { return _path; } set { _path = value; } }
-
-    // 調べ済みかどうか
-    // private Dictionary<MyNumber, bool> _isDone = new Dictionary<MyNumber, bool>();
-    //public Dictionary<MyNumber, bool> IsDone { get { return _isDone; } set { _isDone = value; } }
-
-    public void Add(GameObject human, Node node)
+    public void AddNextPath(GameObject human, Node node)
     {
         var mynumber = human.GetComponent<MyNumber>();
-        if (_path.ContainsKey(mynumber) == false)
-            _path.Add(mynumber, node);
+        if (_nextPath.ContainsKey(mynumber) == false)
+            _nextPath.Add(mynumber, node);
         else
-            _path[mynumber] = node;
+            _nextPath[mynumber] = node;
     }
 
-    public bool PathCheck(GameObject human)
+    public bool NextPathCheck(GameObject human)
     {
         var mynumber = human.GetComponent<MyNumber>();
-        return _path.ContainsKey(mynumber);
+        return _nextPath.ContainsKey(mynumber);
     }
 
-    public Node Direction(GameObject human)
+    public Node NextNode(GameObject human)
     {
         var mynumber = human.GetComponent<MyNumber>();
-        if (_path.ContainsKey(mynumber) == false)
+        if (_nextPath.ContainsKey(mynumber) == false)
             return null;
-        return _path[mynumber];
+        return _nextPath[mynumber];
     }
 
-    public void Remove(GameObject human)
+    public void NextPathRemove(GameObject human)
     {
-        _path.Remove(human.GetComponent<MyNumber>());
+        _nextPath.Remove(human.GetComponent<MyNumber>());
+    }
+
+    // 前のノード
+    private Dictionary<MyNumber, Node> _prevPath = new Dictionary<MyNumber, Node>();
+    public Dictionary<MyNumber, Node> PrevPath { get { return _prevPath; } set { _prevPath = value; } }
+
+    public void AddPrevPath(GameObject human, Node node)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        if (_prevPath.ContainsKey(mynumber) == false)
+            _prevPath.Add(mynumber, node);
+        else
+            _prevPath[mynumber] = node;
+    }
+
+    public bool PrevPathCheck(GameObject human)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        return _prevPath.ContainsKey(mynumber);
+    }
+
+    public Node PrevNode(GameObject human)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        if (_prevPath.ContainsKey(mynumber) == false)
+            return null;
+        return _prevPath[mynumber];
+    }
+
+    public void PrevPathRemove(GameObject human)
+    {
+        _prevPath.Remove(human.GetComponent<MyNumber>());
     }
 }

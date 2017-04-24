@@ -121,7 +121,7 @@ public class AIBeware : MonoBehaviour
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.gameObject.GetComponent<RoadPath>().PathCheck(gameObject) == true)
+            if (node.gameObject.GetComponent<RoadPath>().NextPathCheck(gameObject) == true)
                 continue;
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
@@ -145,7 +145,7 @@ public class AIBeware : MonoBehaviour
                 continue;
             }
 
-            loadpath.Add(gameObject, node);
+            loadpath.AddNextPath(gameObject, node);
 
 
             var found_human = SearchHuman(node);
