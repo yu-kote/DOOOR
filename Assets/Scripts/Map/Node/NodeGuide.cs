@@ -2,12 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoadPath : MonoBehaviour
+public class NodeGuide : MonoBehaviour
 {
-    
+
     // 次のノード
     private Dictionary<MyNumber, Node> _nextPath = new Dictionary<MyNumber, Node>();
     public Dictionary<MyNumber, Node> NextPath { get { return _nextPath; } set { _nextPath = value; } }
+
+    // 前のノード
+    private Dictionary<MyNumber, Node> _prevPath = new Dictionary<MyNumber, Node>();
+    public Dictionary<MyNumber, Node> PrevPath { get { return _prevPath; } set { _prevPath = value; } }
+
+    // 調べ済みかどうか
+    private List<MyNumber> _isSearch = new List<MyNumber>();
+    public List<MyNumber> IsSearch { get { return _isSearch; } set { _isSearch = value; } }
+
+    public void AddSearch(GameObject human)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        if (_isSearch.Contains(mynumber) == false)
+            _isSearch.Add(mynumber);
+    }
+
+    public bool SearchCheck(GameObject human)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        return _isSearch.Contains(mynumber);
+    }
+
+    public void SearchRemove(GameObject human)
+    {
+        _isSearch.Remove(human.GetComponent<MyNumber>());
+    }
 
     public void AddNextPath(GameObject human, Node node)
     {
@@ -37,9 +63,6 @@ public class RoadPath : MonoBehaviour
         _nextPath.Remove(human.GetComponent<MyNumber>());
     }
 
-    // 前のノード
-    private Dictionary<MyNumber, Node> _prevPath = new Dictionary<MyNumber, Node>();
-    public Dictionary<MyNumber, Node> PrevPath { get { return _prevPath; } set { _prevPath = value; } }
 
     public void AddPrevPath(GameObject human, Node node)
     {

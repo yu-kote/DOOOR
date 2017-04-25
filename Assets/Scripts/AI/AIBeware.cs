@@ -29,17 +29,18 @@ public class AIBeware : MonoBehaviour
         {
             yield return null;
 
+            var ai_controller = GetComponent<AIController>();
             // 普通の移動をしている場合しか周囲を見ない
-            if (GetComponent<AISearchMove>() == null)
+            if (ai_controller.MoveMode != AIController.MoveEmotion.DEFAULT)
                 continue;
 
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
             {
                 // 探す
-                var find_humans = SearchHuman(GetComponent<AIController>().CurrentNode);
+                var find_humans = SearchHuman(ai_controller.CurrentNode);
+                _roadPathManager.SearchReset(gameObject);
                 // 探した跡を消す
-                _roadPathManager.RoadPathReset(gameObject);
                 // 見つけたかどうかと、先頭があるかどうか
                 if (find_humans != null && find_humans.First() != null)
                 {
@@ -51,7 +52,7 @@ public class AIBeware : MonoBehaviour
 
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
             if (//tag == "Killer" &&
-                GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                ai_controller.GetMovement().MoveComplete() == false)
                 continue;
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
@@ -59,18 +60,19 @@ public class AIBeware : MonoBehaviour
             if (CanMove(_targetHuman) == false)
                 continue;
 
+
             // 殺人鬼の場合
             if (gameObject.tag == "Killer")
             {
-                // 目標地点を目指している途中ならはじく
-                if (GetComponent<AITargetMove>() != null)
-                    continue;
+                if (ai_controller.MoveMode == AIController.MoveEmotion.DEFAULT)
+                    if (GetComponent<AITargetMove>())
+                        Destroy(GetComponent<AITargetMove>());
 
                 var mover = gameObject.AddComponent<AITargetMove>();
 
                 // どこを目指すかを教える
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
-                mover.Speed = GetComponent<AIController>().HurryUpSpeed;
+                mover.Speed = ai_controller.HurryUpSpeed;
 
                 // 普通の移動をしていたら普通の移動をやめる
                 if (GetComponent<AISearchMove>())
@@ -79,20 +81,20 @@ public class AIBeware : MonoBehaviour
             // 犠牲者の場合
             if (gameObject.tag == "Victim")
             {
-                // 逃げている最中だったらはじく
-                if (GetComponent<AIRunAway>() != null)
-                    continue;
-
                 var mover = gameObject.AddComponent<AIRunAway>();
 
                 // どいつから逃げなければいけないかを教える
-                mover.SetTargetNode(_targetHuman);
-                mover.Speed = GetComponent<AIController>().HurryUpSpeed;
+                mover.SetTargetHuman(_targetHuman);
+                mover.Speed = ai_controller.HurryUpSpeed;
 
-                // 普通の移動をしていたらやめる
+                // 他のの移動をしていたらやめる
                 if (GetComponent<AISearchMove>())
                     Destroy(GetComponent<AISearchMove>());
+                if (GetComponent<AITargetMove>())
+                    Destroy(GetComponent<AITargetMove>());
             }
+            // 急ぐ
+            ai_controller.MoveMode = AIController.MoveEmotion.HURRY_UP;
             _targetHuman = null;
         }
     }
@@ -116,12 +118,12 @@ public class AIBeware : MonoBehaviour
                 return human;
         }
 
-        var loadpath = current_node.gameObject.GetComponent<RoadPath>();
+        var loadpath = current_node.gameObject.GetComponent<NodeGuide>();
 
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.gameObject.GetComponent<RoadPath>().NextPathCheck(gameObject) == true)
+            if (node.gameObject.GetComponent<NodeGuide>().SearchCheck(gameObject))
                 continue;
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
@@ -145,8 +147,7 @@ public class AIBeware : MonoBehaviour
                 continue;
             }
 
-            loadpath.AddNextPath(gameObject, node);
-
+            loadpath.AddSearch(gameObject);
 
             var found_human = SearchHuman(node);
             if (found_human != null)

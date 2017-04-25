@@ -36,7 +36,7 @@ public class AITargetMove : AIBasicsMovement
         _currentNode = GetComponent<AIController>().CurrentNode;
 
         _arriveAtTarget = false;
-        _roadPathManager.RoadPathReset(gameObject);
+        _roadPathManager.RoadGuideReset(gameObject);
         TargetMoveStart(_targetNode);
 
         MoveReset();
@@ -106,7 +106,7 @@ public class AITargetMove : AIBasicsMovement
     {
         while (current_node != _targetNode)
         {
-            var nextnode = current_node.GetComponent<RoadPath>().NextNode(gameObject);
+            var nextnode = current_node.GetComponent<NodeGuide>().NextNode(gameObject);
             if (nextnode == null ||
                 _currentNode == nextnode)
             {
@@ -143,6 +143,11 @@ public class AITargetMove : AIBasicsMovement
             _currentNode == _targetNode)
         {
             _arriveAtTarget = true;
+
+            var ai_controller = GetComponent<AIController>();
+            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
+                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
+
             if (IsDoorAround())
             {
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
@@ -162,7 +167,7 @@ public class AITargetMove : AIBasicsMovement
     {
         foreach (var node in _currentNode.LinkNodes)
         {
-            if (node.GetComponent<Door>())
+            if (tag == "Killer" && node.GetComponent<Door>())
                 return true;
         }
         return false;
@@ -170,7 +175,7 @@ public class AITargetMove : AIBasicsMovement
 
     protected override void NextNodeSearch()
     {
-        _nextNode = _currentNode.GetComponent<RoadPath>().NextNode(gameObject);
+        _nextNode = _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);
     }
 
     bool Search()
@@ -217,7 +222,7 @@ public class AITargetMove : AIBasicsMovement
         {
             foreach (var node in search_node.LinkNodes)
             {
-                if (node.gameObject.GetComponent<RoadPath>().PrevPathCheck(gameObject) == true)
+                if (node.gameObject.GetComponent<NodeGuide>().PrevPathCheck(gameObject) == true)
                     continue;
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
@@ -227,7 +232,7 @@ public class AITargetMove : AIBasicsMovement
 
                 temp_search_nodes.Add(node);
 
-                var roadpath = node.gameObject.GetComponent<RoadPath>();
+                var roadpath = node.gameObject.GetComponent<NodeGuide>();
                 roadpath.AddPrevPath(gameObject, search_node);
 
                 if (node == _targetNode)
@@ -259,14 +264,16 @@ public class AITargetMove : AIBasicsMovement
         _searchNodes.Add(GetComponent<AIController>().CurrentNode);
     }
 
+    // どのノードから来たのかを見て、
+    // 来たノードに自分のノードを教える
     void SearchDirectionInvert(Node current_node)
     {
         if (current_node == GetComponent<AIController>().CurrentNode)
             return;
-        var road_path = current_node.GetComponent<RoadPath>();
+        var road_path = current_node.GetComponent<NodeGuide>();
         var prev_node = road_path.PrevNode(gameObject);
 
-        prev_node.GetComponent<RoadPath>().AddNextPath(gameObject, current_node);
+        prev_node.GetComponent<NodeGuide>().AddNextPath(gameObject, current_node);
         SearchDirectionInvert(prev_node);
     }
 
@@ -280,7 +287,7 @@ public class AITargetMove : AIBasicsMovement
             return false;
         }
 
-        var roadpath = current_node.gameObject.GetComponent<RoadPath>();
+        var roadpath = current_node.gameObject.GetComponent<NodeGuide>();
 
         // 目標地点までの長さを評価点とする
         // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
@@ -293,7 +300,7 @@ public class AITargetMove : AIBasicsMovement
             if (tag == "Killer" &&
                 node.gameObject.GetComponent<Door>() != null)
                 continue;
-            if (node.gameObject.GetComponent<RoadPath>().NextPathCheck(gameObject) == true)
+            if (node.gameObject.GetComponent<NodeGuide>().NextPathCheck(gameObject) == true)
                 continue;
             if (node.gameObject.GetComponent<Wall>() != null)
                 continue;

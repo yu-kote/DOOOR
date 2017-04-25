@@ -11,15 +11,27 @@ public class RoadPathManager : MonoBehaviour
         _nodeManager = GetComponent<NodeManager>();
     }
 
-    public void RoadPathReset(GameObject human)
+    public void RoadGuideReset(GameObject human)
     {
         foreach (var y in _nodeManager.Nodes)
         {
             foreach (var node in y)
             {
-                var roadpath = node.GetComponent<RoadPath>();
+                var roadpath = node.GetComponent<NodeGuide>();
                 roadpath.NextPathRemove(human);
                 roadpath.PrevPathRemove(human);
+            }
+        }
+    }
+
+    public void SearchReset(GameObject human)
+    {
+        foreach (var y in _nodeManager.Nodes)
+        {
+            foreach (var node in y)
+            {
+                var roadpath = node.GetComponent<NodeGuide>();
+                roadpath.SearchRemove(human);
             }
         }
     }
