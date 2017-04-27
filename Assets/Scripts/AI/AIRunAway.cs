@@ -12,8 +12,8 @@ public class AIRunAway : AIBasicsMovement
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
 
     private GameObject _targetHuman;
-    public GameObject TargetNode { get { return _targetHuman; } set { _targetHuman = value; } }
-    public void SetTargetNode(GameObject target_node) { _targetHuman = target_node; }
+    public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
+    public void SetTargetHuman(GameObject target_node) { _targetHuman = target_node; }
 
     private bool _isEscape = false;
     private int _routeCount;
@@ -90,20 +90,21 @@ public class AIRunAway : AIBasicsMovement
         int select_node_num = -1;
         int most_node_route = -1;
 
+        //_roadPathManager.RoadGuideReset(gameObject);
+
         for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
         {
-            var roadpath = _currentNode.GetComponent<RoadPath>();
-            roadpath.Add(gameObject, _currentNode);
+            var roadpath = _currentNode.GetComponent<NodeGuide>();
+            roadpath.AddNextPath(gameObject, _currentNode);
 
             int route_count = 0;
 
             SearchNumOfEscapeRoutes(_currentNode.LinkNodes[i]);
 
+            _roadPathManager.RoadGuideReset(gameObject);
+
             route_count = _routeCount;
             _routeCount = 0;
-            //Debug.Log(i + "本目の" + "逃げ道の数:" + route_count);
-
-            _roadPathManager.RoadPathReset(gameObject);
 
             // 逃げる道の数が同じだった場合は敵から遠ざかる方に逃げる
             if (route_count == most_node_route)
@@ -140,12 +141,12 @@ public class AIRunAway : AIBasicsMovement
         // 道の数を数える
         _routeCount++;
 
-        var roadpath = current_node.GetComponent<RoadPath>();
+        var roadpath = current_node.GetComponent<NodeGuide>();
 
         foreach (var node in current_node.LinkNodes)
         {
             // 検索済みは飛ばし
-            if (node.GetComponent<RoadPath>().PathCheck(gameObject))
+            if (node.GetComponent<NodeGuide>().NextPathCheck(gameObject))
                 continue;
             // 敵がいるノードに到達した場合はその先の検索をやめる
             if (node == _targetHuman.GetComponent<AIController>().CurrentNode)
@@ -154,7 +155,7 @@ public class AIRunAway : AIBasicsMovement
             if (node.GetComponent<Wall>() != null)
                 return 0;
 
-            roadpath.Add(gameObject, node);
+            roadpath.AddNextPath(gameObject, node);
             int count = SearchNumOfEscapeRoutes(node);
             if (count == 0)
                 return 0;
@@ -169,7 +170,7 @@ public class AIRunAway : AIBasicsMovement
             if (door._doorStatus == Door.DoorStatus.CLOSE)
                 if (door.IsDoorLock())
                 {
-                    Debug.Log("通れません");
+                    //Debug.Log("通れません");
                     return true;
                 }
         return false;
@@ -184,7 +185,11 @@ public class AIRunAway : AIBasicsMovement
     {
         if (MoveComplete() && _isEscape)
         {
-            _roadPathManager.RoadPathReset(gameObject);
+            var ai_controller = GetComponent<AIController>();
+            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
+                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
+
+            _roadPathManager.RoadGuideReset(gameObject);
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
         }

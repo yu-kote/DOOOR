@@ -11,6 +11,14 @@ public class AIController : MonoBehaviour
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
 
+    public enum MoveEmotion
+    {
+        DEFAULT,
+        HURRY_UP,
+    }
+    private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
+    public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
+
     [SerializeField]
     private float _defaultSpeed;
     public float DefaultSpeed { get { return _defaultSpeed; } set { _defaultSpeed = value; } }
@@ -43,7 +51,9 @@ public class AIController : MonoBehaviour
 
             // この世界に残した跡をすべて消し去る
             _nodeController.EraseTraces(human.GetComponent<MyNumber>());
-            _roadPathManager.RoadPathReset(human);
+            _roadPathManager.RoadGuideReset(human);
+            _roadPathManager.SearchReset(human);
+
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(human);
 
             Destroy(human);
