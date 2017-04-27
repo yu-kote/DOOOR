@@ -8,10 +8,15 @@ using System;
 public class AISearchMove : AIBasicsMovement
 {
     private MyNumber _myNumber;
+    private RoadPathManager _roadPathManager;
+    Node _newNode;
+    private bool _findNewRoad = false;
 
     public void Start()
     {
         Speed = GetComponent<AIController>().DefaultSpeed;
+        GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
+
         MoveSetup();
     }
 
@@ -20,26 +25,46 @@ public class AISearchMove : AIBasicsMovement
         var field = GameObject.Find("Field");
         _nodeController = field.GetComponent<NodeController>();
         _myNumber = GetComponent<MyNumber>();
+
         var node_manager = field.GetComponent<NodeManager>();
         _currentNode = node_manager.SearchOnNodeHuman(gameObject);
 
+        _roadPathManager = field.GetComponent<RoadPathManager>();
+        _roadPathManager.RoadGuideReset(gameObject);
+
+        _newNode = null;
         MoveReset();
     }
 
     protected override void NextNodeSearch()
     {
+        Node next_node = null;
         // まだ足跡がついてないノードをつながっているノードから探す
         var candidate = CanMoveNode();
 
-        // 周りのノードが全部足跡ついていたら自分の足跡をすべて消して探しなおす
+        // 周りのノードが全部足跡ついていたら足跡を辿ってついていないところを探す
         if (candidate.Count == 0)
         {
-            _nodeController.ReFootPrint(gameObject, _currentNode);
-            candidate = CanMoveNode();
+            var target_node = SearchUnexploredNode(_currentNode);
+            // 足跡がついていないところを見つける
+            if (target_node)
+            {
+                _newNode = target_node;
+            }
+            else
+            {
+                // すべて足跡がついていたら足跡を消して今いる場所に足跡をつける
+                _nodeController.ReFootPrint(gameObject, _currentNode);
+                candidate = CanMoveNode();
+            }
         }
-
-        var next_node_num = UnityEngine.Random.Range(0, candidate.Count);
-        _nextNode = candidate[next_node_num];
+        else
+        {
+            // つながっているノードの候補を決める
+            var next_node_num = UnityEngine.Random.Range(0, candidate.Count);
+            next_node = candidate[next_node_num];
+        }
+        _nextNode = next_node;
     }
 
     List<Node> CanMoveNode()
@@ -67,11 +92,54 @@ public class AISearchMove : AIBasicsMovement
 
     Node SearchUnexploredNode(Node current_node)
     {
+        foreach (var node in current_node.LinkNodes)
+        {
+            if (_currentNode == node)
+                continue;
+            // 調べていたらtrue
+            var road_path = node.GetComponent<NodeGuide>();
+            if (road_path.NextPathCheck(gameObject))
+                continue;
+            // 壁
+            if (node.GetComponent<Wall>())
+                continue;
+            // ドア
+            var door = node.GetComponent<Door>();
+            if (door)
+                if (door._doorStatus == Door.DoorStatus.CLOSE)
+                {
+                    if (tag == "Killer")
+                        continue;
+                    if (door.IsDoorLock())
+                        continue;
+                }
 
+            road_path.AddNextPath(gameObject, node);
 
+            var foot_print = node.GetComponent<FootPrint>();
+            if (foot_print.TraceCheck(gameObject) == false)
+                return node;
 
-
+            var new_node = SearchUnexploredNode(node);
+            if (new_node)
+                return new_node;
+        }
         return null;
     }
 
+    void Update()
+    {
+        if (MoveComplete() &&
+            _newNode)
+        {
+            GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
+            _roadPathManager.RoadGuideReset(gameObject);
+
+            var mover = gameObject.AddComponent<AITargetMove>();
+            // どこを目指すかを教える
+            mover.SetTargetNode(_newNode);
+            mover.Speed = GetComponent<AIController>().DefaultSpeed;
+            Destroy(this);
+        }
+    }
 }

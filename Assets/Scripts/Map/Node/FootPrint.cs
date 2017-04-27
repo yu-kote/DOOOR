@@ -39,6 +39,12 @@ public class FootPrint : MonoBehaviour
         _humansOnNode.Remove(human);
     }
 
+    public bool TraceCheck(GameObject human)
+    {
+        var mynumber = human.GetComponent<MyNumber>();
+        return _traces.Contains(mynumber);
+    }
+
     public void EraseTrace(MyNumber mynumber)
     {
         _traces.Remove(mynumber);
