@@ -5,29 +5,14 @@ using UnityEngine;
 using System.Linq;
 using UniRx;
 
-public class AITargetMove : AIBasicsMovement
+public class AITargetMove : AIRouteSearch
 {
-    private RoadPathManager _roadPathManager;
-
-    private Node _targetNode;
-    public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
-    public void SetTargetNode(Node target_node) { _targetNode = target_node; }
-
-    private int searchLimit = 1000;
-    private int searchCount = 0;
-
-    private GameObject _testSymbol;
-    private List<GameObject> _testSymbolList = new List<GameObject>();
-
     private bool _arriveAtTarget = false;
+
 
     void Start()
     {
-        var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeController = field.GetComponent<NodeController>();
-        _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
-
+        RouteSearchSetup();
         MoveSetup();
     }
 
@@ -65,75 +50,10 @@ public class AITargetMove : AIBasicsMovement
         }
 
         // 道を可視化してみる
-        StartCoroutine(SearchRoad(_currentNode));
+        StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
 
-    // ランダムに道を選んでみる 
-    //private void TargetMoveRandomTest()
-    //{
-    //    _targetNode = TargetRandomSelect();
 
-    //    _nodeController.ReFootPrint(gameObject, _currentNode);
-    //    _roadPathManager.RoadPathReset(gameObject);
-
-    //    // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-    //    if (WriteRoadPath(_searchNode) == false)
-    //    {
-    //        gameObject.AddComponent<AISearchMove>();
-    //        Destroy(this);
-    //    }
-
-    //    _searchNode = _currentNode;
-
-    //    // 道を可視化してみる
-    //    StartCoroutine(SearchRoad(_searchNode));
-    //    _searchNode = _currentNode;
-    //}
-
-    //Node TargetRandomSelect()
-    //{
-    //    while (true)
-    //    {
-    //        var y = UnityEngine.Random.Range(0, _nodeManager.Nodes.Count - 1);
-    //        var x = UnityEngine.Random.Range(0, _nodeManager.Nodes[0].Count - 1);
-    //        if (_nodeManager.Nodes[y][x].GetComponent<Wall>() != null)
-    //            continue;
-    //        return _nodeManager.Nodes[y][x].GetComponent<Node>();
-    //    }
-    //}
-
-    private IEnumerator SearchRoad(Node current_node)
-    {
-        while (current_node != _targetNode)
-        {
-            var nextnode = current_node.GetComponent<NodeGuide>().NextNode(gameObject);
-            if (nextnode == null ||
-                _currentNode == nextnode)
-            {
-                yield return new WaitForSeconds(0.5f);
-                continue;
-            }
-            yield return new WaitForSeconds(0.05f);
-
-            _testSymbolList.Add(Instantiate(_testSymbol, nextnode.transform));
-            _testSymbolList.Last().transform.position = nextnode.gameObject.transform.position;
-            yield return SearchRoad(nextnode);
-        }
-        while (true)
-        {
-            yield return null;
-            if (_currentNode != _targetNode) continue;
-            SymbolDestroy();
-            break;
-        }
-    }
-
-    private void SymbolDestroy()
-    {
-        foreach (var symbol in _testSymbolList)
-            Destroy(symbol);
-        _testSymbolList.Clear();
-    }
 
     void Update()
     {
@@ -176,192 +96,6 @@ public class AITargetMove : AIBasicsMovement
     protected override void NextNodeSearch()
     {
         _nextNode = _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);
-    }
-
-    bool Search()
-    {
-        SearchStart();
-        int limit = 100;
-        for (int i = 0; i < limit; i++)
-        {
-            if (SearchRoadPath())
-            {
-                SearchDirectionInvert(_targetNode);
-                return true;
-            }
-        }
-        _searchNodes.Clear();
-        return false;
-    }
-
-    ///<summary>
-    /// うっちー案
-    /// 探索を開始する地点を分岐地点に設定する
-    /// 関数開始
-    /// 分岐地点から左右どちらかを調べる
-    /// 階段を見つけた場合、階層を比較して上るか下るかを判定する
-    /// 階層を移動する場合移動先のノードを分岐地点に設定する
-    /// 
-    /// 敵を見つけた場合それまで通ったノードの数を分岐地点に保存して、
-    /// 右回りに調べていた場合、その階層の調べ済みを消して、左周りに調べる
-    /// 保存してある通った数の少ないほうをリターンする
-    /// 
-    /// 俺案
-    /// 起点につながっているノードの中で、探索していないノードを選択して保存する
-    /// 保存したノードを起点として、枝を伸ばす
-    /// 伸ばす時にどのノードから伸びてきたかを伸ばした後のノードに保存する
-    /// 伸ばす前のノードを消す
-    /// 見つけたら終了
-    ///</summary>
-    bool SearchRoadPath()
-    {
-        bool is_search_end = false;
-        List<Node> temp_search_nodes = new List<Node>();
-
-        foreach (var search_node in _searchNodes)
-        {
-            foreach (var node in search_node.LinkNodes)
-            {
-                if (node.gameObject.GetComponent<NodeGuide>().PrevPathCheck(gameObject) == true)
-                    continue;
-                if (node.gameObject.GetComponent<Wall>() != null)
-                    continue;
-                if (tag == "Killer" &&
-                    node.gameObject.GetComponent<Door>() != null)
-                    continue;
-
-                temp_search_nodes.Add(node);
-
-                var roadpath = node.gameObject.GetComponent<NodeGuide>();
-                roadpath.AddPrevPath(gameObject, search_node);
-
-                if (node == _targetNode)
-                {
-                    is_search_end = true;
-                    break;
-                }
-            }
-            if (temp_search_nodes.Contains(search_node))
-                temp_search_nodes.Remove(search_node);
-            if (is_search_end)
-                break;
-        }
-        _searchNodes = temp_search_nodes;
-
-        if (is_search_end)
-        {
-            temp_search_nodes.Clear();
-            _searchNodes.Clear();
-            return true;
-        }
-        return false;
-    }
-
-    List<Node> _searchNodes = new List<Node>();
-
-    void SearchStart()
-    {
-        _searchNodes.Add(GetComponent<AIController>().CurrentNode);
-    }
-
-    // どのノードから来たのかを見て、
-    // 来たノードに自分のノードを教える
-    void SearchDirectionInvert(Node current_node)
-    {
-        if (current_node == GetComponent<AIController>().CurrentNode)
-            return;
-        var road_path = current_node.GetComponent<NodeGuide>();
-        var prev_node = road_path.PrevNode(gameObject);
-
-        prev_node.GetComponent<NodeGuide>().AddNextPath(gameObject, current_node);
-        SearchDirectionInvert(prev_node);
-    }
-
-    bool WriteRoadPath(Node current_node)
-    {
-        searchCount++;
-        if (searchCount > searchLimit)
-        {
-            searchCount = 0;
-            Debug.Log("search limit");
-            return false;
-        }
-
-        var roadpath = current_node.gameObject.GetComponent<NodeGuide>();
-
-        // 目標地点までの長さを評価点とする
-        // まだ階段が考慮されてないので、階段があったら距離の評価点が狂う
-        SortByNodeLength(_targetNode, current_node.LinkNodes);
-
-        var is_done = false;
-
-        foreach (var node in current_node.LinkNodes)
-        {
-            if (tag == "Killer" &&
-                node.gameObject.GetComponent<Door>() != null)
-                continue;
-            if (node.gameObject.GetComponent<NodeGuide>().NextPathCheck(gameObject) == true)
-                continue;
-            if (node.gameObject.GetComponent<Wall>() != null)
-                continue;
-
-            roadpath.AddNextPath(gameObject, node);
-            // 目標地点だったら終了
-            if (node == _targetNode)
-                return true;
-
-            is_done = WriteRoadPath(node);
-            if (is_done == true)
-                return true;
-        }
-        return is_done;
-    }
-
-    // 目標地点のノードまでの距離を短い順でソートする（バブルソート）
-    static public void SortByNodeLength(Node targetnode, List<Node> linknodes)
-    {
-        var tpos = targetnode.transform.position;
-        for (int i = 0; i < linknodes.Count; i++)
-        {
-            for (int k = 0; k < linknodes.Count - i - 1; k++)
-            {
-                var vec1 = linknodes[k].transform.position - tpos;
-                var length1 = vec1.magnitude;
-                var vec2 = linknodes[k + 1].transform.position - tpos;
-                var length2 = vec2.magnitude;
-
-                if (length1 > length2)
-                    Swap(linknodes, k, k + 1);
-            }
-        }
-    }
-
-    public static void Swap<T>(List<T> list, int indexA, int indexB)
-    {
-        T temp = list[indexA];
-        list[indexA] = list[indexB];
-        list[indexB] = temp;
-    }
-
-    void BubbleSort(int[] value)
-    {
-        for (int i = 0; i < value.GetLength(0); i++)
-        {
-            for (int k = 0; k < value.GetLength(0) - i - 1; k++)
-            {
-                if (value[k] > value[k + 1])
-                {
-                    Swap(ref value[k], ref value[k + 1]);
-                }
-            }
-        }
-    }
-
-    public static void Swap<T>(ref T lhs, ref T rhs)
-    {
-        T temp = lhs;
-        lhs = rhs;
-        rhs = temp;
     }
 
     private void OnDestroy()

@@ -4483,7 +4483,7 @@ public static partial class LibraryEditor_SpriteStudio
 				Importer.normalmap = false;
 				Importer.npotScale = TextureImporterNPOTScale.None;
 				Importer.textureFormat = TextureImporterFormat.AutomaticTruecolor;
-				Importer.textureType = TextureImporterType.Advanced;
+				Importer.textureType = TextureImporterType.Default;
 				switch(InformationTexture.WrapTexture)
 				{
 					case Library_SpriteStudio.KindWrapTexture.REPEAT:
