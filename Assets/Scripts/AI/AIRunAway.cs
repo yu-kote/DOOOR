@@ -8,6 +8,8 @@ public class AIRunAway : AIRouteSearch
 {
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
+    private int _endNodeDistance = 5;
+
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -55,6 +57,7 @@ public class AIRunAway : AIRouteSearch
     {
         if (_isEscape) return true;
         if (_targetHuman == null) return true;
+
         var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
 
@@ -62,12 +65,14 @@ public class AIRunAway : AIRouteSearch
         if (distance > _endDistance)
             return true;
 
+        if (SearchCount > _endNodeDistance)
+            return true;
+
         _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
 
         Node next_node = null;
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);
-
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
             return false;

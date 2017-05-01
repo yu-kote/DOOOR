@@ -19,8 +19,9 @@ public abstract class AIRouteSearch : AIBasicsMovement
     private GameObject _testSymbol;
     private List<GameObject> _testSymbolList = new List<GameObject>();
 
-    private int _searchCount;
-    
+    private int _searchNodeCount;
+    public int SearchCount { get { return _searchNodeCount; } }
+
     /// <summary>
     /// ノードを全体操作するためのスクリプトをもらう
     /// </summary>
@@ -40,6 +41,8 @@ public abstract class AIRouteSearch : AIBasicsMovement
         {
             if (SearchRoadPath())
             {
+                // ターゲットまでのノードの距離を出す
+                _searchNodeCount = 0;
                 SearchDirectionInvert(_targetNode);
                 return true;
             }
@@ -105,6 +108,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
     // 来たノードに自分のノードを教える
     void SearchDirectionInvert(Node current_node)
     {
+        _searchNodeCount++;
         if (current_node == GetComponent<AIController>().CurrentNode)
             return;
         var road_path = current_node.GetComponent<NodeGuide>();
@@ -153,10 +157,9 @@ public abstract class AIRouteSearch : AIBasicsMovement
 
     bool WriteRoadPath(Node current_node)
     {
-        _searchCount++;
-        if (_searchCount > _searchLimit)
+        _searchNodeCount++;
+        if (_searchNodeCount > _searchLimit)
         {
-            _searchCount = 0;
             Debug.Log("search limit");
             return false;
         }
