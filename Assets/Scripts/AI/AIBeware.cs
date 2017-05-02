@@ -51,9 +51,8 @@ public class AIBeware : MonoBehaviour
             }
 
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            //if (//tag == "Killer" &&
-            //ai_controller.GetMovement().MoveComplete() == false)
-            //continue;
+            if (ai_controller.GetMovement().MoveComplete() == false)
+                continue;
 
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
@@ -73,7 +72,6 @@ public class AIBeware : MonoBehaviour
 
                 // どこを目指すかを教える
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
-                mover.Speed = ai_controller.HurryUpSpeed;
 
                 // 普通の移動をしていたら普通の移動をやめる
                 if (GetComponent<AISearchMove>())
@@ -86,7 +84,6 @@ public class AIBeware : MonoBehaviour
 
                 // どいつから逃げなければいけないかを教える
                 mover.SetTargetHuman(_targetHuman);
-                mover.Speed = ai_controller.HurryUpSpeed;
 
                 // 他のの移動をしていたらやめる
                 if (GetComponent<AISearchMove>())

@@ -10,8 +10,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
     public abstract void MoveSetup();
     protected abstract void NextNodeSearch();
 
-    protected Node _currentNode;
+    protected Node _currentNode = null;
     protected Node _nextNode = null;
+    protected Node _prevNode = null;
     protected NodeController _nodeController;
 
     private float _speed = 0;
@@ -55,7 +56,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
                     _moveLength = Vector3Abs(distance);
 
                     distance = Vector3MoveDistance(distance);
-                    Debug.Log(Vector3Abs(distance));
 
                     // 値が小さいほど速度の調整がしやすいので0.01fをかける
                     _moveDirection = distance * _speed * 0.01f;
@@ -64,6 +64,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
                     NextNodeDecided();
 
                     // 今いるノードを更新する
+                    _prevNode = _currentNode;
                     _currentNode = _nextNode;
                 }
                 Move();
