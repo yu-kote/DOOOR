@@ -13,6 +13,7 @@ public class AISearchMove : AIBasicsMovement
 
     public void Start()
     {
+        Speed = GetComponent<AIController>().DefaultSpeed;
         GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
 
         MoveSetup();
