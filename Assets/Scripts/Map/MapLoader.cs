@@ -20,7 +20,7 @@ public class MapLoader : MonoBehaviour
 {
 	private string _mapDirectoryPath = "PlannerData/MapData";
 
-	private int _stageNum = 1;
+	public int _stageNum = 1;
 	public int StageNum
 	{
 		get { return _stageNum; }
@@ -39,11 +39,8 @@ public class MapLoader : MonoBehaviour
 	public int GetStageNum()
 	{
 		string path = Application.dataPath + "/Resources/" + _mapDirectoryPath;
-		Debug.Log(path);
 		string[] directoryNames = System.IO.Directory.GetDirectories(path, "*", System.IO.SearchOption.AllDirectories);
 		int stageNum = directoryNames.Length;
-
-		Debug.Log(stageNum);
 
 		return stageNum;
 	}
