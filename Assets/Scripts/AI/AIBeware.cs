@@ -51,9 +51,10 @@ public class AIBeware : MonoBehaviour
             }
 
             // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            if (//tag == "Killer" &&
-                ai_controller.GetMovement().MoveComplete() == false)
-                continue;
+            //if (//tag == "Killer" &&
+            //ai_controller.GetMovement().MoveComplete() == false)
+            //continue;
+
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
                 continue;
