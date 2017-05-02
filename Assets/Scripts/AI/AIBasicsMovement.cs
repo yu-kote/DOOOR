@@ -52,10 +52,13 @@ public abstract class AIBasicsMovement : MonoBehaviour
                 {
                     // 進む方向を決めるためベクトルを出す
                     var distance = _nextNode.transform.position - gameObject.transform.position + HeightCorrection();
-                    _moveLength = new Vector3(Mathf.Abs(distance.x), Mathf.Abs(distance.z), Mathf.Abs(distance.z));
+                    _moveLength = Vector3Abs(distance);
+
+                    distance = Vector3MoveDistance(distance);
+                    Debug.Log(Vector3Abs(distance));
 
                     // 値が小さいほど速度の調整がしやすいので0.01fをかける
-                    _moveDirection = distance * 0.01f * _speed;
+                    _moveDirection = distance * _speed * 0.01f;
 
                     // 移動先が決まった時に何かするときの関数
                     NextNodeDecided();
@@ -67,6 +70,31 @@ public abstract class AIBasicsMovement : MonoBehaviour
             }).AddTo(this);
     }
 
+    // ベクトルの長さを球状に補間する
+    Vector3 Vector3MoveDistance(Vector3 distance)
+    {
+        var xy_axis_angle = Mathf.Atan2(distance.y, distance.x);
+        xy_axis_angle = ToDegrees(xy_axis_angle);
+        var zy_axis_angle = Mathf.Atan2(distance.y, distance.z);
+        zy_axis_angle = ToDegrees(zy_axis_angle);
+
+        float rad_pi = Mathf.PI / 180.0f;
+
+        var vx = Mathf.Cos(xy_axis_angle * rad_pi) * Mathf.Abs(distance.x);
+        var vy = Mathf.Sin(xy_axis_angle * rad_pi) * Mathf.Abs(distance.y);
+        var vz = Mathf.Cos(zy_axis_angle * rad_pi) * Mathf.Abs(distance.z);
+
+        return new Vector3(vx, vy, vz);
+    }
+
+    float ToDegrees(float x)
+    {
+        return x * 57.295779513082321f;
+    }
+
+    /// <summary>
+    /// 実際に動かす場所
+    /// </summary>
     void Move()
     {
         if (_canMove == false) return;
@@ -97,7 +125,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     Vector3 Vector3Abs(Vector3 value)
     {
-        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.z), Mathf.Abs(value.z));
+        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
     }
 
     public bool MoveComplete()
