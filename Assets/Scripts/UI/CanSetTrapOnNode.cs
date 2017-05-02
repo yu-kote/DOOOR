@@ -36,8 +36,6 @@ public class CanSetTrapOnNode : MonoBehaviour
 			if ((trapStatus & i) == 0)
 				continue;
 
-			Debug.Log("traptype : " + i);
-
 			switch ((TrapType)i)
 			{
 				case TrapType.PITFALLS:
