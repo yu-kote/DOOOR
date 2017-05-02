@@ -10,11 +10,9 @@ public class AISearchMove : AIBasicsMovement
     private MyNumber _myNumber;
     private RoadPathManager _roadPathManager;
     Node _newNode;
-    private bool _findNewRoad = false;
 
     public void Start()
     {
-        Speed = GetComponent<AIController>().DefaultSpeed;
         GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
 
         MoveSetup();
@@ -48,9 +46,7 @@ public class AISearchMove : AIBasicsMovement
             var target_node = SearchUnexploredNode(_currentNode);
             // 足跡がついていないところを見つける
             if (target_node)
-            {
                 _newNode = target_node;
-            }
             else
             {
                 // すべて足跡がついていたら足跡を消して今いる場所に足跡をつける

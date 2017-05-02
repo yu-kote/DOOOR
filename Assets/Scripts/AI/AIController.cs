@@ -16,8 +16,10 @@ public class AIController : MonoBehaviour
         DEFAULT,
         HURRY_UP,
     }
+
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
+    private MoveEmotion _currentMoveMode = MoveEmotion.DEFAULT;
 
     [SerializeField]
     private float _defaultSpeed;
@@ -34,10 +36,12 @@ public class AIController : MonoBehaviour
         _roadPathManager = field.GetComponent<RoadPathManager>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
+        GetMovement().Speed = _defaultSpeed;
     }
 
     void Update()
     {
+        MoveSpeedChange();
         if (tag != "Killer") return;
 
         var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
@@ -47,7 +51,6 @@ public class AIController : MonoBehaviour
         {
             if (human == null) continue;
             if (human.tag != "Victim") continue;
-            Debug.Log(human.tag + "Destroy");
 
             // この世界に残した跡をすべて消し去る
             _nodeController.EraseTraces(human.GetComponent<MyNumber>());
@@ -59,6 +62,17 @@ public class AIController : MonoBehaviour
             Destroy(human);
             break;
         }
+    }
+
+    private void MoveSpeedChange()
+    {
+        if (_currentMoveMode == _moveMode) return;
+        _currentMoveMode = _moveMode;
+
+        if (_moveMode == MoveEmotion.DEFAULT)
+            GetMovement().Speed = _defaultSpeed;
+        if (_moveMode == MoveEmotion.HURRY_UP)
+            GetMovement().Speed = _hurryUpSpeed;
     }
 
     public AIBasicsMovement GetMovement()

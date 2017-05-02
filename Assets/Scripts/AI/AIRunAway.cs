@@ -10,7 +10,6 @@ public class AIRunAway : AIRouteSearch
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
     private int _endNodeDistance = 5;
 
-
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
     public void SetTargetHuman(GameObject target_node) { _targetHuman = target_node; }

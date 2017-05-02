@@ -9,7 +9,6 @@ public class AITargetMove : AIRouteSearch
 {
     private bool _arriveAtTarget = false;
 
-
     void Start()
     {
         RouteSearchSetup();
@@ -52,8 +51,6 @@ public class AITargetMove : AIRouteSearch
         // 道を可視化してみる
         StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
-
-
 
     void Update()
     {
