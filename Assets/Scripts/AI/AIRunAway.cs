@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AIRunAway : AIBasicsMovement
+public class AIRunAway : AIRouteSearch
 {
-    private RoadPathManager _roadPathManager;
-
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
+    private int _endNodeDistance = 5;
+
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -17,7 +17,6 @@ public class AIRunAway : AIBasicsMovement
 
     private bool _isEscape = false;
     private int _routeCount;
-
 
     void Start()
     {
@@ -36,10 +35,29 @@ public class AIRunAway : AIBasicsMovement
         MoveReset();
     }
 
+    /// <summary>
+    /// 敵に近づく以外のルートを返す
+    /// </summary>
+    List<Node> EscapeNodes()
+    {
+        return _currentNode.LinkNodes
+            .Where(node => node.GetComponent<Wall>() == null)
+            .Where(node => ApproachNode() != node)
+            .ToList();
+    }
+
+    Node ApproachNode()
+    {
+        if (Search())
+            return _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);
+        return null;
+    }
+
     bool RunAway()
     {
         if (_isEscape) return true;
         if (_targetHuman == null) return true;
+
         var vec = _targetHuman.transform.position - _currentNode.transform.position;
         var distance = vec.magnitude;
 
@@ -47,14 +65,14 @@ public class AIRunAway : AIBasicsMovement
         if (distance > _endDistance)
             return true;
 
+        if (SearchCount > _endNodeDistance)
+            return true;
+
+        _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
+
         Node next_node = null;
-
-        // 一方通行なら遠くへ、階段があったら行き止まりの無いほうに逃げる
-        if (_currentNode.GetComponent<Stairs>())
-            next_node = StairsPoint();
-        else
-            next_node = GoAway();
-
+        next_node = StairsPoint(EscapeNodes());
+        _roadPathManager.RoadGuideReset(gameObject);
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
             return false;
@@ -81,7 +99,7 @@ public class AIRunAway : AIBasicsMovement
     }
 
     // 階段が来たらどっちに進めば壁がないか調べる
-    Node StairsPoint()
+    Node StairsPoint(List<Node> link_nodes)
     {
         // つながっているノードを見る
         // ある方向に逃げた場合どのぐらいの距離逃げることが出来るのかを割り出す
@@ -90,16 +108,16 @@ public class AIRunAway : AIBasicsMovement
         int select_node_num = -1;
         int most_node_route = -1;
 
-        //_roadPathManager.RoadGuideReset(gameObject);
+        _roadPathManager.RoadGuideReset(gameObject);
 
-        for (int i = 0; i < _currentNode.LinkNodes.Count; i++)
+        for (int i = 0; i < link_nodes.Count; i++)
         {
-            var roadpath = _currentNode.GetComponent<NodeGuide>();
-            roadpath.AddNextPath(gameObject, _currentNode);
+            var nodeguide = _currentNode.GetComponent<NodeGuide>();
+            nodeguide.AddNextPath(gameObject, _currentNode);
 
             int route_count = 0;
 
-            SearchNumOfEscapeRoutes(_currentNode.LinkNodes[i]);
+            SearchNumOfEscapeRoutes(link_nodes[i]);
 
             _roadPathManager.RoadGuideReset(gameObject);
 
@@ -109,10 +127,10 @@ public class AIRunAway : AIBasicsMovement
             // 逃げる道の数が同じだった場合は敵から遠ざかる方に逃げる
             if (route_count == most_node_route)
             {
-                var candidate_pos = _currentNode.LinkNodes[i].transform.position;
+                var candidate_pos = link_nodes[i].transform.position;
                 var candidate_distance = candidate_pos - _targetHuman.transform.position;
 
-                var best_pos = _currentNode.LinkNodes[select_node_num].transform.position;
+                var best_pos = link_nodes[select_node_num].transform.position;
                 var best_distance = best_pos - _targetHuman.transform.position;
 
                 if (best_distance.magnitude > candidate_distance.magnitude)
@@ -130,9 +148,9 @@ public class AIRunAway : AIBasicsMovement
             }
         }
 
-        var next_candidate_node = _currentNode.LinkNodes[select_node_num];
+
         if (select_node_num > -1 && most_node_route > -1)
-            return next_candidate_node;
+            return link_nodes[select_node_num];
         return _currentNode;
     }
 
@@ -140,8 +158,6 @@ public class AIRunAway : AIBasicsMovement
     {
         // 道の数を数える
         _routeCount++;
-
-        var roadpath = current_node.GetComponent<NodeGuide>();
 
         foreach (var node in current_node.LinkNodes)
         {
@@ -155,7 +171,9 @@ public class AIRunAway : AIBasicsMovement
             if (node.GetComponent<Wall>() != null)
                 return 0;
 
-            roadpath.AddNextPath(gameObject, node);
+            var nodeguide = current_node.GetComponent<NodeGuide>();
+            nodeguide.AddNextPath(gameObject, node);
+
             int count = SearchNumOfEscapeRoutes(node);
             if (count == 0)
                 return 0;
