@@ -45,7 +45,7 @@ public class AITargetMove : AIRouteSearch
             {
                 gameObject.AddComponent<AISearchMove>();
                 Destroy(this);
-            });
+            }).AddTo(this);
             return;
         }
 
@@ -74,7 +74,7 @@ public class AITargetMove : AIRouteSearch
                 {
                     gameObject.AddComponent<AISearchMove>();
                     Destroy(this);
-                });
+                }).AddTo(this);
                 return;
             }
             Destroy(this);

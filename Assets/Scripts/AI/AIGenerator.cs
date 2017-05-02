@@ -18,8 +18,8 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
         {
-            CreateKiller();
-        });
+            //CreateKiller();
+        }).AddTo(this);
     }
 
     void CreateHuman(GameObject human)
