@@ -193,6 +193,7 @@ public class AIRunAway : AIRouteSearch
         return false;
     }
 
+
     protected override void NextNodeSearch()
     {
         _isEscape = RunAway();

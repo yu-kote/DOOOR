@@ -48,11 +48,6 @@ public class AITargetMove : AIRouteSearch
             return;
         }
 
-        var ai_controller = GetComponent<AIController>();
-        if(ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
-        {
-        }
-
         // 道を可視化してみる
         StartCoroutine(SearchRoadTestDraw(_currentNode));
     }

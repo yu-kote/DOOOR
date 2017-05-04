@@ -35,6 +35,10 @@ public class AISearchMove : AIBasicsMovement
         MoveReset();
     }
 
+    protected override void StartNextNodeSearch()
+    {
+    }
+
     protected override void NextNodeSearch()
     {
         Node next_node = null;

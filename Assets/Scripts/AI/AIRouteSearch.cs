@@ -22,6 +22,20 @@ public abstract class AIRouteSearch : AIBasicsMovement
     private int _searchNodeCount;
     public int SearchCount { get { return _searchNodeCount; } }
 
+    protected override void StartNextNodeSearch()
+    {
+        var ai_controller = GetComponent<AIController>();
+        if (ai_controller.MoveMode != AIController.MoveEmotion.HURRY_UP)
+            return;
+
+        NextNodeSearch();
+
+        var prev = GetComponent<AIController>().PrevNode;
+        if (_nextNode == prev)
+            return;
+        _nextNode = GetComponent<AIController>().CurrentNode;
+    }
+
     /// <summary>
     /// ノードを全体操作するためのスクリプトをもらう
     /// </summary>
