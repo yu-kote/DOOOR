@@ -55,6 +55,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
         _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
+                var next = _nextNode;
                 NextNodeMoveUpdate();
                 Move();
             }).AddTo(this);
@@ -68,7 +69,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
         // 進む方向を決めるためベクトルを出す
         var target = _nextNode.transform.position + HeightCorrection();
         var distance = target - gameObject.transform.position;
-        _moveLength = Vector3Abs(new Vector3(distance.x, distance.y, distance.z));
+        _moveLength = Vector3Abs(distance);
 
         // 斜め移動の時に早くならないよう制限する
         //distance = Vector3MoveDistance(distance);
@@ -139,7 +140,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     Vector3 Vector3Abs(Vector3 value)
     {
-        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
+        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.z), Mathf.Abs(value.z));
     }
 
     public bool MoveComplete()

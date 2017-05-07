@@ -97,11 +97,16 @@ public class AIController : MonoBehaviour
     {
         var movement = GetMovement();
         if (movement == null) return;
-        if (_currentNode != movement.CurrentNode)
+        if (movement.CurrentNode &&
+            _currentNode != movement.CurrentNode)
             _currentNode = movement.CurrentNode;
-        if (_nextNode != movement.NextNode)
+
+        if (movement.NextNode &&
+            _nextNode != movement.NextNode)
             _nextNode = movement.NextNode;
-        if (_prevNode != movement.PrevNode)
+
+        if (movement.PrevNode &&
+            _prevNode != movement.PrevNode)
             _prevNode = movement.PrevNode;
     }
 
