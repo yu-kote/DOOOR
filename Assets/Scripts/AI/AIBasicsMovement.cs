@@ -69,14 +69,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
         // 進む方向を決めるためベクトルを出す
         var target = _nextNode.transform.position + HeightCorrection();
         var distance = target - gameObject.transform.position;
-        _moveLength = Vector3Abs(distance);
 
-        // 斜め移動の時に早くならないよう制限する
-        //distance = Vector3MoveDistance(distance);
+        _moveLength = Vector3Abs(distance);
 
         // 値が小さいほど速度の調整がしやすいので0.05fをかける
         _moveDirection = distance.normalized * _speed * 0.05f;
-        Debug.Log(distance.normalized);
 
         // 移動先が決まった時にそのノードに足跡をつける
         NextNodeDecided();
@@ -84,7 +81,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
         // 今いるノードを更新する
         _prevNode = _currentNode;
         _currentNode = _nextNode;
-
     }
 
     // ベクトルの長さを球状に補間する
@@ -115,13 +111,12 @@ public abstract class AIBasicsMovement : MonoBehaviour
     void Move()
     {
         if (_canMove == false) return;
-        transform.position += _moveDirection;
+        transform.Translate(_moveDirection);
         _moveLength -= Vector3Abs(_moveDirection);
 
         if (MoveComplete())
         {
-            transform.position += _moveLength;
-            _moveLength = Vector3.zero;
+            transform.Translate(_moveLength);
             _moveDirection = Vector3.zero;
             NextNodeSearch();
         }
@@ -140,7 +135,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     Vector3 Vector3Abs(Vector3 value)
     {
-        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.z), Mathf.Abs(value.z));
+        return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
     }
 
     public bool MoveComplete()
