@@ -8,11 +8,16 @@ using UniRx.Triggers;
 public abstract class AIBasicsMovement : MonoBehaviour
 {
     public abstract void MoveSetup();
+    protected abstract void StartNextNodeSearch();
     protected abstract void NextNodeSearch();
 
-    protected Node _currentNode = null;
-    protected Node _nextNode = null;
-    protected Node _prevNode = null;
+    protected Node _currentNode;
+    public Node CurrentNode { get { return _currentNode; } set { _currentNode = value; } }
+    protected Node _nextNode;
+    public Node NextNode { get { return _nextNode; } set { _nextNode = value; } }
+    protected Node _prevNode;
+    public Node PrevNode { get { return _prevNode; } set { _prevNode = value; } }
+
     protected NodeController _nodeController;
 
     private float _speed = 0;
@@ -37,8 +42,10 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     private IEnumerator StartSearch()
     {
+        _speed = GetComponent<AIController>().DefaultSpeed;
         yield return null;
-        NextNodeSearch();
+        StartNextNodeSearch();
+        NextNodeMoveUpdate();
     }
 
     private IEnumerator MoveUpdate()
@@ -48,27 +55,32 @@ public abstract class AIBasicsMovement : MonoBehaviour
         _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
-                // 次の移動先が決まったら
-                if (_nextNode != null && _nextNode != _currentNode)
-                {
-                    // 進む方向を決めるためベクトルを出す
-                    var distance = _nextNode.transform.position - gameObject.transform.position + HeightCorrection();
-                    _moveLength = Vector3Abs(distance);
-
-                    distance = Vector3MoveDistance(distance);
-
-                    // 値が小さいほど速度の調整がしやすいので0.01fをかける
-                    _moveDirection = distance * _speed * 0.01f;
-
-                    // 移動先が決まった時に何かするときの関数
-                    NextNodeDecided();
-
-                    // 今いるノードを更新する
-                    _prevNode = _currentNode;
-                    _currentNode = _nextNode;
-                }
+                var next = _nextNode;
+                NextNodeMoveUpdate();
                 Move();
             }).AddTo(this);
+    }
+
+    protected void NextNodeMoveUpdate()
+    {
+        // 次の移動先が決まったら
+        if (_nextNode == null || _nextNode == _currentNode)
+            return;
+        // 進む方向を決めるためベクトルを出す
+        var target = _nextNode.transform.position + HeightCorrection();
+        var distance = target - gameObject.transform.position;
+
+        _moveLength = Vector3Abs(distance);
+
+        // 値が小さいほど速度の調整がしやすいので0.05fをかける
+        _moveDirection = distance.normalized * _speed * 0.05f;
+
+        // 移動先が決まった時にそのノードに足跡をつける
+        NextNodeDecided();
+
+        // 今いるノードを更新する
+        _prevNode = _currentNode;
+        _currentNode = _nextNode;
     }
 
     // ベクトルの長さを球状に補間する
@@ -99,15 +111,13 @@ public abstract class AIBasicsMovement : MonoBehaviour
     void Move()
     {
         if (_canMove == false) return;
-        transform.position += _moveDirection;
+        transform.Translate(_moveDirection);
         _moveLength -= Vector3Abs(_moveDirection);
 
         if (MoveComplete())
         {
-            transform.position = _currentNode.transform.position + HeightCorrection();
-
+            transform.Translate(_moveLength);
             _moveDirection = Vector3.zero;
-            _moveLength = Vector3.zero;
             NextNodeSearch();
         }
     }
@@ -116,7 +126,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         _nextNode = null;
         _moveDirection = Vector3.zero;
-        _moveLength = Vector3.zero;
     }
 
     Vector3 HeightCorrection()

@@ -6,6 +6,10 @@ public class AIController : MonoBehaviour
 {
     private Node _currentNode;
     public Node CurrentNode { get { return _currentNode; } set { _currentNode = value; } }
+    private Node _nextNode;
+    public Node NextNode { get { return _nextNode; } set { _nextNode = value; } }
+    private Node _prevNode;
+    public Node PrevNode { get { return _prevNode; } set { _prevNode = value; } }
 
     private NodeManager _nodeManager;
     private NodeController _nodeController;
@@ -42,6 +46,8 @@ public class AIController : MonoBehaviour
     void Update()
     {
         MoveSpeedChange();
+        NodeUpdate();
+
         if (tag != "Killer") return;
 
         var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
@@ -85,6 +91,23 @@ public class AIController : MonoBehaviour
         if (GetComponent<AIRunAway>())
             movement = GetComponent<AIRunAway>();
         return movement;
+    }
+
+    public void NodeUpdate()
+    {
+        var movement = GetMovement();
+        if (movement == null) return;
+        if (movement.CurrentNode &&
+            _currentNode != movement.CurrentNode)
+            _currentNode = movement.CurrentNode;
+
+        if (movement.NextNode &&
+            _nextNode != movement.NextNode)
+            _nextNode = movement.NextNode;
+
+        if (movement.PrevNode &&
+            _prevNode != movement.PrevNode)
+            _prevNode = movement.PrevNode;
     }
 
     //private void OnTriggerStay(Collider other)

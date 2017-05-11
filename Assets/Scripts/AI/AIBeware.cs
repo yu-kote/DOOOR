@@ -50,9 +50,9 @@ public class AIBeware : MonoBehaviour
                 }
             }
 
-            // ノード間の移動が終わっているかどうか(これがないと角で曲がるとき貫通する)
-            if (ai_controller.GetMovement().MoveComplete() == false)
-                continue;
+            // ノード間の移動が終わっているかどうか
+            //if (ai_controller.GetMovement().MoveComplete() == false)
+            //    continue;
 
             // 標的が見つかっているかどうか
             if (_targetHuman == null)

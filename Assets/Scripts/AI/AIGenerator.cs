@@ -13,7 +13,7 @@ public class AIGenerator : MonoBehaviour
     void Start()
     {
         _field = GameObject.Find("Field");
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 2; i++)
             CreateVictim();
 
         Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
