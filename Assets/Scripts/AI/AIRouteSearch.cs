@@ -40,7 +40,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
 
         if (prev == null || current == null)
             return;
-        if (_nextNode == null || _nextNode == prev)
+        if (_nextNode == prev)
             return;
         _nextNode = ai.CurrentNode;
         _currentNode = ai.PrevNode;
@@ -98,8 +98,10 @@ public abstract class AIRouteSearch : AIBasicsMovement
                     continue;
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
+                var ai = GetComponent<AIController>();
+                // 殺人鬼が探索中の時は扉の向こうに行けなくする
                 if (tag == "Killer" &&
-                    gameObject.GetComponent<AITargetMove>() == null &&
+                    ai.MoveMode == AIController.MoveEmotion.DEFAULT &&
                     node.gameObject.GetComponent<Door>() != null)
                     continue;
 
@@ -219,6 +221,9 @@ public abstract class AIRouteSearch : AIBasicsMovement
         return is_done;
     }
 
+    /// <summary>
+    /// ルート検索を終了して通常探索を再開させる
+    /// </summary>
     protected void SearchMoveStart()
     {
         gameObject.AddComponent<AISearchMove>();

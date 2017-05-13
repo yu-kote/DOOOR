@@ -7,7 +7,7 @@ using UniRx;
 
 public class AITargetMove : AIRouteSearch
 {
-    protected bool _arriveAtTarget = false;
+    protected bool _targetMoveEnd = false;
 
     void Start()
     {
@@ -19,7 +19,7 @@ public class AITargetMove : AIRouteSearch
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
 
-        _arriveAtTarget = false;
+        _targetMoveEnd = false;
         _roadPathManager.RoadGuideReset(gameObject);
         TargetMoveStart(_targetNode);
 
@@ -37,7 +37,6 @@ public class AITargetMove : AIRouteSearch
         }
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        //if (WriteRoadPath(_currentNode) == false)
         if (Search() == false)
         {
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
@@ -50,21 +49,21 @@ public class AITargetMove : AIRouteSearch
 
     void Update()
     {
-        if (_arriveAtTarget) return;
+        if (_targetMoveEnd) return;
 
         if (MoveComplete() &&
             _currentNode == _targetNode)
         {
-            _arriveAtTarget = true;
+            _targetMoveEnd = true;
 
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-            
+
             SearchMoveStart();
         }
     }
-    
+
     protected override void NextNodeSearch()
     {
         _nextNode = _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);

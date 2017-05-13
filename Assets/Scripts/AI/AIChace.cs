@@ -17,42 +17,22 @@ public class AIChace : AITargetMove
 
     void Start()
     {
+        // From RouteSearch
         RouteSearchSetup();
+        // From TargetMove
         MoveSetup();
+
+        // 道を可視化してみる
+        //StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
 
     public override void MoveSetup()
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
-
-        _arriveAtTarget = false;
         _isChaceEnd = false;
-        _roadPathManager.RoadGuideReset(gameObject);
-
-        //ChaceStart();
+        _endNodeDistance = GetComponent<AIBeware>().SearchLimit;
 
         MoveReset();
-    }
-
-    private void ChaceStart()
-    {
-        if (_targetNode == null)
-        {
-            _targetNode = _currentNode;
-            return;
-        }
-
-        if (Search() == false)
-        {
-            Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-            {
-                SearchMoveStart();
-            }).AddTo(this);
-            return;
-        }
-
-        // 道を可視化してみる
-        //StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
 
     Node ApproachNode()
@@ -68,7 +48,6 @@ public class AIChace : AITargetMove
             return true;
         if (_targetHuman == null)
             return true;
-
         if (SearchCount > _endNodeDistance)
             return true;
 
@@ -79,6 +58,8 @@ public class AIChace : AITargetMove
         _roadPathManager.RoadGuideReset(gameObject);
 
         // 移動できるかどうか
+        if (next_node == null)
+            return false;
         if (next_node.GetComponent<Wall>() != null ||
             next_node.GetComponent<Door>() != null)
             return false;
@@ -92,19 +73,6 @@ public class AIChace : AITargetMove
         return false;
     }
 
-    bool IsDoorLock(Node node)
-    {
-        var door = node.GetComponent<Door>();
-        if (door)
-            if (door._doorStatus == Door.DoorStatus.CLOSE)
-                if (door.IsDoorLock())
-                {
-                    //Debug.Log("通れません");
-                    return true;
-                }
-        return false;
-    }
-
     protected override void NextNodeSearch()
     {
         _isChaceEnd = Chace();
@@ -112,25 +80,23 @@ public class AIChace : AITargetMove
 
     void Update()
     {
-        if (_arriveAtTarget) return;
+        if (_targetMoveEnd) return;
 
-
-        if (MoveComplete() &&
+        if (//MoveComplete() &&
             _isChaceEnd)
         {
-            _arriveAtTarget = true;
+            _targetMoveEnd = true;
 
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
 
-            _roadPathManager.RoadGuideReset(gameObject);
-
             if (IsDoorAround())
             {
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
                 {
-                    SearchMoveStart();
+                    if (_isChaceEnd)
+                        SearchMoveStart();
                 }).AddTo(this);
                 return;
             }
@@ -148,4 +114,5 @@ public class AIChace : AITargetMove
         }
         return false;
     }
+
 }

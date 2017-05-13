@@ -73,10 +73,9 @@ public class AIController : MonoBehaviour
 
     private void MoveSpeedChange()
     {
-        if (_currentMoveMode == _moveMode &&
-            IsMovementChange() == false)
-            return;
-        _currentMoveMode = _moveMode;
+        //if (_currentMoveMode == _moveMode)
+        //    return;
+        //_currentMoveMode = _moveMode;
 
         if (_moveMode == MoveEmotion.DEFAULT)
             GetMovement().Speed = _defaultSpeed;
@@ -98,7 +97,7 @@ public class AIController : MonoBehaviour
         return movement;
     }
 
-    public bool IsMovementChange()
+    private bool IsHurryUp()
     {
         if (GetComponent<AISearchMove>())
             return false;
@@ -127,8 +126,7 @@ public class AIController : MonoBehaviour
             _prevNode != movement.PrevNode)
             _prevNode = movement.PrevNode;
     }
-
-
+    
     private void OnDisable()
     {
         // この世界に残した跡をすべて消し去る
