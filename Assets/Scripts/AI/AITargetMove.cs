@@ -7,7 +7,7 @@ using UniRx;
 
 public class AITargetMove : AIRouteSearch
 {
-    private bool _arriveAtTarget = false;
+    protected bool _arriveAtTarget = false;
 
     void Start()
     {
@@ -42,14 +42,10 @@ public class AITargetMove : AIRouteSearch
         {
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
-                gameObject.AddComponent<AISearchMove>();
-                Destroy(this);
+                SearchMoveStart();
             }).AddTo(this);
             return;
         }
-
-        // 道を可視化してみる
-        StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
 
     void Update()
@@ -64,32 +60,11 @@ public class AITargetMove : AIRouteSearch
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-
-            if (IsDoorAround())
-            {
-                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-                {
-                    gameObject.AddComponent<AISearchMove>();
-                    Destroy(this);
-                }).AddTo(this);
-                return;
-            }
-            Destroy(this);
-            gameObject.AddComponent<AISearchMove>();
+            
+            SearchMoveStart();
         }
     }
-
-    // 周囲にドアがあるかどうか
-    bool IsDoorAround()
-    {
-        foreach (var node in _currentNode.LinkNodes)
-        {
-            if (tag == "Killer" && node.GetComponent<Door>())
-                return true;
-        }
-        return false;
-    }
-
+    
     protected override void NextNodeSearch()
     {
         _nextNode = _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);

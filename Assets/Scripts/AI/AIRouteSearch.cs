@@ -22,7 +22,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
     private int _searchNodeCount;
     public int SearchCount { get { return _searchNodeCount; } }
 
-    // ここがおかしい
+    // ルートを導き出す移動に切り替わった時に一番最初にルートを検索する関数
     protected override void StartNextNodeSearch()
     {
         var ai_controller = GetComponent<AIController>();
@@ -31,6 +31,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
 
         NextNodeSearch();
         var tag = gameObject.tag;
+
         var ai = GetComponent<AIController>();
 
         var next = ai.NextNode;
@@ -39,7 +40,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
 
         if (prev == null || current == null)
             return;
-        if (_nextNode == prev)
+        if (_nextNode == null || _nextNode == prev)
             return;
         _nextNode = ai.CurrentNode;
         _currentNode = ai.PrevNode;
@@ -56,10 +57,11 @@ public abstract class AIRouteSearch : AIBasicsMovement
         _nodeController = field.GetComponent<NodeController>();
     }
 
+    // ターゲットを探し出してそこまでのルートをノードに刻む
     protected bool Search()
     {
         SearchStart();
-        int limit = 100;
+        int limit = 1000;
         for (int i = 0; i < limit; i++)
         {
             if (SearchRoadPath())
@@ -81,7 +83,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
 
     ///<summary>
     /// 幅優先探索
-    /// TODO:最短は求められるけど速度はあまり出ない
+    /// TODO: 最短は求められるけど処理速度はあまり出ない
     ///</summary>
     bool SearchRoadPath()
     {
@@ -97,6 +99,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
                 if (tag == "Killer" &&
+                    gameObject.GetComponent<AITargetMove>() == null &&
                     node.gameObject.GetComponent<Door>() != null)
                     continue;
 
@@ -177,7 +180,6 @@ public abstract class AIRouteSearch : AIBasicsMovement
         _testSymbolList.Clear();
     }
 
-
     bool WriteRoadPath(Node current_node)
     {
         _searchNodeCount++;
@@ -215,6 +217,12 @@ public abstract class AIRouteSearch : AIBasicsMovement
                 return true;
         }
         return is_done;
+    }
+
+    protected void SearchMoveStart()
+    {
+        gameObject.AddComponent<AISearchMove>();
+        Destroy(this);
     }
 
     // 目標地点のノードまでの距離を短い順でソートする（バブルソート）

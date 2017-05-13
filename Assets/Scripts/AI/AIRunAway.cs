@@ -8,7 +8,7 @@ public class AIRunAway : AIRouteSearch
 {
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
-    private int _endNodeDistance = 5;
+    private int _endNodeDistance = 6;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -19,10 +19,7 @@ public class AIRunAway : AIRouteSearch
 
     void Start()
     {
-        var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeController = field.GetComponent<NodeController>();
-
+        RouteSearchSetup();
         MoveSetup();
     }
 
@@ -45,6 +42,7 @@ public class AIRunAway : AIRouteSearch
             .ToList();
     }
 
+    // 近づくルート
     Node ApproachNode()
     {
         if (Search())
@@ -192,8 +190,7 @@ public class AIRunAway : AIRouteSearch
                 }
         return false;
     }
-
-
+    
     protected override void NextNodeSearch()
     {
         _isEscape = RunAway();
@@ -201,15 +198,14 @@ public class AIRunAway : AIRouteSearch
 
     void Update()
     {
-        if (MoveComplete() && _isEscape)
+        if (_isEscape)
         {
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
 
             _roadPathManager.RoadGuideReset(gameObject);
-            gameObject.AddComponent<AISearchMove>();
-            Destroy(this);
+            SearchMoveStart();
         }
     }
 }

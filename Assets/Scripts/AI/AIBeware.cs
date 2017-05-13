@@ -68,10 +68,12 @@ public class AIBeware : MonoBehaviour
                     if (GetComponent<AITargetMove>())
                         Destroy(GetComponent<AITargetMove>());
 
-                var mover = gameObject.AddComponent<AITargetMove>();
+                var mover = gameObject.AddComponent<AIChace>();
 
                 // どこを目指すかを教える
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
+                mover.SetTargetHuman(_targetHuman);
+
 
                 // 普通の移動をしていたら普通の移動をやめる
                 if (GetComponent<AISearchMove>())
