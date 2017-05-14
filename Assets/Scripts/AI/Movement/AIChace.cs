@@ -80,6 +80,12 @@ public class AIChace : AITargetMove
 
     void Update()
     {
+        KillTarget();
+        ChaceEnd();
+    }
+
+    void ChaceEnd()
+    {
         if (_targetMoveEnd) return;
 
         if (//MoveComplete() &&
@@ -101,6 +107,26 @@ public class AIChace : AITargetMove
                 return;
             }
             SearchMoveStart();
+        }
+    }
+
+    void KillTarget()
+    {
+        if (tag != "Killer")
+            return;
+        var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
+        if (humans.Count < 2) return;
+
+        foreach (var human in humans)
+        {
+            if (human == null) continue;
+            if (human.tag != "Victim") continue;
+            if (_currentNode.GetComponent<Stairs>() &&
+                human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                continue;
+
+            Destroy(human);
+            break;
         }
     }
 

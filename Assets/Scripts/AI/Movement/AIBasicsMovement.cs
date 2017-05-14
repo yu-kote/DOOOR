@@ -58,7 +58,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
         _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
-                var next = _nextNode;
                 NextNodeMoveUpdate();
                 Move();
             }).AddTo(this);
@@ -75,8 +74,8 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
         _moveLength = Vector3Abs(distance);
 
-        // 値が小さいほど速度の調整がしやすいので0.05fをかける
-        _moveDirection = distance.normalized * _speed * 0.05f;
+        // 値が小さいほど速度の調整がしやすいので0.03fをかける
+        _moveDirection = distance.normalized * _speed * 0.03f;
 
         // 移動先が決まった時にそのノードに足跡をつける
         NextNodeDecided();

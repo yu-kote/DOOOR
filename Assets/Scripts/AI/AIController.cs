@@ -14,6 +14,7 @@ public class AIController : MonoBehaviour
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
+    private AISoundManager _aiSoundManager;
 
     public enum MoveEmotion
     {
@@ -24,7 +25,6 @@ public class AIController : MonoBehaviour
     [SerializeField]
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
-    private MoveEmotion _currentMoveMode = MoveEmotion.DEFAULT;
 
 
     [SerializeField]
@@ -35,7 +35,8 @@ public class AIController : MonoBehaviour
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
 
     [SerializeField]
-    private float _viewSpeed;
+    private float _soundRange = 5;
+    private AISound _aiSound;
 
     void Start()
     {
@@ -43,35 +44,17 @@ public class AIController : MonoBehaviour
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
+        _aiSoundManager = field.GetComponent<AISoundManager>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         GetMovement().Speed = _defaultSpeed;
+        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange);
     }
 
     void Update()
     {
         MoveSpeedChange();
         NodeUpdate();
-
-        _viewSpeed = GetMovement().Speed;
-
-        if (tag != "Killer")
-            return;
-
-        var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
-        if (humans.Count < 2) return;
-
-        foreach (var human in humans)
-        {
-            if (human == null) continue;
-            if (human.tag != "Victim") continue;
-            if (_currentNode.GetComponent<Stairs>() &&
-                human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
-                continue;
-
-            Destroy(human);
-            break;
-        }
     }
 
     private void MoveSpeedChange()
