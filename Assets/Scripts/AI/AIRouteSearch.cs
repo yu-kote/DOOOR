@@ -226,6 +226,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
     /// </summary>
     protected void SearchMoveStart()
     {
+        if (gameObject == null) return;
         gameObject.AddComponent<AISearchMove>();
         Destroy(this);
     }

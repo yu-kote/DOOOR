@@ -65,6 +65,9 @@ public class AIController : MonoBehaviour
         {
             if (human == null) continue;
             if (human.tag != "Victim") continue;
+            if (_currentNode.GetComponent<Stairs>() &&
+                human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                continue;
 
             Destroy(human);
             break;
@@ -126,7 +129,7 @@ public class AIController : MonoBehaviour
             _prevNode != movement.PrevNode)
             _prevNode = movement.PrevNode;
     }
-    
+
     private void OnDisable()
     {
         // この世界に残した跡をすべて消し去る

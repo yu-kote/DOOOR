@@ -50,10 +50,6 @@ public class AIBeware : MonoBehaviour
                 }
             }
 
-            // ノード間の移動が終わっているかどうか
-            //if (ai_controller.GetMovement().MoveComplete() == false)
-            //    continue;
-
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
                 continue;
@@ -110,6 +106,7 @@ public class AIBeware : MonoBehaviour
         }
 
         var humans = current_node.gameObject.GetComponent<FootPrint>().HumansOnNode;
+
         if (!humans.Contains(gameObject) &&
             humans.Count > 0)
         {
@@ -136,13 +133,16 @@ public class AIBeware : MonoBehaviour
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())
             {
-                var stairs_humans = node.gameObject.GetComponent<FootPrint>().HumansOnNode;
-                if (!stairs_humans.Contains(gameObject) &&
-                     stairs_humans.Count > 0)
+                if (tag != "Killer")
                 {
-                    var human = SearchHumanOnNode(stairs_humans, "Victim");
-                    if (human != null)
-                        return human;
+                    var stairs_humans = node.gameObject.GetComponent<FootPrint>().HumansOnNode;
+                    if (!stairs_humans.Contains(gameObject) &&
+                         stairs_humans.Count > 0)
+                    {
+                        var human = SearchHumanOnNode(stairs_humans, "Victim");
+                        if (human != null)
+                            return human;
+                    }
                 }
                 continue;
             }

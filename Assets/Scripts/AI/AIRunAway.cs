@@ -36,9 +36,10 @@ public class AIRunAway : AIRouteSearch
     /// </summary>
     List<Node> EscapeNodes()
     {
+        var approach_node = ApproachNode();
         return _currentNode.LinkNodes
             .Where(node => node.GetComponent<Wall>() == null)
-            .Where(node => ApproachNode() != node)
+            .Where(node => approach_node != node)
             .ToList();
     }
 
@@ -95,7 +96,7 @@ public class AIRunAway : AIRouteSearch
         return next_candidate_node;
     }
 
-    // 階段が来たらどっちに進めば壁がないか調べる
+    // どっちに進めば壁がないか調べる
     Node StairsPoint(List<Node> link_nodes)
     {
         // つながっているノードを見る
@@ -130,7 +131,7 @@ public class AIRunAway : AIRouteSearch
                 var best_pos = link_nodes[select_node_num].transform.position;
                 var best_distance = best_pos - _targetHuman.transform.position;
 
-                if (best_distance.magnitude > candidate_distance.magnitude)
+                if (best_distance.magnitude < candidate_distance.magnitude)
                 {
                     select_node_num = i;
                     continue;
@@ -144,8 +145,7 @@ public class AIRunAway : AIRouteSearch
                 select_node_num = i;
             }
         }
-
-
+        
         if (select_node_num > -1 && most_node_route > -1)
             return link_nodes[select_node_num];
         return _currentNode;
@@ -178,19 +178,6 @@ public class AIRunAway : AIRouteSearch
         return 0;
     }
 
-    bool IsDoorLock(Node node)
-    {
-        var door = node.GetComponent<Door>();
-        if (door)
-            if (door._doorStatus == Door.DoorStatus.CLOSE)
-                if (door.IsDoorLock())
-                {
-                    //Debug.Log("通れません");
-                    return true;
-                }
-        return false;
-    }
-    
     protected override void NextNodeSearch()
     {
         _isEscape = RunAway();

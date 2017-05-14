@@ -129,6 +129,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         _nextNode = null;
         _moveDirection = Vector3.zero;
+        _moveLength = Vector3.zero;
     }
 
     Vector3 HeightCorrection()
