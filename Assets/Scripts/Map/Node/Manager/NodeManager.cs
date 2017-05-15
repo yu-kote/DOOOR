@@ -49,7 +49,7 @@ public class NodeManager : MonoBehaviour
         {
             for (int x = 0; x < _nodes[y].Count; x++)
             {
-                //_nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(itemDatas[y][x]));
+                _nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(itemDatas[y][x]));
             }
         }
     }
