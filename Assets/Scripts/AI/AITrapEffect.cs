@@ -34,8 +34,7 @@ public class AITrapEffect : MonoBehaviour
                 new Vector3(target_node.transform.position.x,
                             target_node.transform.position.y + transform.localScale.y,
                             target_node.transform.position.z);
-
-
+        
         var movement = GetComponent<AIController>().GetMovement();
         if (movement == null) return;
         movement.MoveSetup();
