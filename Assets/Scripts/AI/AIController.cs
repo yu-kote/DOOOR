@@ -14,6 +14,7 @@ public class AIController : MonoBehaviour
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
+    private AISoundManager _aiSoundManager;
 
     public enum MoveEmotion
     {
@@ -21,9 +22,10 @@ public class AIController : MonoBehaviour
         HURRY_UP,
     }
 
+    [SerializeField]
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
-    private MoveEmotion _currentMoveMode = MoveEmotion.DEFAULT;
+
 
     [SerializeField]
     private float _defaultSpeed;
@@ -32,48 +34,34 @@ public class AIController : MonoBehaviour
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
 
+    [SerializeField]
+    private float _soundRange = 5;
+    private AISound _aiSound;
+
     void Start()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
+        _aiSoundManager = field.GetComponent<AISoundManager>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         GetMovement().Speed = _defaultSpeed;
+        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange);
     }
 
     void Update()
     {
         MoveSpeedChange();
         NodeUpdate();
-
-        if (tag != "Killer") return;
-
-        var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
-        if (humans.Count < 2) return;
-
-        foreach (var human in humans)
-        {
-            if (human == null) continue;
-            if (human.tag != "Victim") continue;
-
-            // この世界に残した跡をすべて消し去る
-            _nodeController.EraseTraces(human.GetComponent<MyNumber>());
-            _roadPathManager.RoadGuideReset(human);
-            _roadPathManager.SearchReset(human);
-
-            _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(human);
-
-            Destroy(human);
-            break;
-        }
     }
 
     private void MoveSpeedChange()
     {
-        if (_currentMoveMode == _moveMode) return;
-        _currentMoveMode = _moveMode;
+        //if (_currentMoveMode == _moveMode)
+        //    return;
+        //_currentMoveMode = _moveMode;
 
         if (_moveMode == MoveEmotion.DEFAULT)
             GetMovement().Speed = _defaultSpeed;
@@ -90,7 +78,22 @@ public class AIController : MonoBehaviour
             movement = GetComponent<AITargetMove>();
         if (GetComponent<AIRunAway>())
             movement = GetComponent<AIRunAway>();
+        if (GetComponent<AIChace>())
+            movement = GetComponent<AIChace>();
         return movement;
+    }
+
+    private bool IsHurryUp()
+    {
+        if (GetComponent<AISearchMove>())
+            return false;
+        if (GetComponent<AITargetMove>())
+            return false;
+        if (GetComponent<AIRunAway>())
+            return true;
+        if (GetComponent<AIChace>())
+            return true;
+        return false;
     }
 
     public void NodeUpdate()
@@ -110,23 +113,14 @@ public class AIController : MonoBehaviour
             _prevNode = movement.PrevNode;
     }
 
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    if (gameObject.tag != "Killer") return;
-    //    if (other.gameObject.tag != "Victim") return;
+    private void OnDisable()
+    {
+        // この世界に残した跡をすべて消し去る
+        _nodeController.EraseTraces(GetComponent<MyNumber>());
+        _roadPathManager.RoadGuideReset(gameObject);
+        _roadPathManager.SearchReset(gameObject);
 
-    //    Debug.Log("Kill Enter" + other.gameObject.tag);
-    //    //Destroy(other.gameObject);
-    //}
-
-
-    //private void OnCollisionStay(Collision collision)
-    //{
-    //    if (gameObject.tag != "Killer") return;
-    //    if (collision.gameObject.tag != "Victim") return;
-
-    //    Debug.Log("Kill Collder" + collision.gameObject.tag);
-    //    //Destroy(collision.gameObject);
-    //}
-
+        if (_currentNode != null)
+            _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
+    }
 }

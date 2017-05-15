@@ -16,11 +16,12 @@ public class NodeController : MonoBehaviour
     public void EraseTraces(MyNumber mynumber)
     {
         var nodes = _nodeManager.Nodes;
-
         foreach (var y in nodes)
         {
             foreach (var node in y)
             {
+                if (node == null)
+                    continue;
                 var footprint = node.GetComponent<FootPrint>();
                 if (footprint != null)
                     footprint.EraseTrace(mynumber);

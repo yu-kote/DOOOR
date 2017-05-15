@@ -17,6 +17,8 @@ public class RoadPathManager : MonoBehaviour
         {
             foreach (var node in y)
             {
+                if (node == null)
+                    continue;
                 var roadpath = node.GetComponent<NodeGuide>();
                 roadpath.NextPathRemove(human);
                 roadpath.PrevPathRemove(human);
@@ -30,6 +32,8 @@ public class RoadPathManager : MonoBehaviour
         {
             foreach (var node in y)
             {
+                if (node == null)
+                    continue;
                 var roadpath = node.GetComponent<NodeGuide>();
                 roadpath.SearchRemove(human);
             }

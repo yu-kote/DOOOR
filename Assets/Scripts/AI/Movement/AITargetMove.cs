@@ -7,7 +7,7 @@ using UniRx;
 
 public class AITargetMove : AIRouteSearch
 {
-    private bool _arriveAtTarget = false;
+    protected bool _targetMoveEnd = false;
 
     void Start()
     {
@@ -19,7 +19,7 @@ public class AITargetMove : AIRouteSearch
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
 
-        _arriveAtTarget = false;
+        _targetMoveEnd = false;
         _roadPathManager.RoadGuideReset(gameObject);
         TargetMoveStart(_targetNode);
 
@@ -37,57 +37,31 @@ public class AITargetMove : AIRouteSearch
         }
 
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
-        //if (WriteRoadPath(_currentNode) == false)
         if (Search() == false)
         {
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
-                gameObject.AddComponent<AISearchMove>();
-                Destroy(this);
+                SearchMoveStart();
             }).AddTo(this);
             return;
         }
-
-        // 道を可視化してみる
-        StartCoroutine(SearchRoadTestDraw(_currentNode));
     }
 
     void Update()
     {
-        if (_arriveAtTarget) return;
+        if (_targetMoveEnd) return;
 
         if (MoveComplete() &&
             _currentNode == _targetNode)
         {
-            _arriveAtTarget = true;
+            _targetMoveEnd = true;
 
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
 
-            if (IsDoorAround())
-            {
-                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-                {
-                    gameObject.AddComponent<AISearchMove>();
-                    Destroy(this);
-                }).AddTo(this);
-                return;
-            }
-            Destroy(this);
-            gameObject.AddComponent<AISearchMove>();
+            SearchMoveStart();
         }
-    }
-
-    // 周囲にドアがあるかどうか
-    bool IsDoorAround()
-    {
-        foreach (var node in _currentNode.LinkNodes)
-        {
-            if (tag == "Killer" && node.GetComponent<Door>())
-                return true;
-        }
-        return false;
     }
 
     protected override void NextNodeSearch()

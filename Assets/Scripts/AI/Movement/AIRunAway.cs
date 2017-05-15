@@ -8,7 +8,7 @@ public class AIRunAway : AIRouteSearch
 {
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
-    private int _endNodeDistance = 5;
+    private int _endNodeDistance = 6;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -19,10 +19,7 @@ public class AIRunAway : AIRouteSearch
 
     void Start()
     {
-        var field = GameObject.Find("Field");
-        _roadPathManager = field.GetComponent<RoadPathManager>();
-        _nodeController = field.GetComponent<NodeController>();
-
+        RouteSearchSetup();
         MoveSetup();
     }
 
@@ -39,12 +36,14 @@ public class AIRunAway : AIRouteSearch
     /// </summary>
     List<Node> EscapeNodes()
     {
+        var approach_node = ApproachNode();
         return _currentNode.LinkNodes
             .Where(node => node.GetComponent<Wall>() == null)
-            .Where(node => ApproachNode() != node)
+            .Where(node => approach_node != node)
             .ToList();
     }
 
+    // 近づくルート
     Node ApproachNode()
     {
         if (Search())
@@ -97,7 +96,7 @@ public class AIRunAway : AIRouteSearch
         return next_candidate_node;
     }
 
-    // 階段が来たらどっちに進めば壁がないか調べる
+    // どっちに進めば壁がないか調べる
     Node StairsPoint(List<Node> link_nodes)
     {
         // つながっているノードを見る
@@ -132,7 +131,7 @@ public class AIRunAway : AIRouteSearch
                 var best_pos = link_nodes[select_node_num].transform.position;
                 var best_distance = best_pos - _targetHuman.transform.position;
 
-                if (best_distance.magnitude > candidate_distance.magnitude)
+                if (best_distance.magnitude < candidate_distance.magnitude)
                 {
                     select_node_num = i;
                     continue;
@@ -146,8 +145,7 @@ public class AIRunAway : AIRouteSearch
                 select_node_num = i;
             }
         }
-
-
+        
         if (select_node_num > -1 && most_node_route > -1)
             return link_nodes[select_node_num];
         return _currentNode;
@@ -180,20 +178,6 @@ public class AIRunAway : AIRouteSearch
         return 0;
     }
 
-    bool IsDoorLock(Node node)
-    {
-        var door = node.GetComponent<Door>();
-        if (door)
-            if (door._doorStatus == Door.DoorStatus.CLOSE)
-                if (door.IsDoorLock())
-                {
-                    //Debug.Log("通れません");
-                    return true;
-                }
-        return false;
-    }
-
-
     protected override void NextNodeSearch()
     {
         _isEscape = RunAway();
@@ -201,15 +185,14 @@ public class AIRunAway : AIRouteSearch
 
     void Update()
     {
-        if (MoveComplete() && _isEscape)
+        if (_isEscape)
         {
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
 
             _roadPathManager.RoadGuideReset(gameObject);
-            gameObject.AddComponent<AISearchMove>();
-            Destroy(this);
+            SearchMoveStart();
         }
     }
 }

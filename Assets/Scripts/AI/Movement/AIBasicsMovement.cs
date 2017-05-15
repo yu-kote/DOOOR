@@ -7,8 +7,11 @@ using UniRx.Triggers;
 
 public abstract class AIBasicsMovement : MonoBehaviour
 {
+    // ノードを強制移動させたときに再度移動の検索を開始させる関数
     public abstract void MoveSetup();
+    // このクラスを継承するクラスが一番最初に次に進むノードを選ぶ関数
     protected abstract void StartNextNodeSearch();
+    // 次に進むノードを選ぶ関数
     protected abstract void NextNodeSearch();
 
     protected Node _currentNode;
@@ -55,7 +58,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
         _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
-                var next = _nextNode;
                 NextNodeMoveUpdate();
                 Move();
             }).AddTo(this);
@@ -72,8 +74,8 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
         _moveLength = Vector3Abs(distance);
 
-        // 値が小さいほど速度の調整がしやすいので0.05fをかける
-        _moveDirection = distance.normalized * _speed * 0.05f;
+        // 値が小さいほど速度の調整がしやすいので0.03fをかける
+        _moveDirection = distance.normalized * _speed * 0.03f;
 
         // 移動先が決まった時にそのノードに足跡をつける
         NextNodeDecided();
@@ -126,6 +128,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         _nextNode = null;
         _moveDirection = Vector3.zero;
+        _moveLength = Vector3.zero;
     }
 
     Vector3 HeightCorrection()
@@ -140,9 +143,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     public bool MoveComplete()
     {
-        return _moveLength.x <= 0 &&
-            _moveLength.y <= 0 &&
-            _moveLength.z <= 0;
+        return _moveLength.x <= 0.001f &&
+            _moveLength.y <= 0.001f &&
+            _moveLength.z <= 0.001f;
     }
 
     public void AddFootPrint(Node node)
@@ -161,6 +164,19 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         AddFootPrint(_nextNode);
         LeaveFootPrint(_currentNode);
+    }
+
+    protected bool IsDoorLock(Node node)
+    {
+        var door = node.GetComponent<Door>();
+        if (door)
+            if (door._doorStatus == Door.DoorStatus.CLOSE)
+                if (door.IsDoorLock())
+                {
+                    //Debug.Log("通れません");
+                    return true;
+                }
+        return false;
     }
 
     private void OnDisable()
