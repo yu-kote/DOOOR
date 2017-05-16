@@ -31,7 +31,7 @@ public class AIBeware : MonoBehaviour
 
             var ai_controller = GetComponent<AIController>();
             // 普通の移動をしている場合しか周囲を見ない
-            if (ai_controller.MoveMode != AIController.MoveEmotion.DEFAULT)
+            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 continue;
 
             // 標的が見つかっているかどうか
@@ -105,6 +105,7 @@ public class AIBeware : MonoBehaviour
             return null;
         }
 
+        if (current_node == null) return null;
         var humans = current_node.gameObject.GetComponent<FootPrint>().HumansOnNode;
 
         if (!humans.Contains(gameObject) &&

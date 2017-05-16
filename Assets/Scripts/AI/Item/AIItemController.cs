@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class AIItemController : MonoBehaviour
 {
@@ -58,6 +59,7 @@ public class AIItemController : MonoBehaviour
         ItemSearch();
     }
 
+
     void ItemSearch()
     {
         var ai_controller = GetComponent<AIController>();
@@ -70,13 +72,20 @@ public class AIItemController : MonoBehaviour
         if (itemstatus == null)
             return;
 
-        var acquired_item = itemstatus.AcquiredItem(ItemType.KEY);
-        if (acquired_item == ItemType.NONE)
-            acquired_item = itemstatus.AcquiredItem(ItemType.LASTKEY);
-
-        if (acquired_item == ItemType.NONE)
+        var setting_items = itemstatus.GetItem();
+        if (setting_items == ItemType.NONE)
             return;
+        Func<ItemType, bool> Check =
+            (type) => ((uint)setting_items & (uint)type) > 0;
+        
 
-        this.AcquireItem(acquired_item);
+        for (uint type = (uint)ItemType.GUN << 1; type > 0; type = type >> 1)
+        {
+            if (Check((ItemType)type))
+            {
+                itemstatus.AcquiredItem((ItemType)type);
+                this.AcquireItem((ItemType)type);
+            }
+        }
     }
 }

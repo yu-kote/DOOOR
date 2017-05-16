@@ -44,7 +44,7 @@ public class AISearchMove : AIBasicsMovement
         Node next_node = null;
         // まだ足跡がついてないノードをつながっているノードから探す
         var candidate = CanMoveNode();
-
+        if (candidate == null) return;
         // 周りのノードが全部足跡ついていたら足跡を辿ってついていないところを探す
         if (candidate.Count == 0)
         {
@@ -70,6 +70,7 @@ public class AISearchMove : AIBasicsMovement
 
     List<Node> CanMoveNode()
     {
+        if (_currentNode == null) return null;
         return _currentNode.LinkNodes
             .Where(node => node.GetComponent<FootPrint>().Traces.Contains(_myNumber) == false)
             .Where(node => node.GetComponent<Wall>() == null)
