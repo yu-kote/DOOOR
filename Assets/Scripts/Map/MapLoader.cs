@@ -14,6 +14,7 @@ public enum MapID
 	START,
 	KYUKEISPACE,
 	DUMMYWALL,
+	DEGUTI
 }
 
 public class MapLoader : MonoBehaviour
