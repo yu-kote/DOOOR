@@ -65,6 +65,10 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     protected void NextNodeMoveUpdate()
     {
+        // ドアが閉まっているかどうか
+        if (IsDoorLock(_nextNode))
+            return;
+
         // 次の移動先が決まったら
         if (_nextNode == null || _nextNode == _currentNode)
             return;
@@ -143,9 +147,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     public bool MoveComplete()
     {
-        return _moveLength.x <= 0.001f &&
-            _moveLength.y <= 0.001f &&
-            _moveLength.z <= 0.001f;
+        return _moveLength.x <= 0 &&
+            _moveLength.y <= 0 &&
+            _moveLength.z <= 0;
     }
 
     public void AddFootPrint(Node node)
@@ -168,6 +172,8 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     protected bool IsDoorLock(Node node)
     {
+        if (node == null)
+            return true;
         var door = node.GetComponent<Door>();
         if (door)
             if (door._doorStatus == Door.DoorStatus.CLOSE)

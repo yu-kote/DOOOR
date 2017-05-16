@@ -77,7 +77,11 @@ public class AIRunAway : AIRouteSearch
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))
+        {
+            MoveReset();
             return false;
+        }
+        
         _nextNode = next_node;
 
         return false;
@@ -145,7 +149,7 @@ public class AIRunAway : AIRouteSearch
                 select_node_num = i;
             }
         }
-        
+
         if (select_node_num > -1 && most_node_route > -1)
             return link_nodes[select_node_num];
         return _currentNode;

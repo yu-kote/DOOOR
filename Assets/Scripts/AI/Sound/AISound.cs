@@ -33,7 +33,7 @@ public class AISound : MonoBehaviour
             {
                 transform.position = _targetObject.transform.position;
                 transform.localScale = new Vector3(_range, _range, _range);
-            }).AddTo(this);
+            }).AddTo(_targetObject);
     }
 
     void SoundSetup(Vector3 pos, float range, GameObject obj = null)

@@ -99,7 +99,9 @@ public class AIController : MonoBehaviour
     public void NodeUpdate()
     {
         var movement = GetMovement();
-        if (movement == null) return;
+        if (movement == null)
+            return;
+
         if (movement.CurrentNode &&
             _currentNode != movement.CurrentNode)
             _currentNode = movement.CurrentNode;
@@ -122,5 +124,8 @@ public class AIController : MonoBehaviour
 
         if (_currentNode != null)
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
+
+        if (_aiSound)
+            Destroy(_aiSound.gameObject);
     }
 }

@@ -24,22 +24,22 @@ public class ItemStatus : MonoBehaviour
 
 			_puttingItemStatus += (id - (id >> 1));
 
-			switch ((ItemID)id)
+			switch ((ItemType)id)
 			{
-				case ItemID.KEY:
+				case ItemType.KEY:
 
 					gameObject.AddComponent<Key>();
 					break;
 
-				case ItemID.LASTKEY:
+				case ItemType.LASTKEY:
 
 					gameObject.AddComponent<LastKey>();
 					break;
-				case ItemID.FLASHLIGHT:
+				case ItemType.FLASHLIGHT:
 
 					//gameObject.AddComponent<FlashLight>();
 					break;
-				case ItemID.GUN:
+				case ItemType.GUN:
 
 					//gameObject.AddComponent<Gun>();
 					break;
@@ -48,22 +48,22 @@ public class ItemStatus : MonoBehaviour
 		
 	}
 
-	public ItemID AcquiredItem(ItemID id)
+	public ItemType AcquiredItem(ItemType id)
 	{
 		if ((_puttingItemStatus & (uint)id) == 0)
 		{
 			Debug.Log("すでにおかれています");
-			return ItemID.NONE;
+			return ItemType.NONE;
 		}
 
 		_puttingItemStatus -= (uint)id;
 
 		switch (id)
 		{
-			case ItemID.KEY:
+			case ItemType.KEY:
 
 				return gameObject.GetComponent<Key>().AcquiredItem();
-			case ItemID.LASTKEY:
+			case ItemType.LASTKEY:
 
 				return gameObject.GetComponent<LastKey>().AcquiredItem();
 			//case ItemID.FLASHLIGHT:
@@ -74,6 +74,6 @@ public class ItemStatus : MonoBehaviour
 			//	return gameObject.GetComponent<Gun>().AcquiredItem();
 		}
 
-		return ItemID.NONE;
+		return ItemType.NONE;
 	}
 }
