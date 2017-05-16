@@ -5,7 +5,7 @@ using System.Linq;
 
 public class AIItemController : MonoBehaviour
 {
-    private List<ItemType> _haveItems;
+    private List<ItemType> _haveItems = new List<ItemType>();
     public List<ItemType> HaveItems { get { return _haveItems; } set { _haveItems = value; } }
 
     [SerializeField]
@@ -20,7 +20,7 @@ public class AIItemController : MonoBehaviour
     }
 
     /// <summary>
-    /// アイテムを獲得する
+    /// 獲得
     /// </summary>
     void AcquireItem(ItemType item)
     {
@@ -32,6 +32,7 @@ public class AIItemController : MonoBehaviour
             if (_debugItemList[i] == ItemType.NONE)
             {
                 _debugItemList[i] = item;
+                break;
             }
         }
     }
@@ -54,6 +55,28 @@ public class AIItemController : MonoBehaviour
 
     void Update()
     {
+        ItemSearch();
+    }
 
+    void ItemSearch()
+    {
+        var ai_controller = GetComponent<AIController>();
+        var node = ai_controller.CurrentNode;
+
+        if (node == null)
+            return;
+
+        var itemstatus = node.GetComponent<ItemStatus>();
+        if (itemstatus == null)
+            return;
+
+        var acquired_item = itemstatus.AcquiredItem(ItemType.KEY);
+        if (acquired_item == ItemType.NONE)
+            acquired_item = itemstatus.AcquiredItem(ItemType.LASTKEY);
+
+        if (acquired_item == ItemType.NONE)
+            return;
+
+        this.AcquireItem(acquired_item);
     }
 }

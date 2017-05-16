@@ -69,6 +69,7 @@ public class ItemBase : MonoBehaviour
         if (!_isAcquired)
             return;
 
-        Destroy(gameObject);
+        Destroy(this);
+        Destroy(_item);
     }
 }
