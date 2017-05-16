@@ -60,13 +60,17 @@ public class AIChace : AITargetMove
         // 移動できるかどうか
         if (next_node == null)
             return false;
+
         if (next_node.GetComponent<Wall>() != null ||
             next_node.GetComponent<Door>() != null)
             return false;
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))
+        {
+            MoveReset();
             return false;
+        }
 
         _nextNode = next_node;
 
