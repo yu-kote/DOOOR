@@ -11,6 +11,10 @@ public class ItemStatus : MonoBehaviour
 		set { _puttingItemStatus = value; }
 	}
 
+	public ItemType GetItem()
+	{
+		return (ItemType)_puttingItemStatus;
+	}
 
 	public void AddPutItem(uint id)
 	{
