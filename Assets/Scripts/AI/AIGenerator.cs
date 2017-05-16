@@ -7,19 +7,27 @@ using System;
 public class AIGenerator : MonoBehaviour
 {
     private GameObject _field;
+    private List<GameObject> _humans = new List<GameObject>();
+    public List<GameObject> Humans { get { return _humans; } set { _humans = value; } }
 
     private int _generateCount = 0;
 
     void Start()
     {
         _field = GameObject.Find("Field");
-        for (int i = 0; i < 2; i++)
-            CreateVictim();
 
-        Observable.Timer(TimeSpan.FromSeconds(3)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
+        {
+            for (int i = 0; i < 2; i++)
+                CreateVictim();
+        }).AddTo(gameObject);
+
+
+
+        Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
         {
             CreateKiller();
-        }).AddTo(this);
+        }).AddTo(gameObject);
     }
 
     void CreateHuman(GameObject human)
@@ -39,6 +47,8 @@ public class AIGenerator : MonoBehaviour
 
         start_node.GetComponent<FootPrint>().StepIn(human);
 
+        _humans.Add(human);
+
         _generateCount++;
     }
 
@@ -50,5 +60,12 @@ public class AIGenerator : MonoBehaviour
     void CreateKiller()
     {
         CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var human in _humans)
+            Destroy(human);
+        _humans.Clear();
     }
 }

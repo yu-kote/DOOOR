@@ -157,7 +157,7 @@ public class AIController : MonoBehaviour
             mover.SetTargetNode(exit_node);
             mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
 
-        }).AddTo(this);
+        }).AddTo(gameObject);
     }
 
     private void OnDisable()

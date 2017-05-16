@@ -21,7 +21,7 @@ public class AISound : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(effect_time)).Subscribe(_ =>
         {
             Destroy(this);
-        }).AddTo(this);
+        }).AddTo(gameObject);
     }
 
     public void MakeSound(GameObject obj, float range)

@@ -60,7 +60,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
             {
                 NextNodeMoveUpdate();
                 Move();
-            }).AddTo(this);
+            }).AddTo(gameObject);
     }
 
     protected void NextNodeMoveUpdate()

@@ -105,6 +105,7 @@ public class AIBeware : MonoBehaviour
             return null;
         }
 
+        if (current_node == null) return null;
         var humans = current_node.gameObject.GetComponent<FootPrint>().HumansOnNode;
 
         if (!humans.Contains(gameObject) &&

@@ -34,7 +34,7 @@ public class AITrapEffect : MonoBehaviour
                 new Vector3(target_node.transform.position.x,
                             target_node.transform.position.y + transform.localScale.y,
                             target_node.transform.position.z);
-        
+
         var movement = GetComponent<AIController>().GetMovement();
         if (movement == null) return;
         movement.MoveSetup();
@@ -54,7 +54,7 @@ public class AITrapEffect : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             movement.CanMove = true;
-        }).AddTo(this);
+        }).AddTo(gameObject);
     }
 
     private void Update()
@@ -66,13 +66,15 @@ public class AITrapEffect : MonoBehaviour
     {
         if (tag != "Victim") return;
 
-        var door = _aiController.CurrentNode.GetComponent<Door>();
+        var current_node = _aiController.CurrentNode;
+        if (current_node == null) return;
+        var door = current_node.GetComponent<Door>();
         if (door == null) return;
 
         Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
         {
             door.StartClosing();
-        }).AddTo(this);
+        }).AddTo(gameObject);
 
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 

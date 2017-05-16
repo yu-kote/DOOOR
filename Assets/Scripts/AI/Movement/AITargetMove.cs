@@ -42,7 +42,7 @@ public class AITargetMove : AIRouteSearch
             Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
             {
                 SearchMoveStart();
-            }).AddTo(this);
+            }).AddTo(gameObject);
             return;
         }
     }

@@ -107,7 +107,7 @@ public class AIChace : AITargetMove
                 {
                     if (_isChaceEnd)
                         SearchMoveStart();
-                }).AddTo(this);
+                }).AddTo(gameObject);
                 return;
             }
             SearchMoveStart();
