@@ -40,8 +40,13 @@ public class GameManager : MonoBehaviour
     void GameOver()
     {
         var humans = _aiGenerator.Humans;
-        var goal_human = humans.FirstOrDefault(human =>
+        var goal_human = humans
+            .Where(human => human.tag == "Victim")
+            .FirstOrDefault(human =>
         {
+            var item = human.GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY);
+            if (item == false)
+                return false;
             var current_node = human.GetComponent<AIController>().CurrentNode;
             if (current_node == null)
                 return false;
