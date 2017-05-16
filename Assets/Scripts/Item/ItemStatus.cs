@@ -26,7 +26,7 @@ public class ItemStatus : MonoBehaviour
 				return;
 			}
 
-			_puttingItemStatus += (id - (id >> 1));
+			_puttingItemStatus += (id);
 
 			switch ((ItemType)id)
 			{
