@@ -6,7 +6,7 @@ public class Key : ItemBase
 {
 	void Start()
 	{
-		_itemID = ItemID.KEY;
+		_type = ItemType.KEY;
 		if (_isInstanceAttribute)
 			CreateItem("Key");
 	}

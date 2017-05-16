@@ -7,7 +7,7 @@ public class LastKey : ItemBase
 {
 	void Start()
 	{
-		_itemID = ItemID.LASTKEY;
+		_type = ItemType.LASTKEY;
 		if (_isInstanceAttribute)
 			CreateItem("LastKey");
 	}
