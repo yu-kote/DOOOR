@@ -147,9 +147,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     public bool MoveComplete()
     {
-        return _moveLength.x <= 0 &&
-            _moveLength.y <= 0 &&
-            _moveLength.z <= 0;
+        return _moveLength.x <= 0.001f &&
+            _moveLength.y <= 0.001f &&
+            _moveLength.z <= 0.001f;
     }
 
     public void AddFootPrint(Node node)

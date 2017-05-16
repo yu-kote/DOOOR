@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using UniRx;
+using System;
 
 public class AIController : MonoBehaviour
 {
@@ -20,6 +23,7 @@ public class AIController : MonoBehaviour
     {
         DEFAULT,
         HURRY_UP,
+        TARGET_MOVE,
     }
 
     [SerializeField]
@@ -55,6 +59,7 @@ public class AIController : MonoBehaviour
     {
         MoveSpeedChange();
         NodeUpdate();
+        AimForExit();
     }
 
     private void MoveSpeedChange()
@@ -113,6 +118,46 @@ public class AIController : MonoBehaviour
         if (movement.PrevNode &&
             _prevNode != movement.PrevNode)
             _prevNode = movement.PrevNode;
+    }
+
+    /// <summary>
+    /// 出口の鍵を持っていたら出口を目指す
+    /// </summary>
+    void AimForExit()
+    {
+        var item_contoller = GetComponent<AIItemController>();
+        if (item_contoller == null)
+            return;
+        // 出口の鍵をもっているか
+        if (item_contoller.HaveItemCheck(ItemType.LASTKEY) == false)
+            return;
+
+        var exit = _currentNode.GetComponent<Deguti>();
+        if (exit)
+        {
+            return;
+        }
+
+        // 逃げている最中は目指す余裕がない
+        if (_moveMode != MoveEmotion.DEFAULT)
+            return;
+        _moveMode = MoveEmotion.TARGET_MOVE;
+        
+        Observable.Timer(TimeSpan.FromSeconds(0.1f)).Subscribe(_ =>
+        {
+            var exit_node = _nodeManager.Nodes
+            .FirstOrDefault(nodes => nodes
+            .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
+            .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
+            if (GetComponent<AITargetMove>())
+                Destroy(GetComponent<AITargetMove>());
+            if (GetComponent<AISearchMove>())
+                Destroy(GetComponent<AISearchMove>());
+            var mover = gameObject.AddComponent<AITargetMove>();
+            mover.SetTargetNode(exit_node);
+            mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
+
+        }).AddTo(this);
     }
 
     private void OnDisable()
