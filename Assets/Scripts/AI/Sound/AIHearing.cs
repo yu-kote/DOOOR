@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class AIHearing : MonoBehaviour
 {
-    private GameObject _testSymbol;
 
     void Start()
     {
