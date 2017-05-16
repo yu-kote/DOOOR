@@ -234,6 +234,11 @@ public class NodeManager : MonoBehaviour
 
                         node.gameObject.AddComponent<DummyWall>();
                         break;
+
+					case MapID.DEGUTI:
+
+						node.gameObject.AddComponent<Deguti>();
+						break;
                 }
             }
         }
