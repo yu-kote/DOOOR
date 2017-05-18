@@ -91,6 +91,7 @@ public class AISearchMove : AIBasicsMovement
             .ToList();
     }
 
+    // 未踏の地を探す
     Node SearchUnexploredNode(Node current_node)
     {
         foreach (var node in current_node.LinkNodes)

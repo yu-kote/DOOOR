@@ -136,11 +136,12 @@ public class AIController : MonoBehaviour
 
         var exit = _currentNode.GetComponent<Deguti>();
         if (exit)
-        {
             return;
-        }
 
-        // 逃げている最中は目指す余裕がない
+        if (ExitNode().GetComponent<FootPrint>().TraceCheck(gameObject) == false)
+            return;
+
+        // 逃げている最中と出口を目指してないかどうか
         if (_moveMode != MoveEmotion.DEFAULT)
             return;
         _moveMode = MoveEmotion.TARGET_MOVE;
@@ -150,10 +151,7 @@ public class AIController : MonoBehaviour
         // TODO:設計見直し箇所
         Observable.Timer(TimeSpan.FromSeconds(0.1f)).Subscribe(_ =>
         {
-            var exit_node = _nodeManager.Nodes
-            .FirstOrDefault(nodes => nodes
-            .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
-            .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
+            var exit_node = ExitNode();
             if (GetComponent<AITargetMove>())
                 Destroy(GetComponent<AITargetMove>());
             if (GetComponent<AISearchMove>())
@@ -163,6 +161,15 @@ public class AIController : MonoBehaviour
             mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
 
         }).AddTo(gameObject);
+    }
+
+    public Node ExitNode()
+    {
+        var exit_node = _nodeManager.Nodes
+        .FirstOrDefault(nodes => nodes
+        .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
+        .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
+        return exit_node;
     }
 
     private void OnDisable()
