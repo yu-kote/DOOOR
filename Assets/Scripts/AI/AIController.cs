@@ -181,10 +181,7 @@ public class AIController : MonoBehaviour
 
         if (_currentNode != null)
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
-
-        if (_aiSound)
-            Destroy(_aiSound.gameObject);
-
+        
         _aiGenerator.Humans.Remove(gameObject);
     }
 }

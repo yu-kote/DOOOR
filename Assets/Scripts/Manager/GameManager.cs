@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        var field = GameObject.Find("Field");
+        //var field = GameObject.Find("Field");
         var human_manager = GameObject.Find("HumanManager");
         _aiGenerator = human_manager.GetComponent<AIGenerator>();
     }

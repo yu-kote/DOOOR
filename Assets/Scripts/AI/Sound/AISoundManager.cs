@@ -41,6 +41,13 @@ public class AISoundManager : MonoBehaviour
 
     void Update()
     {
-
+        foreach (var sound in _aiSounds)
+        {
+            if (sound == null)
+            {
+                _aiSounds.Remove(sound);
+                break;
+            }
+        }
     }
 }
