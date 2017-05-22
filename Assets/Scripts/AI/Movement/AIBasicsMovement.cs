@@ -60,7 +60,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
             {
                 NextNodeMoveUpdate();
                 Move();
-            }).AddTo(gameObject);
+            }).AddTo(this).AddTo(gameObject);
     }
 
     protected void NextNodeMoveUpdate()
@@ -117,6 +117,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     void Move()
     {
         if (_canMove == false) return;
+        if (this == null) return;
         transform.Translate(_moveDirection);
         _moveLength -= Vector3Abs(_moveDirection);
 

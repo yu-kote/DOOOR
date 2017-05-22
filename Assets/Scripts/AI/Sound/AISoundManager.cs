@@ -7,8 +7,6 @@ public class AISoundManager : MonoBehaviour
     [SerializeField]
     private GameObject _aiSound;
 
-    //private List<GameObject> _aiSounds = new List<GameObject>();
-    //public List<GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
     private Dictionary<GameObject, GameObject> _aiSounds = new Dictionary<GameObject, GameObject>();
     public Dictionary<GameObject, GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
 
@@ -24,6 +22,8 @@ public class AISoundManager : MonoBehaviour
     public AISound MakeSound(Vector3 pos, float range, int effect_time)
     {
         var sound = Instantiate(_aiSound, transform);
+        if (_aiSounds.ContainsValue(sound))
+            return null;
         var ai_sound = sound.GetComponent<AISound>();
         ai_sound.MakeSound(pos, range, effect_time);
         _aiSounds.Add(gameObject, sound);

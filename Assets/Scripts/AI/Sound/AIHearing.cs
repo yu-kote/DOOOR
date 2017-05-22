@@ -8,6 +8,8 @@ public class AIHearing : MonoBehaviour
     private AISoundManager _aiSoundManager;
     private NodeManager _nodeManager;
     private AIController _aiController;
+    private List<Node> _targetNode = new List<Node>();
+    //private GameObject _targetSound;
 
     void Start()
     {
@@ -17,20 +19,12 @@ public class AIHearing : MonoBehaviour
         _aiController = GetComponent<AIController>();
     }
 
-    /// <summary>
-    /// 殺人鬼しか耳を持たない
-    /// 自分の音は反応しない
-    /// 他人の音が殺人鬼だった場合
-    /// 音を鳴らした場合、音を鳴らした位置に行く
-    /// 探索者を探している場合しか音の判定をしない
-    /// 音の方向に向かっている場合他の音は聞かない
-    /// </summary>
+
     void Update()
     {
         if (GetComponent<AIChace>() != null)
             return;
-        if (_aiController.MoveMode == AIController.MoveEmotion.HURRY_UP)
-            return;
+        //if (GetComponent<AISearchMove>())
 
         foreach (var sound in _aiSoundManager.AISounds)
         {
@@ -41,38 +35,25 @@ public class AIHearing : MonoBehaviour
 
             if (Utility.PointToCircle(transform.position, p, r))
             {
-                Debug.Log("hit :" + tag);
-
+                // 音がなった位置から最も近いノードをもらう
                 var node = _nodeManager.NearNode(p);
-                if (node == null)
+                // 目指すノードが今の位置だったらやめる
+                if (node == null || node == _aiController.CurrentNode)
                     continue;
-                Debug.Log(node);
-                _aiController.MoveMode = AIController.MoveEmotion.HURRY_UP;
-                StartCoroutine(TargetMoveStart(node));
+
+                if (_targetNode.Contains(_aiController.CurrentNode))
+                    continue;
+
+                _targetNode.Add(node);
+
+                if (GetComponent<AISearchMove>())
+                    Destroy(GetComponent<AISearchMove>());
+                if (GetComponent<AITargetMove>())
+                    Destroy(GetComponent<AITargetMove>());
+                
+                var target_mover = gameObject.AddComponent<AITargetMove>();
+                target_mover.SetTargetNode(node);
             }
-        }
-    }
-
-    private IEnumerator TargetMoveStart(Node node)
-    {
-        var target_node = node;
-        while (true)
-        {
-            yield return null;
-            var mover = _aiController.GetMovement();
-            if (mover.MoveComplete() == false)
-                continue;
-
-            if (GetComponent<AISearchMove>())
-                Destroy(GetComponent<AISearchMove>());
-            if (GetComponent<AITargetMove>())
-                Destroy(GetComponent<AITargetMove>());
-
-            var target_mover = gameObject.AddComponent<AITargetMove>();
-            target_mover.SetTargetNode(target_node);
-            _aiController.MoveMode = AIController.MoveEmotion.HURRY_UP;
-
-            break;
         }
     }
 }

@@ -131,8 +131,7 @@ public class AISearchMove : AIBasicsMovement
 
     void Update()
     {
-        if (MoveComplete() &&
-            _newNode)
+        if (MoveComplete() && _newNode)
         {
             GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
             _roadPathManager.RoadGuideReset(gameObject);
