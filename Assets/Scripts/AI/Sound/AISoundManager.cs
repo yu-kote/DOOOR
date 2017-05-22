@@ -7,8 +7,11 @@ public class AISoundManager : MonoBehaviour
     [SerializeField]
     private GameObject _aiSound;
 
-    private List<GameObject> _aiSounds = new List<GameObject>();
-    public List<GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
+    //private List<GameObject> _aiSounds = new List<GameObject>();
+    //public List<GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
+    private Dictionary<GameObject, GameObject> _aiSounds = new Dictionary<GameObject, GameObject>();
+    public Dictionary<GameObject, GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
+
 
     void Start()
     {
@@ -23,7 +26,7 @@ public class AISoundManager : MonoBehaviour
         var sound = Instantiate(_aiSound, transform);
         var ai_sound = sound.GetComponent<AISound>();
         ai_sound.MakeSound(pos, range, effect_time);
-        _aiSounds.Add(sound);
+        _aiSounds.Add(gameObject, sound);
         return ai_sound;
     }
 
@@ -35,7 +38,7 @@ public class AISoundManager : MonoBehaviour
         var sound = Instantiate(_aiSound, transform);
         var ai_sound = sound.GetComponent<AISound>();
         ai_sound.MakeSound(obj, range);
-        _aiSounds.Add(sound);
+        _aiSounds.Add(obj, sound);
         return ai_sound;
     }
 
@@ -43,9 +46,9 @@ public class AISoundManager : MonoBehaviour
     {
         foreach (var sound in _aiSounds)
         {
-            if (sound == null)
+            if (sound.Value == null)
             {
-                _aiSounds.Remove(sound);
+                _aiSounds.Remove(sound.Key);
                 break;
             }
         }

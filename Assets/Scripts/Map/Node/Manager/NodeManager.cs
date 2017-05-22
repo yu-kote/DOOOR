@@ -235,10 +235,10 @@ public class NodeManager : MonoBehaviour
                         node.gameObject.AddComponent<DummyWall>();
                         break;
 
-					case MapID.DEGUTI:
+                    case MapID.DEGUTI:
 
-						node.gameObject.AddComponent<Deguti>();
-						break;
+                        node.gameObject.AddComponent<Deguti>();
+                        break;
                 }
             }
         }
@@ -269,6 +269,28 @@ public class NodeManager : MonoBehaviour
         var y = (_topFloor * _heightInterval) / 2.0f;
         var z = x;
         return new Vector3(x, y, z);
+    }
+
+    public Node NearNode(Vector3 position)
+    {
+        float near_dist = float.MaxValue;
+        GameObject target_node = null;
+
+        foreach (var y in _nodes)
+        {
+            foreach (var node in y)
+            {
+                var distance = Vector3.Distance(node.transform.position, position);
+                if (near_dist > distance)
+                {
+                    near_dist = distance;
+                    target_node = node;
+                }
+            }
+        }
+        if (target_node)
+            return target_node.GetComponent<Node>();
+        return null;
     }
 
 }

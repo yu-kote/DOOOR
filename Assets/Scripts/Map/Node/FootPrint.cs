@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FootPrint : MonoBehaviour
 {
-    // 足跡をDebug用にserializefieldします
+    // 足跡
     [SerializeField]
     private List<MyNumber> _traces = new List<MyNumber>();
     public List<MyNumber> Traces { get { return _traces; } set { _traces = value; } }
