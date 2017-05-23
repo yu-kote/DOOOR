@@ -40,7 +40,7 @@ public class TrapSpawnManager : MonoBehaviour
                 Destroy(_trapObject);
                 GameObject.Find("Field")
                     .GetComponent<AISoundManager>()
-                    .MakeSound(nodeTrans.position, soundRange, 3);
+                    .MakeSound(nodeTrans.gameObject, nodeTrans.position, soundRange, 3);
                 break;
 
             case TrapType.NONE:
