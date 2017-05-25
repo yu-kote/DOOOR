@@ -14,6 +14,7 @@ public class AIController : MonoBehaviour
     private Node _prevNode;
     public Node PrevNode { get { return _prevNode; } set { _prevNode = value; } }
 
+    private AIGenerator _aiGenerator;
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
@@ -49,6 +50,7 @@ public class AIController : MonoBehaviour
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
         _aiSoundManager = field.GetComponent<AISoundManager>();
+        _aiGenerator = gameObject.transform.parent.gameObject.GetComponent<AIGenerator>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         GetMovement().Speed = _defaultSpeed;
@@ -134,21 +136,22 @@ public class AIController : MonoBehaviour
 
         var exit = _currentNode.GetComponent<Deguti>();
         if (exit)
-        {
             return;
-        }
 
-        // 逃げている最中は目指す余裕がない
+        if (ExitNode().GetComponent<FootPrint>().TraceCheck(gameObject) == false)
+            return;
+
+        // 逃げている最中と出口を目指してないかどうか
         if (_moveMode != MoveEmotion.DEFAULT)
             return;
         _moveMode = MoveEmotion.TARGET_MOVE;
-        
+
+        // 同フレームで探索移動をdestroyしているので未定義で死ぬのを防御するため
+        // 数フレーム遅らせる。
+        // TODO:設計見直し箇所
         Observable.Timer(TimeSpan.FromSeconds(0.1f)).Subscribe(_ =>
         {
-            var exit_node = _nodeManager.Nodes
-            .FirstOrDefault(nodes => nodes
-            .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
-            .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
+            var exit_node = ExitNode();
             if (GetComponent<AITargetMove>())
                 Destroy(GetComponent<AITargetMove>());
             if (GetComponent<AISearchMove>())
@@ -160,6 +163,15 @@ public class AIController : MonoBehaviour
         }).AddTo(gameObject);
     }
 
+    public Node ExitNode()
+    {
+        var exit_node = _nodeManager.Nodes
+        .FirstOrDefault(nodes => nodes
+        .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
+        .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
+        return exit_node;
+    }
+
     private void OnDisable()
     {
         // この世界に残した跡をすべて消し去る
@@ -169,8 +181,7 @@ public class AIController : MonoBehaviour
 
         if (_currentNode != null)
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
-
-        if (_aiSound)
-            Destroy(_aiSound.gameObject);
+        
+        _aiGenerator.Humans.Remove(gameObject);
     }
 }

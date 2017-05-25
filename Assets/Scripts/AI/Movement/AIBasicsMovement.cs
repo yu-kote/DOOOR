@@ -60,7 +60,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
             {
                 NextNodeMoveUpdate();
                 Move();
-            }).AddTo(gameObject);
+            }).AddTo(this).AddTo(gameObject);
     }
 
     protected void NextNodeMoveUpdate()
@@ -117,6 +117,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     void Move()
     {
         if (_canMove == false) return;
+        if (this == null) return;
         transform.Translate(_moveDirection);
         _moveLength -= Vector3Abs(_moveDirection);
 
@@ -147,9 +148,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     public bool MoveComplete()
     {
-        return _moveLength.x <= 0.001f &&
-            _moveLength.y <= 0.001f &&
-            _moveLength.z <= 0.001f;
+        return _moveLength.x <= 0.01f &&
+            _moveLength.y <= 0.01f &&
+            _moveLength.z <= 0.01f;
     }
 
     public void AddFootPrint(Node node)

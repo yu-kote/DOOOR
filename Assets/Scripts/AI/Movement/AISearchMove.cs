@@ -91,6 +91,7 @@ public class AISearchMove : AIBasicsMovement
             .ToList();
     }
 
+    // 未踏の地を探す
     Node SearchUnexploredNode(Node current_node)
     {
         foreach (var node in current_node.LinkNodes)
@@ -130,8 +131,7 @@ public class AISearchMove : AIBasicsMovement
 
     void Update()
     {
-        if (MoveComplete() &&
-            _newNode)
+        if (MoveComplete() && _newNode)
         {
             GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
             _roadPathManager.RoadGuideReset(gameObject);

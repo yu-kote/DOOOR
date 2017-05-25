@@ -29,12 +29,23 @@ public class NodeController : MonoBehaviour
         }
     }
 
-    // 足跡を消して今いる位置に足跡をつける
+    // 足跡をリセットする
     public void ReFootPrint(GameObject human, Node current_node)
     {
+        // 出口を知っている場合は出口に足跡を残しておく
+        var is_exit_footprint = false;
+        var exit_node = human.GetComponent<AIController>().ExitNode();
+        if (exit_node.GetComponent<FootPrint>().TraceCheck(human))
+            is_exit_footprint = true;
+
         EraseTraces(human.GetComponent<MyNumber>());
         // 今乗っているノードが再検索されないように足跡を付け直す
         current_node.GetComponent<FootPrint>().AddTrace(human);
+
+
+        if (is_exit_footprint)
+            if(exit_node)
+                exit_node.GetComponent<FootPrint>().AddTrace(human);
     }
 
 }
