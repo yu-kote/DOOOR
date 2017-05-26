@@ -62,6 +62,7 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
+        SoundUpdate();
     }
 
     private void MoveSpeedChange()
@@ -152,6 +153,8 @@ public class AIController : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(0.1f)).Subscribe(_ =>
         {
             var exit_node = ExitNode();
+            if (exit_node == null)
+                return;
             if (GetComponent<AITargetMove>())
                 Destroy(GetComponent<AITargetMove>());
             if (GetComponent<AISearchMove>())
@@ -163,6 +166,7 @@ public class AIController : MonoBehaviour
         }).AddTo(gameObject);
     }
 
+    // 出口のノードを返す関数
     public Node ExitNode()
     {
         var exit_node = _nodeManager.Nodes
@@ -170,6 +174,14 @@ public class AIController : MonoBehaviour
         .FirstOrDefault(node => node.GetComponent<Deguti>() != null)).ToList()
         .FirstOrDefault(node => node.GetComponent<Deguti>() != null).GetComponent<Node>();
         return exit_node;
+    }
+
+    void SoundUpdate()
+    {
+        var resound = CurrentNode;//.GetComponent<Resound>();
+        if (resound == null)
+            return;
+
     }
 
     private void OnDisable()
@@ -181,7 +193,7 @@ public class AIController : MonoBehaviour
 
         if (_currentNode != null)
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
-        
+
         _aiGenerator.Humans.Remove(gameObject);
     }
 }

@@ -18,11 +18,10 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 10; i++)
                 CreateVictim();
         }).AddTo(gameObject);
-
-
+        
 
         Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
         {
