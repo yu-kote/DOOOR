@@ -6,6 +6,12 @@ using System;
 
 public class AIGenerator : MonoBehaviour
 {
+    [SerializeField]
+    private int _victimCount;
+    [SerializeField]
+    private int _killerCount;
+
+
     private GameObject _field;
     private List<GameObject> _humans = new List<GameObject>();
     public List<GameObject> Humans { get { return _humans; } set { _humans = value; } }
@@ -18,14 +24,15 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < _victimCount; i++)
                 CreateVictim();
         }).AddTo(gameObject);
-        
+
 
         Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
         {
-            CreateKiller();
+            for (int i = 0; i < _killerCount; i++)
+                CreateKiller();
         }).AddTo(gameObject);
     }
 
