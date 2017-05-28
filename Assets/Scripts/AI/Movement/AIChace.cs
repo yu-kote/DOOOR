@@ -145,11 +145,4 @@ public class AIChace : AITargetMove
         }
         return false;
     }
-
-    private void OnDestroy()
-    {
-        int test = 0;
-        if (test == 0)
-            test = 1;
-    }
 }

@@ -31,6 +31,23 @@ public class AIController : MonoBehaviour
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
 
+    /// <summary>
+    /// 基本的に何かしらのモーションが終わった後は
+    /// 待機モーションに戻せばバグらないはず
+    /// </summary>
+    public enum AnimationStatus
+    {
+        IDOL,       // 待機
+        WALK,       // 歩き
+        RUN,        // 走り
+        OPEN_DOOR,  // ドアを開ける
+        STAGGER,    // 罠にかかる(ふらつく)
+        CRISIS,     // 追いつめられる
+        DEAD,       // 死亡
+    }
+    [SerializeField]
+    private AnimationStatus _animStatus;
+    public AnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
 
     [SerializeField]
     private float _defaultSpeed;
@@ -63,13 +80,11 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
         SoundUpdate();
+        AnimStatusUpdate();
     }
 
     private void MoveSpeedChange()
     {
-        //if (_currentMoveMode == _moveMode)
-        //    return;
-        //_currentMoveMode = _moveMode;
         if (GetMovement() == null)
             return;
 
@@ -195,6 +210,37 @@ public class AIController : MonoBehaviour
         if (resound == null)
             return;
 
+    }
+
+    // 歩きのモーションのみ更新する
+    void AnimStatusUpdate()
+    {
+        if (_animStatus == AnimationStatus.OPEN_DOOR ||
+            _animStatus == AnimationStatus.STAGGER ||
+            _animStatus == AnimationStatus.CRISIS ||
+            _animStatus == AnimationStatus.DEAD)
+            return;
+
+        _animStatus = AnimationStatus.IDOL;
+        if (GetComponent<AISearchMove>() || GetComponent<AITargetMove>())
+            _animStatus = AnimationStatus.WALK;
+        if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.DEFAULT)
+            _animStatus = AnimationStatus.WALK;
+        if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.HURRY_UP)
+            _animStatus = AnimationStatus.RUN;
+    }
+
+    public void StopMovement(float time)
+    {
+        var movement = GetMovement();
+        if (movement == null)
+            return;
+
+        movement.CanMove = false;
+        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
+        {
+            movement.CanMove = true;
+        }).AddTo(gameObject);
     }
 
     private void OnDisable()
