@@ -60,34 +60,31 @@ public class AIBeware : MonoBehaviour
             // 殺人鬼の場合
             if (gameObject.tag == "Killer")
             {
-                if (ai_controller.MoveMode == AIController.MoveEmotion.DEFAULT)
-                    if (GetComponent<AITargetMove>())
-                        Destroy(GetComponent<AITargetMove>());
+                // 普通の移動をしていたら普通の移動をやめる
+                if (GetComponent<AISearchMove>())
+                    Destroy(GetComponent<AISearchMove>());
+                if (GetComponent<AITargetMove>())
+                    Destroy(GetComponent<AITargetMove>());
 
                 var mover = gameObject.AddComponent<AIChace>();
 
                 // どこを目指すかを教える
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
                 mover.SetTargetHuman(_targetHuman);
-
-
-                // 普通の移動をしていたら普通の移動をやめる
-                if (GetComponent<AISearchMove>())
-                    Destroy(GetComponent<AISearchMove>());
             }
             // 犠牲者の場合
             if (gameObject.tag == "Victim")
             {
-                var mover = gameObject.AddComponent<AIRunAway>();
-
-                // どいつから逃げなければいけないかを教える
-                mover.SetTargetHuman(_targetHuman);
-
                 // 他のの移動をしていたらやめる
                 if (GetComponent<AISearchMove>())
                     Destroy(GetComponent<AISearchMove>());
                 if (GetComponent<AITargetMove>())
                     Destroy(GetComponent<AITargetMove>());
+
+                var mover = gameObject.AddComponent<AIRunAway>();
+
+                // どいつから逃げなければいけないかを教える
+                mover.SetTargetHuman(_targetHuman);
             }
             // 急ぐ
             ai_controller.MoveMode = AIController.MoveEmotion.HURRY_UP;

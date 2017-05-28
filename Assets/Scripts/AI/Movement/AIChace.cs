@@ -77,6 +77,7 @@ public class AIChace : AITargetMove
         }
 
         _nextNode = next_node;
+        PrevNodeUpdate();
 
         return false;
     }
@@ -100,11 +101,7 @@ public class AIChace : AITargetMove
             _isChaceEnd)
         {
             _targetMoveEnd = true;
-
-            var ai_controller = GetComponent<AIController>();
-            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
-                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-
+            
             if (IsDoorAround())
             {
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
@@ -149,4 +146,10 @@ public class AIChace : AITargetMove
         return false;
     }
 
+    private void OnDestroy()
+    {
+        int test = 0;
+        if (test == 0)
+            test = 1;
+    }
 }

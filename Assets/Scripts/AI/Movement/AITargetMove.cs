@@ -55,11 +55,7 @@ public class AITargetMove : AIRouteSearch
             _currentNode == _targetNode)
         {
             _targetMoveEnd = true;
-
-            var ai_controller = GetComponent<AIController>();
-            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
-                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-
+            
             SearchMoveStart();
         }
     }
