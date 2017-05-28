@@ -12,12 +12,19 @@ public class AIHearingVictim : AIHearing
 
     void Update()
     {
-        // 逃げてる時は聞こえなくする
-        //if (GetComponent<AIRunAway>() != null)
-        //    return;
+        var run_aways = GetComponents<AIRunAway>();
+        if (run_aways.Count() > 1)
+            Destroy(GetComponent<AIRunAway>());
 
-        TargetSoundRemove();
-        Hearing();
+
+        // 逃げてる時は聞こえなくする
+        if (GetComponent<AISearchMove>() ||
+            GetComponent<AITargetMove>() ||
+            _aiController.MoveMode == AIController.MoveEmotion.REACT_SOUND)
+        {
+            TargetSoundRemove();
+            Hearing();
+        }
     }
 
     protected override void HearingAction()
@@ -26,11 +33,12 @@ public class AIHearingVictim : AIHearing
             Destroy(GetComponent<AISearchMove>());
         if (GetComponent<AITargetMove>())
             Destroy(GetComponent<AITargetMove>());
-        if (GetComponents<AIRunAway>() != null)
-            for (int i = 0; i < GetComponents<AIRunAway>().Count(); i++)
-                Destroy(GetComponents<AIRunAway>()[i]);
+        if (GetComponent<AIRunAway>())
+            Destroy(GetComponent<AIRunAway>());
 
         var target_mover = gameObject.AddComponent<AIRunAway>();
         target_mover.SetTargetNode(_hearNode);
+
+        _aiController.MoveMode = AIController.MoveEmotion.REACT_SOUND;
     }
 }

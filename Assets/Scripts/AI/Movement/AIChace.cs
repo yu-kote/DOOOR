@@ -101,7 +101,7 @@ public class AIChace : AITargetMove
             _isChaceEnd)
         {
             _targetMoveEnd = true;
-            
+
             if (IsDoorAround())
             {
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
@@ -129,8 +129,12 @@ public class AIChace : AITargetMove
             if (_currentNode.GetComponent<Stairs>() &&
                 human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
                 continue;
+            // 追っている目標じゃなかったら殺さない
+            if (_targetHuman != human)
+                continue;
+            _targetHuman = null;
 
-            Destroy(human);
+            human.GetComponent<AIController>().BeKilled();
             break;
         }
     }

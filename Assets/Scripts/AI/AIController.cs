@@ -24,6 +24,7 @@ public class AIController : MonoBehaviour
     {
         DEFAULT,
         HURRY_UP,
+        REACT_SOUND,
         TARGET_MOVE,
     }
 
@@ -90,7 +91,8 @@ public class AIController : MonoBehaviour
 
         if (_moveMode == MoveEmotion.DEFAULT)
             GetMovement().Speed = _defaultSpeed;
-        if (_moveMode == MoveEmotion.HURRY_UP)
+        if (_moveMode == MoveEmotion.HURRY_UP ||
+            _moveMode == MoveEmotion.REACT_SOUND)
             GetMovement().Speed = _hurryUpSpeed;
     }
 
@@ -215,10 +217,16 @@ public class AIController : MonoBehaviour
     // 歩きのモーションのみ更新する
     void AnimStatusUpdate()
     {
+        // 死んだら更新を止める
+        if (_animStatus == AnimationStatus.DEAD)
+            return;
+
+        // 追いつめられモーション
+        AnimCrisis();
+
         if (_animStatus == AnimationStatus.OPEN_DOOR ||
             _animStatus == AnimationStatus.STAGGER ||
-            _animStatus == AnimationStatus.CRISIS ||
-            _animStatus == AnimationStatus.DEAD)
+            _animStatus == AnimationStatus.CRISIS)
             return;
 
         _animStatus = AnimationStatus.IDOL;
@@ -228,6 +236,26 @@ public class AIController : MonoBehaviour
             _animStatus = AnimationStatus.WALK;
         if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.HURRY_UP)
             _animStatus = AnimationStatus.RUN;
+    }
+
+
+    void AnimCrisis()
+    {
+        if (_moveMode == MoveEmotion.DEFAULT)
+            _animStatus = AnimationStatus.IDOL;
+
+        if (_nextNode == null ||
+            _currentNode == null ||
+            _prevNode == null)
+            return;
+
+        // 移動先がない場合
+        if (_nextNode != _currentNode ||
+            _nextNode != _prevNode ||
+            _currentNode != _prevNode)
+            return;
+
+        _animStatus = AnimationStatus.CRISIS;
     }
 
     public void StopMovement(float time)
@@ -241,6 +269,26 @@ public class AIController : MonoBehaviour
         {
             movement.CanMove = true;
         }).AddTo(gameObject);
+    }
+
+    public void StopMovement(float time, Action action)
+    {
+        var movement = GetMovement();
+        if (movement == null)
+            return;
+
+        movement.CanMove = false;
+        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
+        {
+            movement.CanMove = true;
+            action();
+        }).AddTo(gameObject);
+    }
+
+    public void BeKilled()
+    {
+        StopMovement(3, () => Destroy(gameObject));
+        OnDisable();
     }
 
     private void OnDisable()

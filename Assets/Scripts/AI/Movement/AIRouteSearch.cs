@@ -29,7 +29,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
     protected override void StartNextNodeSearch()
     {
         var ai_controller = GetComponent<AIController>();
-        if (ai_controller.MoveMode != AIController.MoveEmotion.HURRY_UP)
+        if (ai_controller.MoveMode == AIController.MoveEmotion.DEFAULT)
             return;
 
         NextNodeSearch();
@@ -38,16 +38,27 @@ public abstract class AIRouteSearch : AIBasicsMovement
         var ai = GetComponent<AIController>();
         var movement = ai.GetMovement();
 
-        var next = movement.NextNode;
-        var current = movement.CurrentNode;
-        var prev = movement.PrevNode;
-
         if (ai.PrevNode == null || ai.CurrentNode == null)
             return;
-        if (_nextNode == prev)
+        if (_nextNode == ai.PrevNode &&
+            _nextNode == ai.CurrentNode)
             return;
-        _nextNode = movement.CurrentNode;
-        _currentNode = ai.PrevNode;
+
+        // 目指す先が戻る方向のノードだった場合は
+        // 目指していたノードを過去のノードにする
+        if (_nextNode == ai.PrevNode)
+        {
+            _updateNewMove = true;
+            _prevNode = _currentNode;
+            ai.PrevNode = _currentNode;
+            _currentNode = _nextNode;
+        }
+        // 目指す先が目指す先の先だった場合
+        else
+        {
+            _nextNode = movement.CurrentNode;
+            _currentNode = ai.PrevNode;
+        }
     }
 
     /// <summary>
@@ -233,7 +244,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
         if (gameObject == null) return;
         gameObject.AddComponent<AISearchMove>();
         Destroy(this);
-        
+
         var ai_controller = GetComponent<AIController>();
         if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
             ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
