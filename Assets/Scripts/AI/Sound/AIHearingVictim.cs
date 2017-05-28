@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class AIHearingVictim : AIHearing
 {
@@ -13,7 +14,7 @@ public class AIHearingVictim : AIHearing
     {
         // 逃げてる時は聞こえなくする
         //if (GetComponent<AIRunAway>() != null)
-        //return;
+        //    return;
 
         TargetSoundRemove();
         Hearing();
@@ -25,9 +26,10 @@ public class AIHearingVictim : AIHearing
             Destroy(GetComponent<AISearchMove>());
         if (GetComponent<AITargetMove>())
             Destroy(GetComponent<AITargetMove>());
-        if(GetComponent<AIRunAway>())
-            Destroy(GetComponent<AIRunAway>());
-        
+        if (GetComponents<AIRunAway>() != null)
+            for (int i = 0; i < GetComponents<AIRunAway>().Count(); i++)
+                Destroy(GetComponents<AIRunAway>()[i]);
+
         var target_mover = gameObject.AddComponent<AIRunAway>();
         target_mover.SetTargetNode(_hearNode);
     }
