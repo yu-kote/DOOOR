@@ -11,6 +11,9 @@ public class RoadPathManager : MonoBehaviour
         _nodeManager = GetComponent<NodeManager>();
     }
 
+    /// <summary>
+    /// ルート検索のために使用した目印を全て消去する
+    /// </summary>
     public void RoadGuideReset(GameObject human)
     {
         foreach (var y in _nodeManager.Nodes)
@@ -26,6 +29,9 @@ public class RoadPathManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 標的の検索のために使用した目印を全て消去する
+    /// </summary>
     public void SearchReset(GameObject human)
     {
         foreach (var y in _nodeManager.Nodes)

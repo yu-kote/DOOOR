@@ -63,6 +63,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
             }).AddTo(this).AddTo(gameObject);
     }
 
+    protected void PrevNodeUpdate()
+    {
+        _prevNode = _currentNode;
+    }
+
     protected void NextNodeMoveUpdate()
     {
         // ドアが閉まっているかどうか

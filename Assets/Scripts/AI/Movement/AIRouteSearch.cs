@@ -7,6 +7,9 @@ public abstract class AIRouteSearch : AIBasicsMovement
 {
     protected RoadPathManager _roadPathManager;
 
+    /// <summary>
+    /// ルート検索の指標となるノード
+    /// </summary>
     protected Node _targetNode;
     public Node TargetNode { get { return _targetNode; } set { _targetNode = value; } }
     public void SetTargetNode(Node target_node) { _targetNode = target_node; }
@@ -33,16 +36,17 @@ public abstract class AIRouteSearch : AIBasicsMovement
         var tag = gameObject.tag;
 
         var ai = GetComponent<AIController>();
+        var movement = ai.GetMovement();
 
-        var next = ai.NextNode;
-        var current = ai.CurrentNode;
-        var prev = ai.PrevNode;
+        var next = movement.NextNode;
+        var current = movement.CurrentNode;
+        var prev = movement.PrevNode;
 
-        if (prev == null || current == null)
+        if (ai.PrevNode == null || ai.CurrentNode == null)
             return;
         if (_nextNode == prev)
             return;
-        _nextNode = ai.CurrentNode;
+        _nextNode = movement.CurrentNode;
         _currentNode = ai.PrevNode;
     }
 
@@ -229,6 +233,10 @@ public abstract class AIRouteSearch : AIBasicsMovement
         if (gameObject == null) return;
         gameObject.AddComponent<AISearchMove>();
         Destroy(this);
+        
+        var ai_controller = GetComponent<AIController>();
+        if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
+            ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
     }
 
     // 目標地点のノードまでの距離を短い順でソートする（バブルソート）

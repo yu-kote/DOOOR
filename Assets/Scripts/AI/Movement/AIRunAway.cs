@@ -54,9 +54,15 @@ public class AIRunAway : AIRouteSearch
     bool RunAway()
     {
         if (_isEscape) return true;
-        if (_targetHuman == null) return true;
+        
+        // 逃げ切りの距離を出すための位置を取得
+        var escape_pos = Vector3.zero;
+        if (_targetHuman)
+            escape_pos = _targetHuman.transform.position;
+        else
+            escape_pos = _targetNode.transform.position;
 
-        var vec = _targetHuman.transform.position - _currentNode.transform.position;
+        var vec = escape_pos - _currentNode.transform.position;
         var distance = vec.magnitude;
 
         // 逃げ切ったら終わり
@@ -66,8 +72,10 @@ public class AIRunAway : AIRouteSearch
         if (SearchCount > _endNodeDistance)
             return true;
 
-        _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
-
+        // 逃げる対象が人間だった場合は遠ざかるノードを更新する
+        if (_targetHuman)
+            _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
+        
         Node next_node = null;
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);
@@ -81,8 +89,9 @@ public class AIRunAway : AIRouteSearch
             MoveReset();
             return false;
         }
-        
+
         _nextNode = next_node;
+        PrevNodeUpdate();
 
         return false;
     }
@@ -92,7 +101,7 @@ public class AIRunAway : AIRouteSearch
     {
         // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
         AITargetMove.SortByNodeLength(
-            _targetHuman.GetComponent<AIController>().CurrentNode,
+            _targetNode,
             _currentNode.LinkNodes);
 
         var next_candidate_node = _currentNode.LinkNodes.Last();
@@ -130,10 +139,10 @@ public class AIRunAway : AIRouteSearch
             if (route_count == most_node_route)
             {
                 var candidate_pos = link_nodes[i].transform.position;
-                var candidate_distance = candidate_pos - _targetHuman.transform.position;
+                var candidate_distance = candidate_pos - _targetNode.transform.position;
 
                 var best_pos = link_nodes[select_node_num].transform.position;
-                var best_distance = best_pos - _targetHuman.transform.position;
+                var best_distance = best_pos - _targetNode.transform.position;
 
                 if (best_distance.magnitude < candidate_distance.magnitude)
                 {
@@ -166,7 +175,7 @@ public class AIRunAway : AIRouteSearch
             if (node.GetComponent<NodeGuide>().NextPathCheck(gameObject))
                 continue;
             // 敵がいるノードに到達した場合はその先の検索をやめる
-            if (node == _targetHuman.GetComponent<AIController>().CurrentNode)
+            if (node == _targetNode)
                 return 0;
             // 壁が来た場合はその先の検索をやめる
             if (node.GetComponent<Wall>() != null)

@@ -61,9 +61,13 @@ public class AIChace : AITargetMove
         if (next_node == null)
             return false;
 
-        if (next_node.GetComponent<Wall>() != null ||
-            next_node.GetComponent<Door>() != null)
+        if (next_node.GetComponent<Wall>() != null)
             return false;
+
+        var door = next_node.GetComponent<Door>();
+        if (door != null)
+            //if (door._doorStatus == Door.DoorStatus.CLOSE)
+            return true;
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))
@@ -73,6 +77,7 @@ public class AIChace : AITargetMove
         }
 
         _nextNode = next_node;
+        PrevNodeUpdate();
 
         return false;
     }
@@ -96,11 +101,7 @@ public class AIChace : AITargetMove
             _isChaceEnd)
         {
             _targetMoveEnd = true;
-
-            var ai_controller = GetComponent<AIController>();
-            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
-                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-
+            
             if (IsDoorAround())
             {
                 Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
@@ -145,4 +146,10 @@ public class AIChace : AITargetMove
         return false;
     }
 
+    private void OnDestroy()
+    {
+        int test = 0;
+        if (test == 0)
+            test = 1;
+    }
 }
