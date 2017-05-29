@@ -29,6 +29,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
     private bool _canMove = true;
     public bool CanMove { get { return _canMove; } set { _canMove = value; } }
 
+    // 新しい移動方法に切り替わった時に
+    // next_nodeがcurrent_nodeと同じだった場合
+    // 移動を許可する
+    protected bool _updateNewMove = false;
+
     // デバッグ用にSerializeField
     [SerializeField]
     private Vector3 _moveDirection;
@@ -74,9 +79,14 @@ public abstract class AIBasicsMovement : MonoBehaviour
         if (IsDoorLock(_nextNode))
             return;
 
-        // 次の移動先が決まったら
-        if (_nextNode == null || _nextNode == _currentNode)
+        if (_nextNode == null)
             return;
+        // 次の移動先が決まったら
+        if (_updateNewMove == false)
+            if (_nextNode == _currentNode)
+                return;
+        _updateNewMove = false;
+
         // 進む方向を決めるためベクトルを出す
         var target = _nextNode.transform.position + HeightCorrection();
         var distance = target - gameObject.transform.position;
@@ -129,7 +139,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
         if (MoveComplete())
         {
             transform.Translate(_moveLength);
-            _moveDirection = Vector3.zero;
+            MoveReset();
             NextNodeSearch();
         }
     }

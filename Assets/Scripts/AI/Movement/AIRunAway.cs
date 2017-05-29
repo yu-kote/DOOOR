@@ -200,10 +200,6 @@ public class AIRunAway : AIRouteSearch
     {
         if (_isEscape)
         {
-            var ai_controller = GetComponent<AIController>();
-            if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
-                ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
-
             _roadPathManager.RoadGuideReset(gameObject);
             SearchMoveStart();
         }

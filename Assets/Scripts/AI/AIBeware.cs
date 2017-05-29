@@ -80,6 +80,8 @@ public class AIBeware : MonoBehaviour
                     Destroy(GetComponent<AISearchMove>());
                 if (GetComponent<AITargetMove>())
                     Destroy(GetComponent<AITargetMove>());
+                if (GetComponent<AIChace>())
+                    Destroy(GetComponent<AIChace>());
 
                 var mover = gameObject.AddComponent<AIRunAway>();
 
@@ -112,6 +114,11 @@ public class AIBeware : MonoBehaviour
             if (human != null)
                 return human;
         }
+
+        // 角の場合は終了
+        if (current_node.gameObject.GetComponent<Corner>())
+            if (current_node != GetComponent<AIController>().CurrentNode)
+                return null;
 
         var loadpath = current_node.gameObject.GetComponent<NodeGuide>();
 
@@ -150,10 +157,6 @@ public class AIBeware : MonoBehaviour
             var found_human = SearchHuman(node);
             if (found_human != null)
                 return found_human;
-
-            // 角の場合は終了
-            if (node.gameObject.GetComponent<Corner>())
-                return null;
         }
         _searchCount = 0;
         return null;
