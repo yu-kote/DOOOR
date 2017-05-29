@@ -8,17 +8,14 @@ public enum TrapType
 {
 	NONE = 0,
 	PITFALLS = 1 << 0,	//落とし穴
-	DUMMY = 1 << 1,		//殺人鬼のダミー
 	SOUND = 1 << 2,		//音
 	ROPE = 1 << 3,		//ロープ
-	CARPET = 1 << 4,	//足音が聞こえなくなるカーペット
 	MAX
 }
 
 public class TrapStatus : MonoBehaviour
 {
-	[SerializeField]
-	private uint _canSetTrapStatus = 0;
+	private uint _canSetTrapStatus = 7;
 	public uint CanSetTrapStatus
 	{
 		get { return _canSetTrapStatus; }

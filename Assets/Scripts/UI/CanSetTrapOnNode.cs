@@ -41,17 +41,11 @@ public class CanSetTrapOnNode : MonoBehaviour
 				case TrapType.PITFALLS:
 					textMesh.text += "PITFALLS";
 					break;
-				case TrapType.DUMMY:
-					textMesh.text += "DUMMY";
-					break;
 				case TrapType.SOUND:
 					textMesh.text += "SOUND";
 					break;
 				case TrapType.ROPE:
 					textMesh.text += "ROPE";
-					break;
-				case TrapType.CARPET:
-					textMesh.text += "CARPET";
 					break;
 			}
 

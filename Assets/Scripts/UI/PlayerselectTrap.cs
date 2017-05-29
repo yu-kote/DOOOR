@@ -34,17 +34,11 @@ public class PlayerselectTrap : MonoBehaviour
 			case TrapType.PITFALLS:
 				_text.text = "PITFALLS";
 				return;
-			case TrapType.DUMMY:
-				_text.text = "DUMMY";
-				return;
 			case TrapType.SOUND:
 				_text.text = "SOUND";
 				return;
 			case TrapType.ROPE:
 				_text.text = "ROPE";
-				return;
-			case TrapType.CARPET:
-				_text.text = "CARPET";
 				return;
 		}
 	}
