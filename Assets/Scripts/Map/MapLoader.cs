@@ -13,7 +13,7 @@ public enum MapID
 	RIGHTDOOR,
 	START,
 	KYUKEISPACE,
-	DUMMYWALL,
+	CANBREAKEWALL,
 	DEGUTI
 }
 
@@ -29,8 +29,8 @@ public class MapLoader : MonoBehaviour
 	}
 
 	public List<string[]> _mapDatas = new List<string[]>();
-	public List<string[]> _trapDatas = new List<string[]>();
-	public List<string[]> _itemDatas = new List<string[]>();
+	public Vector2 lastKeyPos = Vector2.zero;
+	public string[] items;
 
 	void Awake()
 	{
@@ -57,20 +57,23 @@ public class MapLoader : MonoBehaviour
 			_mapDatas.Add(line.Split(','));
 		}
 
-		csvFile = Resources.Load(path + "TrapStatus") as TextAsset;
+		csvFile = Resources.Load(path + "LastKeyPlace") as TextAsset;
 		reader = new StringReader(csvFile.text);
 		while (reader.Peek() > -1)
 		{
 			string line = reader.ReadLine();
-			_trapDatas.Add(line.Split(','));
+			string[] data = line.Split(',');
+			int x = int.Parse(data[0]);
+			int y = int.Parse(data[1]);
+			lastKeyPos = new Vector2(x, y);
 		}
 
-		csvFile = Resources.Load(path + "ItemStatus") as TextAsset;
+		csvFile = Resources.Load(path + "ItemList") as TextAsset;
 		reader = new StringReader(csvFile.text);
 		while (reader.Peek() > -1)
 		{
 			string line = reader.ReadLine();
-			_itemDatas.Add(line.Split(','));
+			items = line.Split(',');
 		}
 	}
 }
