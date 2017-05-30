@@ -84,9 +84,9 @@ public class NodeManager : MonoBehaviour
                         {
                             var next_node = _nodes[y - 1][x - 2].GetComponent<Node>();
                             node.Link(next_node);
-                            node.gameObject.AddComponent<Stairs>();
+                            var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
-                            node.gameObject.GetComponent<Stairs>().RotateAngle = new Vector3(0, 180, 0);
+                            stairs.DirectionTag = "Left";
                         }
                         break;
 
@@ -95,8 +95,9 @@ public class NodeManager : MonoBehaviour
                         {
                             var next_node = _nodes[y - 1][x + 2].GetComponent<Node>();
                             node.Link(next_node);
-                            node.gameObject.AddComponent<Stairs>();
+                            var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+                            stairs.DirectionTag = "Right";
                         }
                         break;
 
@@ -200,13 +201,13 @@ public class NodeManager : MonoBehaviour
     public Vector3 SurfaceDirection(int surface_num)
     {
         if (surface_num == 0)
-            return new Vector3(1, 1, 0);
+            return new Vector3(1, 0, 0);
         if (surface_num == 1)
-            return new Vector3(0, 1, 1);
+            return new Vector3(0, 0, 1);
         if (surface_num == 2)
-            return new Vector3(-1, 1, 0);
+            return new Vector3(-1, 0, 0);
         if (surface_num == 3)
-            return new Vector3(0, 1, -1);
+            return new Vector3(0, 0, -1);
         return Vector3.zero;
     }
 
