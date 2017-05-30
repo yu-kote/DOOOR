@@ -182,8 +182,10 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     protected void NextNodeDecided()
     {
-        AddFootPrint(_nextNode);
+        if (_prevNode)
+            LeaveFootPrint(_prevNode);
         LeaveFootPrint(_currentNode);
+        AddFootPrint(_nextNode);
     }
 
     protected bool IsDoorLock(Node node)

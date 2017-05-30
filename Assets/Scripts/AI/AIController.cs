@@ -91,9 +91,15 @@ public class AIController : MonoBehaviour
 
         if (_moveMode == MoveEmotion.DEFAULT)
             GetMovement().Speed = _defaultSpeed;
-        if (_moveMode == MoveEmotion.HURRY_UP ||
-            _moveMode == MoveEmotion.REACT_SOUND)
+        if (_moveMode == MoveEmotion.HURRY_UP)
             GetMovement().Speed = _hurryUpSpeed;
+        if (_moveMode == MoveEmotion.REACT_SOUND)
+        {
+            //if (tag == "Victim")
+            GetMovement().Speed = _hurryUpSpeed;
+            //if (tag == "Killer")
+            //GetMovement().Speed = _defaultSpeed;
+        }
     }
 
     public AIBasicsMovement GetMovement()

@@ -13,6 +13,8 @@ public abstract class AIHearing : MonoBehaviour
     protected AISoundManager _aiSoundManager;
     protected NodeManager _nodeManager;
     protected AIController _aiController;
+    protected RoadPathManager _roadPathManager;
+
     protected GameObject _targetSound;
     protected List<GameObject> _targetSounds = new List<GameObject>();
 
@@ -30,6 +32,7 @@ public abstract class AIHearing : MonoBehaviour
         _aiSoundManager = field.GetComponent<AISoundManager>();
         _nodeManager = field.GetComponent<NodeManager>();
         _aiController = GetComponent<AIController>();
+        _roadPathManager = field.GetComponent<RoadPathManager>();
     }
 
     /// <summary>

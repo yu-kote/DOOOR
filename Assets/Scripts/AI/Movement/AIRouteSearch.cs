@@ -6,6 +6,7 @@ using System.Linq;
 public abstract class AIRouteSearch : AIBasicsMovement
 {
     protected RoadPathManager _roadPathManager;
+    private NodeManager _nodeManager;
 
     /// <summary>
     /// ルート検索の指標となるノード
@@ -32,32 +33,34 @@ public abstract class AIRouteSearch : AIBasicsMovement
         if (ai_controller.MoveMode == AIController.MoveEmotion.DEFAULT)
             return;
 
+        if (GetComponent<AITargetMove>())
+            ai_controller.GetMovement().MoveSetup();
+
         NextNodeSearch();
         var tag = gameObject.tag;
 
-        var ai = GetComponent<AIController>();
-        var movement = ai.GetMovement();
+        var movement = ai_controller.GetMovement();
 
-        if (ai.PrevNode == null || ai.CurrentNode == null)
+        if (ai_controller.PrevNode == null || ai_controller.CurrentNode == null)
             return;
-        if (_nextNode == ai.PrevNode &&
-            _nextNode == ai.CurrentNode)
+        if (_nextNode == ai_controller.PrevNode &&
+            _nextNode == ai_controller.CurrentNode)
             return;
 
         // 目指す先が戻る方向のノードだった場合は
         // 目指していたノードを過去のノードにする
-        if (_nextNode == ai.PrevNode)
+        if (_nextNode == ai_controller.PrevNode)
         {
             _updateNewMove = true;
             _prevNode = _currentNode;
-            ai.PrevNode = _currentNode;
+            ai_controller.PrevNode = _currentNode;
             _currentNode = _nextNode;
         }
         // 目指す先が目指す先の先だった場合
         else
         {
             _nextNode = movement.CurrentNode;
-            _currentNode = ai.PrevNode;
+            _currentNode = ai_controller.PrevNode;
         }
     }
 
@@ -70,6 +73,7 @@ public abstract class AIRouteSearch : AIBasicsMovement
         _roadPathManager = field.GetComponent<RoadPathManager>();
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
         _nodeController = field.GetComponent<NodeController>();
+        _nodeManager = field.GetComponent<NodeManager>();
     }
 
     // ターゲットを探し出してそこまでのルートをノードに刻む
@@ -114,10 +118,11 @@ public abstract class AIRouteSearch : AIBasicsMovement
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
                 var ai = GetComponent<AIController>();
-                // 殺人鬼が探索中の時は扉の向こうに行けなくする
+                // 殺人鬼の時は扉の向こうに行けなくする
                 if (tag == "Killer" &&
-                    ai.MoveMode == AIController.MoveEmotion.DEFAULT &&
-                    node.gameObject.GetComponent<Door>() != null)
+                    (ai.MoveMode == AIController.MoveEmotion.DEFAULT ||
+                    ai.MoveMode == AIController.MoveEmotion.REACT_SOUND) &&
+                    node.gameObject.GetComponent<Door>())
                     continue;
 
                 temp_search_nodes.Add(node);
