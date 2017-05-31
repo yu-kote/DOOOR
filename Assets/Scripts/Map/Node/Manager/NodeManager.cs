@@ -32,16 +32,16 @@ public class NodeManager : MonoBehaviour
 
     void Awake()
     {
-
-    }
-
-    void Start()
-    {
         MapLoader mapLoader = GetComponent<MapLoader>();
         List<string[]> mapDatas = mapLoader._mapDatas;
         NodesInitialize(mapDatas.Count, mapDatas[0].Length);
         NodesLink();
         CreateMap(mapLoader);
+    }
+
+    void Start()
+    {
+
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -201,13 +201,13 @@ public class NodeManager : MonoBehaviour
     public Vector3 SurfaceDirection(int surface_num)
     {
         if (surface_num == 0)
-            return new Vector3(1, 0, 0);
+            return new Vector3(1, 1, 0);
         if (surface_num == 1)
-            return new Vector3(0, 0, 1);
+            return new Vector3(0, 1, 1);
         if (surface_num == 2)
-            return new Vector3(-1, 0, 0);
+            return new Vector3(-1, 1, 0);
         if (surface_num == 3)
-            return new Vector3(0, 0, -1);
+            return new Vector3(0, 1, -1);
         return Vector3.zero;
     }
 

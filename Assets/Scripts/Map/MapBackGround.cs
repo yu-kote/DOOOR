@@ -80,27 +80,6 @@ public class MapBackground : MonoBehaviour
         bg.transform.position += offset_pos;
 
         _backgrounds.Add(bg);
-        
-        // 階段があったら階段のテクスチャを生成します
-        CreateStairs(node.GetComponent<Node>());
-    }
-
-    void CreateStairs(Node node)
-    {
-        if (node.GetComponent<Stairs>() == null)
-            return;
-
-        Node stairs_node = null;
-        stairs_node = node.LinkNodes.FirstOrDefault(n => n.GetComponent<Stairs>());
-
-        var direction = node.transform.position - stairs_node.transform.position;
-        // 上への階段以外ははじく
-        if (direction.y < 0)
-            return;
-
-        var offset = _nodeManager.SurfaceDirection(node.CellX) * _nodeManager.Interval;
-
-
     }
 
     void OffsetSurface(int x, ref Vector3 offset_pos, float value)
