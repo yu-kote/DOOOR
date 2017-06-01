@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 
-public class MapBackground : MonoBehaviour
+public class MapBackgrounds : MonoBehaviour
 {
     private NodeManager _nodeManager;
 

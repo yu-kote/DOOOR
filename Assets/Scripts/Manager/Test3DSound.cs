@@ -7,7 +7,7 @@ public class Test3DSound : MonoBehaviour
 
     void Start()
     {
-        SoundManager.Instance.PlayBGM("BGM", gameObject);
+        //SoundManager.Instance.PlayBGM("BGM", gameObject);
     }
 
     void Update()
