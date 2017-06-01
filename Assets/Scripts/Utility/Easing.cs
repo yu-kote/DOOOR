@@ -43,6 +43,19 @@ public static class EasingInitiator
             _ease.Add(target, new RunEase(target, end, time, type));
     }
 
+    public static void Wait(GameObject target, float time)
+    {
+        Add(target, target.transform.localPosition, time, EaseType.NONE);
+    }
+
+    public static bool IsEaseEnd(GameObject target)
+    {
+        if (_ease.ContainsKey(target))
+            if (_ease[target].IsEaseEnd())
+                return true;
+        return false;
+    }
+
     public static void EaseUpdate()
     {
         var remove_list = _ease.Where(e => e.Value.IsEaseEnd()).ToList();
@@ -71,7 +84,7 @@ class RunEase
     public void Add(GameObject target, Vector3 end, float time, EaseType type)
     {
         _target = target;
-        _easeAccum.Enqueue(new EaseOrigin(target.transform.position, end, time, type));
+        _easeAccum.Enqueue(new EaseOrigin(target.transform.localPosition, end, time, type));
     }
 
     public void Update()
@@ -80,11 +93,11 @@ class RunEase
         {
             _easeAccum.Dequeue();
             if (_easeAccum.Count() > 0)
-                _easeAccum.First().Begin = _target.transform.position;
+                _easeAccum.First().Begin = _target.transform.localPosition;
         }
         else
         {
-            _target.transform.position = _easeAccum.First().CurrentTargetValue();
+            _target.transform.localPosition = _easeAccum.First().CurrentTargetValue();
             _easeAccum.First().Update();
         }
     }

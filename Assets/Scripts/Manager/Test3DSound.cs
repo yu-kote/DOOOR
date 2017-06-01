@@ -12,6 +12,9 @@ public class Test3DSound : MonoBehaviour
 
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            ReportBoard.Instance.Pop("テストaaa");
+        }
     }
 }
