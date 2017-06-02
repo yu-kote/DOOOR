@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <SpriteStudioProject version="1.02.02">
-	<name>anime_otamesi</name>
+	<name>chala_noppo</name>
 	<exportPath></exportPath>
 	<settings>
 		<animeBaseDirectory></animeBaseDirectory>
@@ -28,8 +28,8 @@
 			<reverseZRotSignForNegativeScale>1</reverseZRotSignForNegativeScale>
 			<numberOfPivotDecimals>0</numberOfPivotDecimals>
 		</ssaxExport>
-		<player>any</player>
-		<strictVer4>0</strictVer4>
+		<player>ssp_for_unity</player>
+		<strictVer4>1</strictVer4>
 		<dontUseMatrixForTransform>0</dontUseMatrixForTransform>
 		<rootPartFunctionAsVer4>0</rootPartFunctionAsVer4>
 		<interpolateColorBlendAsVer4>1</interpolateColorBlendAsVer4>
@@ -70,20 +70,20 @@
 		<filterMode>linear</filterMode>
 		<interpolationType>linear</interpolationType>
 		<renderingSettings>
-			<outputFolder></outputFolder>
-			<outputType>AVI</outputType>
+			<outputFolder>C:/Users/kagalli/Dropbox/★Vantan2016/＠ゲーム大賞/ゲーム大賞/noppo/Export</outputFolder>
+			<outputType>GIF</outputType>
 			<bgColor>FF606060</bgColor>
 			<addAnimeName>0</addAnimeName>
 			<addTimeStamp>0</addTimeStamp>
-			<addAlphaChanel>1</addAlphaChanel>
+			<addAlphaChanel>0</addAlphaChanel>
 		</renderingSettings>
 		<cellTags />
 	</settings>
 	<animeSettings>
 		<fps>30</fps>
-		<frameCount>11</frameCount>
+		<frameCount>31</frameCount>
 		<sortMode>prio</sortMode>
-		<canvasSize>320 320</canvasSize>
+		<canvasSize>512 512</canvasSize>
 		<pivot>0 0</pivot>
 		<bgColor>FF323232</bgColor>
 		<gridSize>32</gridSize>
@@ -98,16 +98,14 @@
 		<padding>1</padding>
 	</texPackSettings>
 	<cellmapNames>
-		<value>anime_otamesi.ssce</value>
+		<value>chala_noppo.ssce</value>
 	</cellmapNames>
 	<animepackNames>
-		<value>anime_otamesi.ssae</value>
-		<value>anime_otamesi_standing.ssae</value>
-		<value>anime_otamesi_walk.ssae</value>
+		<value>chala_noppo.ssae</value>
 	</animepackNames>
-	<lastAnimeFile>anime_otamesi_walk.ssae</lastAnimeFile>
-	<lastAnimeName>anime_1</lastAnimeName>
-	<lastCellMapFile>anime_otamesi.ssce</lastCellMapFile>
-	<lastCell>kosi</lastCell>
-	<lastPart>root</lastPart>
+	<lastAnimeFile>chala_noppo.ssae</lastAnimeFile>
+	<lastAnimeName>03_run_hurikaeri</lastAnimeName>
+	<lastCellMapFile>chala_noppo.ssce</lastCellMapFile>
+	<lastCell>R_sune</lastCell>
+	<lastPart>R_sune</lastPart>
 </SpriteStudioProject>
