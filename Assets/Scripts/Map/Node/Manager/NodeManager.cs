@@ -18,7 +18,10 @@ public class NodeManager : MonoBehaviour
     private int _loadNum = 60;
     private int _surfaceNum = 4;
     private int _interval = 3;
+    public int Interval { get { return _interval; } }
     private int _heightInterval = 6;
+    public int HeightInterval { get { return _heightInterval; } }
+
 
     private Vector2 _victimStartPos = Vector2.zero;
     public Vector2 VictimStartPos
@@ -29,121 +32,122 @@ public class NodeManager : MonoBehaviour
 
     void Awake()
     {
-
+        MapLoader mapLoader = GetComponent<MapLoader>();
+        List<string[]> mapDatas = mapLoader._mapDatas;
+        NodesInitialize(mapDatas.Count, mapDatas[0].Length);
+        NodesLink();
+        CreateMap(mapLoader);
     }
 
     void Start()
     {
-		MapLoader mapLoader = GetComponent<MapLoader>();
-		List<string[]> mapDatas = mapLoader._mapDatas;
-		NodesInitialize(mapDatas.Count, mapDatas[0].Length);
-        NodesLink();
-		CreateMap(mapLoader);
+
     }
 
-	private void CreateMap(MapLoader mapLoader)
-	{
-		string[] items = mapLoader.items;
-		var mapDatas = mapLoader._mapDatas;
+    private void CreateMap(MapLoader mapLoader)
+    {
+        string[] items = mapLoader.items;
+        var mapDatas = mapLoader._mapDatas;
 
-		bool[] isSet = new bool[items.Length];
-		for (int y = 0; y < _nodes.Count; y++)
-		{
-			for (int x = 0; x < _nodes[y].Count; x++)
-			{
-				var node = _nodes[y][x].GetComponent<Node>();
+        bool[] isSet = new bool[items.Length];
+        for (int y = 0; y < _nodes.Count; y++)
+        {
+            for (int x = 0; x < _nodes[y].Count; x++)
+            {
+                var node = _nodes[y][x].GetComponent<Node>();
 
-				if (mapLoader.lastKeyPos.x == x && mapLoader.lastKeyPos.y == y)
-					_nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
+                if (mapLoader.lastKeyPos.x == x && mapLoader.lastKeyPos.y == y)
+                    _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
 
-				int randNum = 0;
-				if (isSet.Contains(false))
-				{
-					do
-					{
-						randNum = UnityEngine.Random.Range(0, items.Length);
-					} while (isSet[randNum] == true);
-					isSet[randNum] = true;
-				}
+                int randNum = 0;
+                if (isSet.Contains(false))
+                {
+                    do
+                    {
+                        randNum = UnityEngine.Random.Range(0, items.Length);
+                    } while (isSet[randNum] == true);
+                    isSet[randNum] = true;
+                }
 
-				// 角
-				if (IsCorner(x))
-					node.gameObject.AddComponent<Corner>();
+                // 角
+                if (IsCorner(x))
+                    node.gameObject.AddComponent<Corner>();
 
-				int mapID = int.Parse(mapDatas[y][x]);
-				switch ((MapID)mapID)
-				{
-					case MapID.FLOOR:
-						break;
+                int mapID = int.Parse(mapDatas[y][x]);
+                switch ((MapID)mapID)
+                {
+                    case MapID.FLOOR:
+                        break;
 
-					case MapID.LEFTSTAIRS:
+                    case MapID.LEFTSTAIRS:
 
-						{
-							var next_node = _nodes[y - 1][x - 2].GetComponent<Node>();
-							node.Link(next_node);
-							node.gameObject.AddComponent<Stairs>();
-							next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
-							node.gameObject.GetComponent<Stairs>().RotateAngle = new Vector3(0, 180, 0);
-						}
-						break;
+                        {
+                            var next_node = _nodes[y - 1][x - 2].GetComponent<Node>();
+                            node.Link(next_node);
+                            var stairs = node.gameObject.AddComponent<Stairs>();
+                            next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+                            stairs.DirectionTag = "Left";
+                        }
+                        break;
 
-					case MapID.RIGHTSTAIRS:
+                    case MapID.RIGHTSTAIRS:
 
-						{
-							var next_node = _nodes[y - 1][x + 2].GetComponent<Node>();
-							node.Link(next_node);
-							node.gameObject.AddComponent<Stairs>();
-							next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
-						}
-						break;
+                        {
+                            var next_node = _nodes[y - 1][x + 2].GetComponent<Node>();
+                            node.Link(next_node);
+                            var stairs = node.gameObject.AddComponent<Stairs>();
+                            next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+                            stairs.DirectionTag = "Right";
+                        }
+                        break;
 
-					case MapID.WALL:
+                    case MapID.WALL:
 
-						node.gameObject.AddComponent<Wall>();
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						break;
+                        node.gameObject.AddComponent<Wall>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        break;
 
-					case MapID.LEFTDOOR:
+                    case MapID.LEFTDOOR:
 
-						node.gameObject.AddComponent<Door>();
-						node.gameObject.GetComponent<Door>().RotateAngle = new Vector3(0, 180, 0);
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						break;
+                        node.gameObject.AddComponent<Door>();
+                        node.gameObject.GetComponent<Door>().RotateAngle = new Vector3(0, 180, 0);
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        break;
 
-					case MapID.RIGHTDOOR:
+                    case MapID.RIGHTDOOR:
 
-						node.gameObject.AddComponent<Door>();
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						break;
+                        node.gameObject.AddComponent<Door>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        break;
 
-					case MapID.START:
+                    case MapID.START:
 
-						_victimStartPos = new Vector2(node.CellX, node.CellY);
-						break;
+                        _victimStartPos = new Vector2(node.CellX, node.CellY);
+                        break;
 
-					case MapID.KYUKEISPACE:
+                    case MapID.KYUKEISPACE:
 
-						node.gameObject.AddComponent<Kyukeispace>();
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						_nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(items[randNum]));
+                        node.gameObject.AddComponent<Kyukeispace>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        _nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(items[randNum]));
 
-						break;
+                        break;
 
-					case MapID.CANBREAKEWALL:
+                    case MapID.CANBREAKEWALL:
 
-						node.gameObject.AddComponent<DummyWall>();
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						break;
+                        node.gameObject.AddComponent<DummyWall>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        break;
 
-					case MapID.DEGUTI:
+                    case MapID.DEGUTI:
 
-						node.gameObject.AddComponent<Deguti>();
-						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
-						break;
-				}
-			}
-		}
-	}
+                        node.gameObject.AddComponent<Deguti>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        break;
+                }
+            }
+        }
+    }
 
     public void NodesInitialize(int topFloor, int loadNum)
     {
@@ -182,7 +186,7 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-    private int WhichSurfaceNum(int x)
+    public int WhichSurfaceNum(int x)
     {
         return x / (_loadNum / _surfaceNum);
     }

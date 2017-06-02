@@ -48,14 +48,15 @@ public class AIChace : AITargetMove
             return true;
         if (_targetHuman == null)
             return true;
-        if (SearchCount > _endNodeDistance)
-            return true;
 
         _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
 
         Node next_node = null;
         next_node = ApproachNode();
         _roadPathManager.RoadGuideReset(gameObject);
+
+        if (SearchCount > _endNodeDistance)
+            return true;
 
         // 移動できるかどうか
         if (next_node == null)
