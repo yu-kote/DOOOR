@@ -63,7 +63,7 @@ public class MapBackgrounds : MonoBehaviour
             BackgroundMaterialChange("NormalBackground");
             use_bg = _singleBackground;
         }
-        
+
         var bg = Instantiate(use_bg, node.transform);
 
         // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
@@ -74,8 +74,8 @@ public class MapBackgrounds : MonoBehaviour
         float offset = _nodeManager.Interval / 2.0f;
 
         // ジャスタウェイ
-        OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset);
-        OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset_kyukeispace);
+        OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset + offset_kyukeispace);
+        //OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset_kyukeispace);
 
         bg.transform.position += offset_pos;
 
