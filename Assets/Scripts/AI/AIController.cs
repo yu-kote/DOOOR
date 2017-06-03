@@ -40,7 +40,7 @@ public class AIController : MonoBehaviour
     {
         IDOL,       // 待機
         WALK,       // 歩き
-        RUN,        // 走り
+        RUN = 3,        // 走り
         OPEN_DOOR,  // ドアを開ける
         STAGGER,    // 罠にかかる(ふらつく)
         CRISIS,     // 追いつめられる

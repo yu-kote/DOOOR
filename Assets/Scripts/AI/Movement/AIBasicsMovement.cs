@@ -37,6 +37,8 @@ public abstract class AIBasicsMovement : MonoBehaviour
     // デバッグ用にSerializeField
     [SerializeField]
     private Vector3 _moveDirection;
+    public Vector3 MoveDirection { get { return _moveDirection; } }
+
     [SerializeField]
     private Vector3 _moveLength;
 

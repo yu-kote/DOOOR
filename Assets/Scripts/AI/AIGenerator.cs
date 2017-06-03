@@ -11,6 +11,12 @@ public class AIGenerator : MonoBehaviour
     [SerializeField]
     private int _killerCount;
 
+    public enum VictimType
+    {
+        WOMAN,
+        TALLMAN,
+        FAT,
+    }
 
     private GameObject _field;
     private List<GameObject> _humans = new List<GameObject>();
@@ -24,8 +30,9 @@ public class AIGenerator : MonoBehaviour
 
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
-            for (int i = 0; i < _victimCount; i++)
-                CreateVictim();
+            CreateVictim(GetVictimName(VictimType.WOMAN));
+            CreateVictim(GetVictimName(VictimType.TALLMAN));
+            CreateVictim(GetVictimName(VictimType.FAT));
         }).AddTo(gameObject);
 
 
@@ -58,9 +65,23 @@ public class AIGenerator : MonoBehaviour
         _generateCount++;
     }
 
-    void CreateVictim()
+    public string GetVictimName(VictimType type)
     {
-        CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Victim"));
+        switch (type)
+        {
+            case VictimType.WOMAN:
+                return "Woman";
+            case VictimType.TALLMAN:
+                return "TallMan";
+            case VictimType.FAT:
+                return "Fat";
+        }
+        return null;
+    }
+
+    void CreateVictim(string name)
+    {
+        CreateHuman(Resources.Load<GameObject>("Prefabs/Human/" + name));
     }
 
     void CreateKiller()
