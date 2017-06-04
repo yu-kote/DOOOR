@@ -46,6 +46,11 @@ public class ItemStatus : MonoBehaviour
 
 				gameObject.AddComponent<Gun>();
 				break;
+
+			case ItemType.TYENSO:
+
+				gameObject.AddComponent<Tyenso>();
+				break;
 		}
 
 	}
@@ -74,6 +79,10 @@ public class ItemStatus : MonoBehaviour
 			case ItemType.GUN:
 
 				return gameObject.GetComponent<Gun>().AcquiredItem();
+
+			case ItemType.TYENSO:
+
+				return gameObject.GetComponent<Tyenso>().AcquiredItem();
 		}
 
 		return ItemType.NONE;
