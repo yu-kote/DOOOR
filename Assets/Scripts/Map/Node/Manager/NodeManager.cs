@@ -46,10 +46,8 @@ public class NodeManager : MonoBehaviour
 
 	private void CreateMap(MapLoader mapLoader)
 	{
-		string[] items = mapLoader.items;
 		var mapDatas = mapLoader._mapDatas;
 
-		bool[] isSet = new bool[items.Length];
 		for (int y = 0; y < _nodes.Count; y++)
 		{
 			for (int x = 0; x < _nodes[y].Count; x++)
@@ -57,15 +55,6 @@ public class NodeManager : MonoBehaviour
 				var node = _nodes[y][x].GetComponent<Node>();
 
 				int mapID = int.Parse(mapDatas[y][x]);
-				int randNum = 0;
-				if (isSet.Contains(false) && (MapID)mapID == MapID.KYUKEISPACE)
-				{
-					do
-					{
-						randNum = UnityEngine.Random.Range(0, items.Length);
-					} while (isSet[randNum] == true);
-					isSet[randNum] = true;
-				}
 
 				// 角
 				if (IsCorner(x))
@@ -132,8 +121,22 @@ public class NodeManager : MonoBehaviour
 						_nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
 						if (mapLoader.lastKeyPos.x == x && mapLoader.lastKeyPos.y == y)
 							_nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
+						else if (mapLoader.itaPos.x == x && mapLoader.itaPos.y == y)
+							_nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
+						else if (mapLoader.manhaPos.x == x && mapLoader.manhaPos.y == y)
+							_nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
 						else
-							_nodes[y][x].GetComponent<ItemStatus>().AddPutItem(uint.Parse(items[randNum]));
+						{
+							int randNum;
+							do
+							{
+								randNum = UnityEngine.Random.Range(2, 4);
+								randNum = 1 << randNum;
+							} while (randNum == (int)ItemType.LASTKEY);
+
+							_nodes[y][x].GetComponent<ItemStatus>().AddPutItem((uint)randNum);
+						}
+		
 
 						break;
 
