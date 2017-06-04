@@ -8,7 +8,8 @@ public class AIRunAway : AIRouteSearch
 {
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
-    private int _endNodeDistance = 6;
+    [SerializeField]
+    private int _endNodeDistance = 8;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }

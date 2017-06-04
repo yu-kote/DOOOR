@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using System.Linq;
 
 public class AIGenerator : MonoBehaviour
 {
@@ -37,8 +38,8 @@ public class AIGenerator : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.WOMAN));
-            CreateVictim(GetVictimName(VictimType.TALLMAN));
-            CreateVictim(GetVictimName(VictimType.FAT));
+            //CreateVictim(GetVictimName(VictimType.TALLMAN));
+            //CreateVictim(GetVictimName(VictimType.FAT));
         }).AddTo(gameObject);
 
 
@@ -83,6 +84,11 @@ public class AIGenerator : MonoBehaviour
                 return "Fat";
         }
         return null;
+    }
+
+    public GameObject GetKiller()
+    {
+        return _humans.First(human => human.tag == "Killer");
     }
 
     void CreateVictim(string name)
