@@ -8,9 +8,9 @@ public enum TrapType
 {
 	NONE = 0,
 	PITFALLS = 1 << 0,	//落とし穴
-	SOUND = 1 << 2,		//音
-	ROPE = 1 << 3,		//ロープ
-	MAX
+	SOUND = 1 << 1,		//音
+	ROPE = 1 << 2,		//ロープ
+	MAX = 1 << 3
 }
 
 public class TrapStatus : MonoBehaviour
