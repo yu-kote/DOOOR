@@ -8,7 +8,8 @@ public enum ItemType
     KEY = 1 << 0,           //部屋の鍵
     LASTKEY = 1 << 1,       //玄関(出口)の鍵
     FLASHLIGHT = 1 << 2,    //懐中電灯
-    GUN = 1 << 3			//銃
+    GUN = 1 << 3,			//銃
+	TYENSO = 1 << 4			//チェーン層
 }
 
 public class ItemBase : MonoBehaviour
