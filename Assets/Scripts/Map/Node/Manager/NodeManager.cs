@@ -112,8 +112,6 @@ public class NodeManager : MonoBehaviour
 
                     case MapID.START:
 
-
-
                         break;
 
                     case MapID.KYUKEISPACE:

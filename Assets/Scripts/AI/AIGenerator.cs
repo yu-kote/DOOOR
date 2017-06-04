@@ -56,8 +56,6 @@ public class AIGenerator : MonoBehaviour
     {
         human = Instantiate(human, transform);
 
-        var node_manager = _field.GetComponent<NodeManager>();
-
         var start_node = _startNode;
         var start_pos = start_node.transform.position;
 

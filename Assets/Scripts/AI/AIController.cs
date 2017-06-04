@@ -242,7 +242,8 @@ public class AIController : MonoBehaviour
             _animStatus = AnimationStatus.WALK;
         if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.DEFAULT)
             _animStatus = AnimationStatus.WALK;
-        if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.HURRY_UP)
+        if (GetComponent<AIRunAway>() &&
+            (_moveMode == MoveEmotion.HURRY_UP || _moveMode == MoveEmotion.REACT_SOUND))
             _animStatus = AnimationStatus.RUN;
     }
 

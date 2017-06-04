@@ -19,11 +19,16 @@ public class Easing : MonoBehaviour
         EasingInitiator.Add(gameObject, new Vector3(-3, -3, 3), 1, EaseType.BackIn);
 
 
-        EasingInitiator.Add(gameObject, new Vector3(90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(-90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(90, 90, 90), 2, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(-270, 90, 90), 0.5f, EaseType.BackIn, EaseValue.ROTATION);
         EasingInitiator.Wait(gameObject, 1, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(90, -90, -90), 1, EaseType.BackIn, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(-90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(90, -90, -90), 2, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(-180, 0, 0), 4, EaseType.BackIn, EaseValue.ROTATION);
+
+        EasingInitiator.Add(gameObject, new Vector3(2, 2, 2), 2, EaseType.BackIn, EaseValue.SCALE);
+        EasingInitiator.Add(gameObject, new Vector3(-1, -1, -1), 4, EaseType.BackIn, EaseValue.SCALE);
+        EasingInitiator.Add(gameObject, new Vector3(1, 1, 1), 1, EaseType.BackIn, EaseValue.SCALE);
+
     }
 
     void Update()
