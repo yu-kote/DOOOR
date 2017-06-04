@@ -51,7 +51,14 @@ public class GameManager : MonoBehaviour
             if (current_node == null)
                 return false;
             if (current_node.GetComponent<Deguti>())
+            {
+                human.GetComponent<AIItemController>().UseItem(ItemType.LASTKEY);
+
+                var _aiController = human.GetComponent<AIController>();
+                _aiController.AnimStatus = AnimationStatus.OPEN_DOOR;
+                _aiController.StopMovement(0.5f, () => _aiController.AnimStatus = AnimationStatus.IDOL);
                 return true;
+            }
             return false;
         });
 

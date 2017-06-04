@@ -51,6 +51,9 @@ public class AIItemController : MonoBehaviour
     /// </summary>
     public void UseItem(ItemType type)
     {
+        var ai_controller = GetComponent<AIController>();
+        ai_controller.AnimStatus = AnimationStatus.USE_ITEM;
+        ai_controller.StopMovement(0.5f, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
         _haveItems.Remove(type);
     }
 
@@ -77,9 +80,9 @@ public class AIItemController : MonoBehaviour
             return;
         Func<ItemType, bool> Check =
             (type) => ((uint)setting_items & (uint)type) > 0;
-        
 
-        for (uint type = (uint)ItemType.GUN << 1; type > 0; type = type >> 1)
+
+        for (uint type = (uint)ItemType.TYENSO << 1; type > 0; type = type >> 1)
         {
             if (Check((ItemType)type))
             {

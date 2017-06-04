@@ -17,4 +17,12 @@ public class MyNumber : MonoBehaviour
                 _number = value;
         }
     }
+
+    [SerializeField]
+    private string _name;
+    public string Name
+    {
+        get { return _name; }
+        set { _name = value; }
+    }
 }

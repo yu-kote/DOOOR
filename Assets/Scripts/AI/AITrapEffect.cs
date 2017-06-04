@@ -34,18 +34,8 @@ public class AITrapEffect : MonoBehaviour
 
         EasingInitiator.Add(gameObject, target_pos, 2, EaseType.BounceOut);
 
-        _aiController.AnimStatus = AIController.AnimationStatus.STAGGER;
-
-        var movement = _aiController.GetMovement();
-        if (movement == null) return;
-        movement.MoveSetup();
-
-        movement.CanMove = false;
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-        {
-            movement.CanMove = true;
-            _aiController.AnimStatus = AIController.AnimationStatus.IDOL;
-        }).AddTo(gameObject);
+        _aiController.AnimStatus = AnimationStatus.STAGGER;
+        _aiController.StopMovement(2, () => _aiController.AnimStatus = AnimationStatus.IDOL);
     }
 
     //ロープの罠にかかった時の処理
@@ -53,7 +43,7 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
-        _aiController.AnimStatus = AIController.AnimationStatus.STAGGER;
+        _aiController.AnimStatus = AnimationStatus.STAGGER;
         StartCoroutine(Deceleration());
     }
 
@@ -71,7 +61,7 @@ public class AITrapEffect : MonoBehaviour
         if (_aiController == null)
             yield break;
 
-        _aiController.AnimStatus = AIController.AnimationStatus.IDOL;
+        _aiController.AnimStatus = AnimationStatus.IDOL;
         _aiController.DefaultSpeed = defalut_speed;
         _aiController.HurryUpSpeed = hurry_up_speed;
     }
@@ -87,10 +77,11 @@ public class AITrapEffect : MonoBehaviour
 
         var current_node = _aiController.CurrentNode;
         if (current_node == null) return;
+
         var door = current_node.GetComponent<Door>();
         if (door == null) return;
 
-        Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {
             door.StartClosing();
         }).AddTo(gameObject);
@@ -98,6 +89,8 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
+        _aiController.AnimStatus = AnimationStatus.OPEN_DOOR;
+        _aiController.StopMovement(0.5f, () => _aiController.AnimStatus = AnimationStatus.IDOL);
     }
 
 }
