@@ -103,8 +103,12 @@ public class NodeManager : MonoBehaviour
 
                     case MapID.WALL:
 
-                        node.gameObject.AddComponent<Wall>();
+                        var wall = node.gameObject.AddComponent<Wall>();
                         _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+
+                        wall.NodeManager = this;
+                        wall.MyNode = node;
+
                         break;
 
                     case MapID.LEFTDOOR:

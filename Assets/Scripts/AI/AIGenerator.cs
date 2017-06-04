@@ -11,6 +11,10 @@ public class AIGenerator : MonoBehaviour
     [SerializeField]
     private int _killerCount;
 
+    [SerializeField]
+    private GameObject _view3dCamera;
+    public GameObject View3dCamera { get { return _view3dCamera; } }
+
     public enum VictimType
     {
         WOMAN,
@@ -27,6 +31,8 @@ public class AIGenerator : MonoBehaviour
     void Start()
     {
         _field = GameObject.Find("Field");
+
+        _view3dCamera = Instantiate(_view3dCamera, transform);
 
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {

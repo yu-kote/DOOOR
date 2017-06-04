@@ -9,7 +9,8 @@ public class Easing : MonoBehaviour
     void Start()
     {
         // 使い方
-        // Easing.Add(gameObject, new Vector3(10,10,10), 1, EaseType.BackIn);
+        // 現状の設計ではlocalPositionしか動かせませんｍ（_ _）ｍ
+        // EasingInitiator.Add(gameObject, new Vector3(10,10,10), 1, EaseType.BackIn);
 
         // テスト
         EasingInitiator.Add(gameObject, new Vector3(3, 3, -3), 1, EaseType.BackIn);
