@@ -17,6 +17,13 @@ public class Easing : MonoBehaviour
         EasingInitiator.Add(gameObject, new Vector3(-3, -3, 3), 1, EaseType.BackIn);
         EasingInitiator.Add(gameObject, new Vector3(3, 3, -3), 1, EaseType.BackIn);
         EasingInitiator.Add(gameObject, new Vector3(-3, -3, 3), 1, EaseType.BackIn);
+
+
+        EasingInitiator.Add(gameObject, new Vector3(90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(-90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Wait(gameObject, 1, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(90, -90, -90), 1, EaseType.BackIn, EaseValue.ROTATION);
+        EasingInitiator.Add(gameObject, new Vector3(-90, 90, 90), 1, EaseType.BackIn, EaseValue.ROTATION);
     }
 
     void Update()
@@ -25,9 +32,18 @@ public class Easing : MonoBehaviour
     }
 }
 
+public enum EaseValue
+{
+    POSITION,
+    ROTATION,
+    SCALE,
+}
+
 public static class EasingInitiator
 {
-    static Dictionary<GameObject, RunEase> _ease = new Dictionary<GameObject, RunEase>();
+    static Dictionary<GameObject, RunEase> _easePosition = new Dictionary<GameObject, RunEase>();
+    static Dictionary<GameObject, RunEase> _easeRotation = new Dictionary<GameObject, RunEase>();
+    static Dictionary<GameObject, RunEase> _easeScale = new Dictionary<GameObject, RunEase>();
 
     /// <summary>
     /// 指定したオブジェクトをイージングします
@@ -36,56 +52,105 @@ public static class EasingInitiator
     /// <param name="end">動かしたい位置</param>
     /// <param name="time">何秒で動かすか</param>
     /// <param name="type">使うイージングの種類</param>
-    public static void Add(GameObject target, Vector3 end, float time, EaseType type)
+    /// <param name="value">イージングさせる箇所</param>
+    public static void Add(GameObject target, Vector3 end, float time, EaseType type, EaseValue value = EaseValue.POSITION)
     {
-        if (_ease.ContainsKey(target))
-            _ease[target].Add(target, end, time, type);
+        if (value == EaseValue.POSITION)
+            AddEase(_easePosition, target, end, time, type, value);
+        if (value == EaseValue.ROTATION)
+            AddEase(_easeRotation, target, end, time, type, value);
+        if (value == EaseValue.SCALE)
+            AddEase(_easeScale, target, end, time, type, value);
+    }
+
+    private static void AddEase(Dictionary<GameObject, RunEase> ease, GameObject target,
+                                Vector3 end, float time, EaseType type, EaseValue value)
+    {
+        if (ease.ContainsKey(target))
+            ease[target].Add(target, end, time, type);
         else
-            _ease.Add(target, new RunEase(target, end, time, type));
+            ease.Add(target, new RunEase(target, end, time, type, value));
     }
 
-    public static void Wait(GameObject target, float time)
+    /// <summary>
+    /// イージングを一定時間停止させます
+    /// </summary>
+    /// <param name="target">停止させるオブジェクト</param>
+    /// <param name="time">停止時間</param>
+    /// <param name="value">停止させる箇所</param>
+    public static void Wait(GameObject target, float time, EaseValue value = EaseValue.POSITION)
     {
-        Add(target, target.transform.localPosition, time, EaseType.NONE);
+        if (value == EaseValue.POSITION)
+            Add(target, target.transform.localPosition, time, EaseType.NONE, value);
+        if (value == EaseValue.ROTATION)
+            Add(target, target.transform.localEulerAngles, time, EaseType.NONE, value);
+        if (value == EaseValue.SCALE)
+            Add(target, target.transform.localScale, time, EaseType.NONE, value);
     }
 
-    public static bool IsEaseEnd(GameObject target)
+    public static bool IsEaseEnd(GameObject target, EaseValue value = EaseValue.POSITION)
     {
-        if (_ease.ContainsKey(target))
-            if (_ease[target].IsEaseEnd())
+        if (value == EaseValue.POSITION)
+            return IsEnd(_easePosition, target);
+        if (value == EaseValue.ROTATION)
+            return IsEnd(_easeRotation, target);
+        if (value == EaseValue.SCALE)
+            return IsEnd(_easeScale, target);
+        return false;
+    }
+
+    private static bool IsEnd(Dictionary<GameObject, RunEase> ease, GameObject target)
+    {
+        if (ease.ContainsKey(target))
+            if (ease[target].IsEaseEnd())
                 return true;
         return false;
     }
 
     public static void EaseUpdate()
     {
-        var remove_list = _ease.Where(e => e.Value.IsEaseEnd()).ToList();
-        foreach (var item in remove_list)
-        {
-            _ease.Remove(item.Key);
-        }
+        RemoveEase(_easePosition);
+        RemoveEase(_easeRotation);
+        RemoveEase(_easeScale);
 
-        foreach (var it in _ease)
-        {
+        foreach (var it in _easePosition)
             it.Value.Update();
-        }
+        foreach (var it in _easeRotation)
+            it.Value.Update();
+        foreach (var it in _easeScale)
+            it.Value.Update();
     }
+
+    private static void RemoveEase(Dictionary<GameObject, RunEase> ease)
+    {
+        var remove_list = ease.Where(e => e.Value.IsEaseEnd()).ToList();
+        foreach (var item in remove_list)
+            ease.Remove(item.Key);
+    }
+
 }
 
 class RunEase
 {
     Queue<EaseOrigin> _easeAccum = new Queue<EaseOrigin>();
     GameObject _target;
+    EaseValue _easeValue = EaseValue.POSITION;
 
-    public RunEase(GameObject target, Vector3 end, float time, EaseType type)
+    public RunEase(GameObject target, Vector3 end, float time, EaseType type, EaseValue ease_value)
     {
+        _easeValue = ease_value;
         Add(target, end, time, type);
     }
 
     public void Add(GameObject target, Vector3 end, float time, EaseType type)
     {
         _target = target;
-        _easeAccum.Enqueue(new EaseOrigin(target.transform.localPosition, end, time, type));
+        if (_easeValue == EaseValue.POSITION)
+            _easeAccum.Enqueue(new EaseOrigin(target.transform.localPosition, end, time, type));
+        else if (_easeValue == EaseValue.ROTATION)
+            _easeAccum.Enqueue(new EaseOrigin(target.transform.localEulerAngles, end, time, type));
+        else if (_easeValue == EaseValue.SCALE)
+            _easeAccum.Enqueue(new EaseOrigin(target.transform.localScale, end, time, type));
     }
 
     public void Update()
@@ -94,11 +159,21 @@ class RunEase
         {
             _easeAccum.Dequeue();
             if (_easeAccum.Count() > 0)
-                _easeAccum.First().Begin = _target.transform.localPosition;
+                if (_easeValue == EaseValue.POSITION)
+                    _easeAccum.First().Begin = _target.transform.localPosition;
+                else if (_easeValue == EaseValue.ROTATION)
+                    _easeAccum.First().Begin = _target.transform.localEulerAngles;
+                else if (_easeValue == EaseValue.SCALE)
+                    _easeAccum.First().Begin = _target.transform.localScale;
         }
         else
         {
-            _target.transform.localPosition = _easeAccum.First().CurrentTargetValue();
+            if (_easeValue == EaseValue.POSITION)
+                _target.transform.localPosition = _easeAccum.First().CurrentTargetValue();
+            else if (_easeValue == EaseValue.ROTATION)
+                _target.transform.localEulerAngles = _easeAccum.First().CurrentTargetValue();
+            else if (_easeValue == EaseValue.SCALE)
+                _target.transform.localScale = _easeAccum.First().CurrentTargetValue();
             _easeAccum.First().Update();
         }
     }
