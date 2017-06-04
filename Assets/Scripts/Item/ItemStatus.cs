@@ -18,38 +18,36 @@ public class ItemStatus : MonoBehaviour
 
 	public void AddPutItem(uint id)
 	{
-		for (; id > 0; id = id >> 1)
+
+		if ((_puttingItemStatus & (id - (id >> 1))) != 0)
 		{
-			if ((_puttingItemStatus & (id - (id >> 1))) != 0)
-			{
-				Debug.Log("すでにおかれています");
-				return;
-			}
-
-			_puttingItemStatus += (id);
-
-			switch ((ItemType)id)
-			{
-				case ItemType.KEY:
-
-					gameObject.AddComponent<Key>();
-					break;
-
-				case ItemType.LASTKEY:
-
-					gameObject.AddComponent<LastKey>();
-					break;
-				case ItemType.FLASHLIGHT:
-
-					//gameObject.AddComponent<FlashLight>();
-					break;
-				case ItemType.GUN:
-
-					//gameObject.AddComponent<Gun>();
-					break;
-			}
+			Debug.Log("すでにおかれています");
+			return;
 		}
-		
+
+		_puttingItemStatus += (id);
+
+		switch ((ItemType)id)
+		{
+			case ItemType.KEY:
+
+				gameObject.AddComponent<Key>();
+				break;
+
+			case ItemType.LASTKEY:
+
+				gameObject.AddComponent<LastKey>();
+				break;
+			case ItemType.FLASHLIGHT:
+
+				gameObject.AddComponent<FlashLight>();
+				break;
+			case ItemType.GUN:
+
+				gameObject.AddComponent<Gun>();
+				break;
+		}
+
 	}
 
 	public ItemType AcquiredItem(ItemType id)
@@ -70,12 +68,12 @@ public class ItemStatus : MonoBehaviour
 			case ItemType.LASTKEY:
 
 				return gameObject.GetComponent<LastKey>().AcquiredItem();
-			//case ItemID.FLASHLIGHT:
+			case ItemType.FLASHLIGHT:
 
-			//	return gameObject.GetComponent<FlashLight>().AcquiredItem();
-			//case ItemID.GUN:
+				return gameObject.GetComponent<FlashLight>().AcquiredItem();
+			case ItemType.GUN:
 
-			//	return gameObject.GetComponent<Gun>().AcquiredItem();
+				return gameObject.GetComponent<Gun>().AcquiredItem();
 		}
 
 		return ItemType.NONE;

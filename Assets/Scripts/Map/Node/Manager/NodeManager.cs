@@ -59,8 +59,9 @@ public class NodeManager : MonoBehaviour
                 if (mapLoader.lastKeyPos.x == x && mapLoader.lastKeyPos.y == y)
                     _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
 
+				int mapID = int.Parse(mapDatas[y][x]);
                 int randNum = 0;
-                if (isSet.Contains(false))
+                if (isSet.Contains(false) && (MapID)mapID == MapID.KYUKEISPACE)
                 {
                     do
                     {
@@ -73,7 +74,6 @@ public class NodeManager : MonoBehaviour
                 if (IsCorner(x))
                     node.gameObject.AddComponent<Corner>();
 
-                int mapID = int.Parse(mapDatas[y][x]);
                 switch ((MapID)mapID)
                 {
                     case MapID.FLOOR:
