@@ -14,6 +14,7 @@ public class HumanAnimController : MonoBehaviour
 
     void Start()
     {
+        var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
         _aiController = GetComponent<AIController>();
 
         _human = Instantiate(_human, transform);
@@ -22,6 +23,11 @@ public class HumanAnimController : MonoBehaviour
 
         _root = _human.transform.FindChild("chara_noppo")
             .gameObject.GetComponent<Script_SpriteStudio_Root>();
+
+        var camera = ai_generator.View3dCamera;
+        var prefab = _human.GetComponent<Script_SpriteStudio_ControlPrefab>();
+        var draw = prefab.InstanceManagerDraw = camera.GetComponent<Script_SpriteStudio_ManagerDraw>();
+
     }
 
     void Update()
@@ -49,6 +55,8 @@ public class HumanAnimController : MonoBehaviour
         euler_angle = new Vector3(0, euler_angle.y + 90.0f, 0);
 
         var rotation = _human.transform.rotation;
+        if (rotation.eulerAngles == euler_angle)
+            return;
         rotation.eulerAngles = euler_angle;
         _human.transform.rotation = rotation;
     }
