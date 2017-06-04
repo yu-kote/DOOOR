@@ -7,22 +7,20 @@ using System;
 
 public class AITrapEffect : MonoBehaviour
 {
-    //private NodeManager _nodeManager;
     private Node _currentNode;
     private AIController _aiController;
+    private AIGenerator _aiGenerator;
 
     void Start()
     {
-        //var field = GameObject.Find("Field");
-        //_nodeManager = field.GetComponent<NodeManager>();
+        _aiGenerator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
         _aiController = GetComponent<AIController>();
     }
 
     // 今のところは瞬間移動になる
     public void ToMove(Node target_node)
     {
-        var ai_controller = GetComponent<AIController>();
-        _currentNode = ai_controller.CurrentNode;
+        _currentNode = _aiController.CurrentNode;
 
         var foot_print = _currentNode.GetComponent<FootPrint>();
         foot_print.StepOut(gameObject);
@@ -30,14 +28,24 @@ public class AITrapEffect : MonoBehaviour
         foot_print = target_node.GetComponent<FootPrint>();
         foot_print.StepIn(gameObject);
 
-        gameObject.transform.position =
-                new Vector3(target_node.transform.position.x,
-                            target_node.transform.position.y + transform.localScale.y,
-                            target_node.transform.position.z);
+        var target_pos = new Vector3(target_node.transform.position.x,
+                                     target_node.transform.position.y + transform.localScale.y,
+                                     target_node.transform.position.z);
 
-        var movement = GetComponent<AIController>().GetMovement();
+        EasingInitiator.Add(gameObject, target_pos, 2, EaseType.BounceOut);
+
+        _aiController.AnimStatus = AIController.AnimationStatus.STAGGER;
+
+        var movement = _aiController.GetMovement();
         if (movement == null) return;
         movement.MoveSetup();
+
+        movement.CanMove = false;
+        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        {
+            movement.CanMove = true;
+            _aiController.AnimStatus = AIController.AnimationStatus.IDOL;
+        }).AddTo(gameObject);
     }
 
     //ロープの罠にかかった時の処理
@@ -45,16 +53,27 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
+        _aiController.AnimStatus = AIController.AnimationStatus.STAGGER;
+        StartCoroutine(Deceleration());
+    }
 
-        var movement = GetComponent<AIController>().GetMovement();
-        if (movement == null) return;
+    private IEnumerator Deceleration()
+    {
+        var defalut_speed = _aiController.DefaultSpeed;
+        var hurry_up_speed = _aiController.HurryUpSpeed;
 
-        movement.CanMove = false;
-        // 時間はまだ決め打ち　　　　　　　　　　↓
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-        {
-            movement.CanMove = true;
-        }).AddTo(gameObject);
+        var killer = _aiGenerator.GetKiller().GetComponent<AIController>();
+
+        _aiController.DefaultSpeed = killer.DefaultSpeed;
+        _aiController.HurryUpSpeed = killer.HurryUpSpeed;
+
+        yield return new WaitForSeconds(2.0f);
+        if (_aiController == null)
+            yield break;
+
+        _aiController.AnimStatus = AIController.AnimationStatus.IDOL;
+        _aiController.DefaultSpeed = defalut_speed;
+        _aiController.HurryUpSpeed = hurry_up_speed;
     }
 
     private void Update()
@@ -71,7 +90,7 @@ public class AITrapEffect : MonoBehaviour
         var door = current_node.GetComponent<Door>();
         if (door == null) return;
 
-        Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
             door.StartClosing();
         }).AddTo(gameObject);

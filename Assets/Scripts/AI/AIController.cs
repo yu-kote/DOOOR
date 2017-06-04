@@ -40,7 +40,7 @@ public class AIController : MonoBehaviour
     {
         IDOL,       // 待機
         WALK,       // 歩き
-        RUN = 3,        // 走り
+        RUN = 3,    // 走り
         OPEN_DOOR,  // ドアを開ける
         STAGGER,    // 罠にかかる(ふらつく)
         CRISIS,     // 追いつめられる
@@ -247,20 +247,20 @@ public class AIController : MonoBehaviour
 
     void AnimCrisis()
     {
-        if (_moveMode == MoveEmotion.DEFAULT)
-            _animStatus = AnimationStatus.IDOL;
-
         if (_nextNode == null ||
             _currentNode == null ||
             _prevNode == null)
             return;
 
-        // 移動先がない場合
+        // 移動先がある場合ははじく(追いつめられていたらモーションを終了する)
         if (_nextNode != _currentNode ||
             _nextNode != _prevNode ||
             _currentNode != _prevNode)
+        {
+            if (_animStatus == AnimationStatus.CRISIS)
+                _animStatus = AnimationStatus.IDOL;
             return;
-
+        }
         _animStatus = AnimationStatus.CRISIS;
     }
 
