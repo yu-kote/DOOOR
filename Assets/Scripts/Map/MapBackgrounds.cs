@@ -9,7 +9,12 @@ public class MapBackgrounds : MonoBehaviour
     private NodeManager _nodeManager;
 
     [SerializeField]
-    private GameObject _singleBackground;
+    private GameObject _singleBackground0;
+    [SerializeField]
+    private GameObject _singleBackground1;
+
+    private bool _switchBackground = false;
+
     [SerializeField]
     private GameObject _doubleBackground;
 
@@ -23,12 +28,16 @@ public class MapBackgrounds : MonoBehaviour
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
 
-        _singleBackground.transform.localScale
+        _singleBackground0.transform.localScale
+            = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0);
+        _singleBackground1.transform.localScale
             = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0);
         _doubleBackground.transform.localScale
             = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0);
 
+
         LoadMaterials();
+        MaterialInit();
         StartCoroutine(Create());
     }
 
@@ -55,13 +64,15 @@ public class MapBackgrounds : MonoBehaviour
         if (node.GetComponent<Kyukeispace>())
         {
             offset_kyukeispace = -0.1f;
-            BackgroundMaterialChange("Room");
             use_bg = _doubleBackground;
         }
         else
         {
-            BackgroundMaterialChange("NormalBackground");
-            use_bg = _singleBackground;
+            if (_switchBackground)
+                use_bg = _singleBackground0;
+            else
+                use_bg = _singleBackground1;
+            _switchBackground = !_switchBackground;
         }
 
         var bg = Instantiate(use_bg, node.transform);
@@ -69,6 +80,8 @@ public class MapBackgrounds : MonoBehaviour
         // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
         bg.transform.localPosition = Vector3.zero;
         bg.transform.localEulerAngles = Vector3.zero;
+        // マテリアルの関係で上下を反転させる必要があるため、反転させる
+        bg.transform.localEulerAngles = new Vector3(0, 0, 180);
 
         var offset_pos = new Vector3(0, _nodeManager.HeightInterval / 2, 0);
         float offset = _nodeManager.Interval / 2.0f;
@@ -94,17 +107,6 @@ public class MapBackgrounds : MonoBehaviour
             offset_pos += new Vector3(value, 0, 0);
     }
 
-    /// <summary>
-    /// TODO:背景の識別がintなのでstringに修正予定
-    /// </summary>
-    void BackgroundMaterialChange(string name)
-    {
-        _singleBackground.GetComponent<MeshRenderer>().material
-            = _backgroundMaterials[name];
-        _doubleBackground.GetComponent<MeshRenderer>().material
-            = _backgroundMaterials[name];
-    }
-
     void LoadMaterials()
     {
         var materials = Resources.LoadAll<Material>("Prefabs/BG/Materials");
@@ -113,4 +115,15 @@ public class MapBackgrounds : MonoBehaviour
             _backgroundMaterials.Add(materials[i].name, materials[i]);
         }
     }
+
+    void MaterialInit()
+    {
+        _singleBackground0.GetComponent<MeshRenderer>().material
+            = _backgroundMaterials["NormalBackground" + "0"];
+        _singleBackground1.GetComponent<MeshRenderer>().material
+            = _backgroundMaterials["NormalBackground" + "1"];
+        _doubleBackground.GetComponent<MeshRenderer>().material
+            = _backgroundMaterials["Room"];
+    }
+
 }
