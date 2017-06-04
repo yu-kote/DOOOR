@@ -30,7 +30,8 @@ public class MapLoader : MonoBehaviour
 
 	public List<string[]> _mapDatas = new List<string[]>();
 	public Vector2 lastKeyPos = Vector2.zero;
-	public string[] items;
+	public Vector2 itaPos = new Vector2(int.MaxValue, int.MaxValue);
+	public Vector2 manhaPos = new Vector2(int.MaxValue, int.MaxValue);
 
 	void Awake()
 	{
@@ -57,23 +58,31 @@ public class MapLoader : MonoBehaviour
 			_mapDatas.Add(line.Split(','));
 		}
 
-		csvFile = Resources.Load(path + "LastKeyPlace") as TextAsset;
+		csvFile = Resources.Load(path + "Item") as TextAsset;
 		reader = new StringReader(csvFile.text);
+		List<string[]> data = new List<string[]>();
 		while (reader.Peek() > -1)
 		{
 			string line = reader.ReadLine();
-			string[] data = line.Split(',');
-			int x = int.Parse(data[0]);
-			int y = int.Parse(data[1]);
-			lastKeyPos = new Vector2(x, y);
+			data.Add(line.Split(','));
 		}
 
-		csvFile = Resources.Load(path + "ItemList") as TextAsset;
-		reader = new StringReader(csvFile.text);
-		while (reader.Peek() > -1)
+		int x = int.Parse(data[0][0]);
+		int y = int.Parse(data[0][1]);
+		lastKeyPos = new Vector2(x, y);
+
+		if(bool.Parse(data[1][0]) == true)
 		{
-			string line = reader.ReadLine();
-			items = line.Split(',');
+			x = int.Parse(data[1][1]);
+			y = int.Parse(data[1][2]);
+			itaPos = new Vector2(x, y);
+		}
+
+		if (bool.Parse(data[2][0]) == true)
+		{
+			x = int.Parse(data[2][1]);
+			y = int.Parse(data[2][2]);
+			manhaPos = new Vector2(x, y);
 		}
 	}
 }
