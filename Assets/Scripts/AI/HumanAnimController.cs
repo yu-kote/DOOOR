@@ -10,7 +10,7 @@ public class HumanAnimController : MonoBehaviour
     private Script_SpriteStudio_Root _root;
 
     private AIController _aiController;
-    private AIController.AnimationStatus _currentAnimStatus;
+    private AnimationStatus _currentAnimStatus;
 
     void Start()
     {

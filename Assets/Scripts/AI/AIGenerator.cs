@@ -16,6 +16,8 @@ public class AIGenerator : MonoBehaviour
     private GameObject _view3dCamera;
     public GameObject View3dCamera { get { return _view3dCamera; } }
 
+    private Node _startNode;
+
     public enum VictimType
     {
         WOMAN,
@@ -32,16 +34,16 @@ public class AIGenerator : MonoBehaviour
     void Start()
     {
         _field = GameObject.Find("Field");
+        _startNode = _field.GetComponent<NodeManager>().StartNode;
 
         _view3dCamera = Instantiate(_view3dCamera, transform);
 
         Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.WOMAN));
-            //CreateVictim(GetVictimName(VictimType.TALLMAN));
-            //CreateVictim(GetVictimName(VictimType.FAT));
+            CreateVictim(GetVictimName(VictimType.TALLMAN));
+            CreateVictim(GetVictimName(VictimType.FAT));
         }).AddTo(gameObject);
-
 
         Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
         {
@@ -54,9 +56,7 @@ public class AIGenerator : MonoBehaviour
     {
         human = Instantiate(human, transform);
 
-        var node_manager = _field.GetComponent<NodeManager>();
-
-        var start_node = node_manager.Nodes[0][0];
+        var start_node = _startNode;
         var start_pos = start_node.transform.position;
 
         human.transform.position = start_pos;

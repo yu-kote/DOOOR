@@ -5,6 +5,22 @@ using System.Linq;
 using UniRx;
 using System;
 
+/// <summary>
+/// 基本的に何かしらのモーションが終わった後は
+/// 待機モーションに戻せばバグらないはず
+/// </summary>
+public enum AnimationStatus
+{
+    IDOL,       // 待機
+    WALK,       // 歩き
+    RUN = 3,    // 走り
+    OPEN_DOOR,  // ドアを開ける
+    STAGGER,    // 罠にかかる(ふらつく)
+    CRISIS,     // 追いつめられる
+    USE_ITEM,   // アイテム使用
+    DEAD,       // 死亡
+}
+
 public class AIController : MonoBehaviour
 {
     private Node _currentNode;
@@ -32,20 +48,6 @@ public class AIController : MonoBehaviour
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
 
-    /// <summary>
-    /// 基本的に何かしらのモーションが終わった後は
-    /// 待機モーションに戻せばバグらないはず
-    /// </summary>
-    public enum AnimationStatus
-    {
-        IDOL,       // 待機
-        WALK,       // 歩き
-        RUN = 3,    // 走り
-        OPEN_DOOR,  // ドアを開ける
-        STAGGER,    // 罠にかかる(ふらつく)
-        CRISIS,     // 追いつめられる
-        DEAD,       // 死亡
-    }
     [SerializeField]
     private AnimationStatus _animStatus;
     public AnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
@@ -240,7 +242,8 @@ public class AIController : MonoBehaviour
             _animStatus = AnimationStatus.WALK;
         if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.DEFAULT)
             _animStatus = AnimationStatus.WALK;
-        if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.HURRY_UP)
+        if (GetComponent<AIRunAway>() &&
+            (_moveMode == MoveEmotion.HURRY_UP || _moveMode == MoveEmotion.REACT_SOUND))
             _animStatus = AnimationStatus.RUN;
     }
 
@@ -282,6 +285,7 @@ public class AIController : MonoBehaviour
         var movement = GetMovement();
         if (movement == null)
             return;
+        movement.MoveSetup();
 
         movement.CanMove = false;
         Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>

@@ -133,6 +133,26 @@ public class AIChace : AITargetMove
             // 追っている目標じゃなかったら殺さない
             if (_targetHuman != human)
                 continue;
+
+            var item_controller = human.GetComponent<AIItemController>();
+            // 迎撃するアイテムを持っていたら迎撃される
+            if (item_controller.HaveItemCheck(ItemType.GUN))
+            {
+                item_controller.UseItem(ItemType.GUN);
+                GetComponent<AIController>()
+                    .AnimStatus = AnimationStatus.STAGGER;
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
+
+            }
+            if (item_controller.HaveItemCheck(ItemType.TYENSO))
+            {
+                item_controller.UseItem(ItemType.TYENSO);
+                GetComponent<AIController>()
+                    .AnimStatus = AnimationStatus.STAGGER;
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
+            }
             _targetHuman = null;
 
             human.GetComponent<AIController>().BeKilled();
