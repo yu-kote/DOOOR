@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<SpriteStudioCellMap version="1.00.02">
+	<name>chala_player</name>
+	<exportPath></exportPath>
+	<generator>SpriteStudio</generator>
+	<packed>0</packed>
+	<imagePath>chala_player.png</imagePath>
+	<pixelSize>2048 2048</pixelSize>
+	<overrideTexSettings>0</overrideTexSettings>
+	<wrapMode>clamp</wrapMode>
+	<filterMode>linear</filterMode>
+	<imagePathAtImport></imagePathAtImport>
+	<packInfoFilePath></packInfoFilePath>
+	<texPackSettings>
+		<maxSize>4096 4096</maxSize>
+		<forcePo2>1</forcePo2>
+		<forceSquare>0</forceSquare>
+		<margin>0</margin>
+		<padding>1</padding>
+	</texPackSettings>
+	<cells>
+		<cell>
+			<name>L_te</name>
+			<pos>1692 446</pos>
+			<size>250 264</size>
+			<pivot>0.175999999046326 0.32196968793869</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>L_ude</name>
+			<pos>1512 730</pos>
+			<size>382 344</size>
+			<pivot>0.353403151035309 0.398255825042725</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>L_kata</name>
+			<pos>1692 4</pos>
+			<size>314 440</size>
+			<pivot>0.280254781246185 0.409090906381607</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>dou</name>
+			<pos>1238 4</pos>
+			<size>452 724</size>
+			<pivot>0.115044251084328 -0.399171262979507</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>kao</name>
+			<pos>604 534</pos>
+			<size>478 488</size>
+			<pivot>0.238493725657463 -0.428278684616089</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>asi_1</name>
+			<pos>604 4</pos>
+			<size>632 528</size>
+			<pivot>-0.142405062913895 0.352272719144821</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>asi_2</name>
+			<pos>1084 730</pos>
+			<size>426 526</size>
+			<pivot>-0.464788734912872 -0.256653994321823</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>kosi</name>
+			<pos>4 4</pos>
+			<size>598 898</size>
+			<pivot>0.0685618743300438 0.394209355115891</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>R_te </name>
+			<pos>638 1024</pos>
+			<size>196 244</size>
+			<pivot>-0.051020409911871 0.405737698078156</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>R_ude</name>
+			<pos>330 1024</pos>
+			<size>306 344</size>
+			<pivot>0.326797395944595 0.395348846912384</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>R_kata</name>
+			<pos>4 904</pos>
+			<size>324 372</size>
+			<pivot>0.358024686574936 0.392473131418228</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+	</cells>
+</SpriteStudioCellMap>
