@@ -33,6 +33,13 @@ public class AIGenerator : MonoBehaviour
 
     void Start()
     {
+        StartCoroutine(Setup());
+    }
+
+    private IEnumerator Setup()
+    {
+        yield return null;
+
         _field = GameObject.Find("Field");
         _startNode = _field.GetComponent<NodeManager>().StartNode;
 

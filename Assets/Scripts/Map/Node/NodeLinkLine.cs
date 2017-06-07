@@ -11,13 +11,13 @@ public class NodeLinkLine : MonoBehaviour
 
     void Awake()
     {
-        CreateLine();
+        //CreateLine();
     }
 
     public void SetLinkNode(Node node)
     {
         _targetNode = node;
-        Link();
+        //Link();
     }
 
     private void CreateLine()

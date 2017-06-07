@@ -88,14 +88,13 @@ public class MapBackgrounds : MonoBehaviour
 
         // ジャスタウェイ
         OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset + offset_kyukeispace);
-        //OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset_kyukeispace);
 
         bg.transform.position += offset_pos;
 
         _backgrounds.Add(bg);
     }
 
-    void OffsetSurface(int x, ref Vector3 offset_pos, float value)
+    public void OffsetSurface(int x, ref Vector3 offset_pos, float value)
     {
         if (_nodeManager.WhichSurfaceNum(x) == 0)
             offset_pos += new Vector3(0, 0, value);
