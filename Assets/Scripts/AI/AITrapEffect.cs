@@ -10,11 +10,13 @@ public class AITrapEffect : MonoBehaviour
     private Node _currentNode;
     private AIController _aiController;
     private AIGenerator _aiGenerator;
+    private VictimAnimation _victimAnimation;
 
     void Start()
     {
         _aiGenerator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
         _aiController = GetComponent<AIController>();
+        _victimAnimation = GetComponent<VictimAnimation>();
     }
 
     // 今のところは瞬間移動になる
@@ -34,8 +36,8 @@ public class AITrapEffect : MonoBehaviour
 
         EasingInitiator.Add(gameObject, target_pos, 2, EaseType.BounceOut);
 
-        _aiController.AnimStatus = AnimationStatus.STAGGER;
-        _aiController.StopMovement(2, () => _aiController.AnimStatus = AnimationStatus.IDOL);
+        _victimAnimation.AnimStatus = VictimAnimationStatus.STAGGER;
+        _aiController.StopMovement(2, () => _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL);
     }
 
     //ロープの罠にかかった時の処理
@@ -43,7 +45,7 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
-        _aiController.AnimStatus = AnimationStatus.STAGGER;
+        _victimAnimation.AnimStatus = VictimAnimationStatus.STAGGER;
         StartCoroutine(Deceleration());
     }
 
@@ -61,7 +63,7 @@ public class AITrapEffect : MonoBehaviour
         if (_aiController == null)
             yield break;
 
-        _aiController.AnimStatus = AnimationStatus.IDOL;
+        _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL;
         _aiController.DefaultSpeed = defalut_speed;
         _aiController.HurryUpSpeed = hurry_up_speed;
     }
@@ -89,8 +91,8 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        _aiController.AnimStatus = AnimationStatus.OPEN_DOOR;
-        _aiController.StopMovement(0.5f, () => _aiController.AnimStatus = AnimationStatus.IDOL);
+        _victimAnimation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
+        _aiController.StopMovement(0.5f, () => _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL);
     }
 
 }

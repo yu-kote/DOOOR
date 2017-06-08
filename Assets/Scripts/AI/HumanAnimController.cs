@@ -10,7 +10,9 @@ public class HumanAnimController : MonoBehaviour
     private Script_SpriteStudio_Root _root;
 
     private AIController _aiController;
-    private AnimationStatus _currentAnimStatus;
+
+    private VictimAnimationStatus _currentVictimAnimStatus;
+    private KillerAnimationStatus _currentKillerAnimStatus;
 
     void Start()
     {
@@ -31,17 +33,30 @@ public class HumanAnimController : MonoBehaviour
 
     void Update()
     {
-        AnimationStatusUpdate();
+        if (tag == "Victim")
+            VictimAnimationStatusUpdate();
+        else if (tag == "Killer")
+            KillerAnimationStatusUpdate();
+
         Rotation();
     }
 
-    void AnimationStatusUpdate()
+    void VictimAnimationStatusUpdate()
     {
-        if (_currentAnimStatus == _aiController.AnimStatus)
+        if (_currentVictimAnimStatus == GetComponent<VictimAnimation>().AnimStatus)
             return;
 
-        _currentAnimStatus = _aiController.AnimStatus;
-        _root.AnimationPlay((int)_currentAnimStatus);
+        _currentVictimAnimStatus = GetComponent<VictimAnimation>().AnimStatus;
+        _root.AnimationPlay((int)_currentVictimAnimStatus);
+    }
+
+    void KillerAnimationStatusUpdate()
+    {
+        if (_currentKillerAnimStatus == GetComponent<KillerAnimation>().AnimStatus)
+            return;
+
+        _currentKillerAnimStatus = GetComponent<KillerAnimation>().AnimStatus;
+        _root.AnimationPlay((int)_currentKillerAnimStatus);
     }
 
     // キャラを進む方向に回転させる

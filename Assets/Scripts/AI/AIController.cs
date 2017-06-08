@@ -5,22 +5,6 @@ using System.Linq;
 using UniRx;
 using System;
 
-/// <summary>
-/// 基本的に何かしらのモーションが終わった後は
-/// 待機モーションに戻せばバグらない設計にする
-/// </summary>
-public enum AnimationStatus
-{
-    IDOL,       // 待機
-    WALK,       // 歩き
-    RUN,        // 走り
-    DEAD,       // 死亡
-    OPEN_DOOR,  // ドアを開ける
-    STAGGER,    // 罠にかかる(ふらつく)
-    CRISIS,     // 追いつめられる
-    USE_ITEM,   // アイテム使用
-}
-
 public class AIController : MonoBehaviour
 {
     private Node _currentNode;
@@ -47,10 +31,6 @@ public class AIController : MonoBehaviour
     [SerializeField]
     private MoveEmotion _moveMode = MoveEmotion.DEFAULT;
     public MoveEmotion MoveMode { get { return _moveMode; } set { _moveMode = value; } }
-
-    [SerializeField]
-    private AnimationStatus _animStatus;
-    public AnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
 
     [SerializeField]
     private float _defaultSpeed;
@@ -82,7 +62,7 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
-        AnimStatusUpdate();
+
     }
 
     private void MoveSpeedChange()
@@ -212,55 +192,6 @@ public class AIController : MonoBehaviour
         var exit_node = exit.GetComponent<Node>();
         return exit_node;
     }
-    
-    // 歩きのモーションのみ更新する
-    void AnimStatusUpdate()
-    {
-        // 死んだら更新を止める
-        if (_animStatus == AnimationStatus.DEAD)
-            return;
-
-        // 追いつめられモーション
-        AnimCrisis();
-
-        if (_animStatus == AnimationStatus.OPEN_DOOR ||
-            _animStatus == AnimationStatus.STAGGER ||
-            _animStatus == AnimationStatus.CRISIS)
-            return;
-
-        _animStatus = AnimationStatus.IDOL;
-        if (GetComponent<AISearchMove>() || GetComponent<AITargetMove>())
-            _animStatus = AnimationStatus.WALK;
-        if (GetComponent<AIRunAway>() && _moveMode == MoveEmotion.DEFAULT)
-            _animStatus = AnimationStatus.WALK;
-        if (GetComponent<AIRunAway>() &&
-            (_moveMode == MoveEmotion.HURRY_UP || _moveMode == MoveEmotion.REACT_SOUND))
-            _animStatus = AnimationStatus.RUN;
-    }
-
-    // 追い詰められモーション
-    void AnimCrisis()
-    {
-        if (GetComponent<AIRunAway>() == false &&
-            _moveMode == MoveEmotion.DEFAULT)
-            return;
-
-        if (_nextNode == null ||
-            _currentNode == null ||
-            _prevNode == null)
-            return;
-
-        // 移動先がある場合ははじく(追いつめられていたらモーションを終了する)
-        if (_nextNode != _currentNode ||
-            _nextNode != _prevNode ||
-            _currentNode != _prevNode)
-        {
-            if (_animStatus == AnimationStatus.CRISIS)
-                _animStatus = AnimationStatus.IDOL;
-            return;
-        }
-        _animStatus = AnimationStatus.CRISIS;
-    }
 
     public void StopMovement(float time)
     {
@@ -294,6 +225,7 @@ public class AIController : MonoBehaviour
     {
         StopMovement(3, () => Destroy(gameObject));
         OnDisable();
+        GetComponent<VictimAnimation>().DeadAnimation();
     }
 
     private void OnDisable()

@@ -139,23 +139,24 @@ public class AIChace : AITargetMove
             if (item_controller.HaveItemCheck(ItemType.GUN))
             {
                 item_controller.UseItem(ItemType.GUN);
-                GetComponent<AIController>()
-                    .AnimStatus = AnimationStatus.STAGGER;
-                GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
+                human.GetComponent<VictimAnimation>()
+                    .AnimStatus = VictimAnimationStatus.CRISIS;
+                human.GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
 
             }
             if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO);
-                GetComponent<AIController>()
-                    .AnimStatus = AnimationStatus.STAGGER;
-                GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
+                human.GetComponent<VictimAnimation>()
+                    .AnimStatus = VictimAnimationStatus.CRISIS;
+                human.GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
             }
             _targetHuman = null;
 
             human.GetComponent<AIController>().BeKilled();
+            GetComponent<KillerAnimation>().KillAnimation();
             break;
         }
     }
