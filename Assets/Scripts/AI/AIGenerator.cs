@@ -50,17 +50,17 @@ public class AIGenerator : MonoBehaviour
             CreateVictim(GetVictimName(VictimType.WOMAN));
         }).AddTo(gameObject);
 
-        Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.TALLMAN));
         }).AddTo(gameObject);
 
-        Observable.Timer(TimeSpan.FromSeconds(1.5f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.FAT));
         }).AddTo(gameObject);
 
-        Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
         {
             for (int i = 0; i < _killerCount; i++)
                 CreateKiller();

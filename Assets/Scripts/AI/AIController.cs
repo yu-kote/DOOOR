@@ -223,7 +223,7 @@ public class AIController : MonoBehaviour
 
     public void BeKilled()
     {
-        StopMovement(3, () => Destroy(gameObject));
+        StopMovement(1.1f, () => Destroy(gameObject));
         OnDisable();
         GetComponent<VictimAnimation>().DeadAnimation();
     }

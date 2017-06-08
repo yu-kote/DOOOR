@@ -20,7 +20,7 @@ public class HumanAnimController : MonoBehaviour
         _aiController = GetComponent<AIController>();
 
         _human = Instantiate(_human, transform);
-        _human.transform.localPosition = new Vector3(0, 1.35f, 0);
+        _human.transform.localPosition = new Vector3(0, 1.0f, 0);
         _human.transform.localRotation = Quaternion.identity;
 
         _root = _human.transform.GetChild(0)
@@ -63,6 +63,21 @@ public class HumanAnimController : MonoBehaviour
     void Rotation()
     {
         var direction = _aiController.GetMovement().MoveDirection;
+        if (direction == Vector3.zero)
+            return;
+        var euler_angle = Quaternion.FromToRotation(new Vector3(0, 0, 1), direction.normalized).eulerAngles;
+        euler_angle = new Vector3(0, euler_angle.y + 90.0f, 0);
+
+        var rotation = _human.transform.rotation;
+        if (rotation.eulerAngles == euler_angle)
+            return;
+        rotation.eulerAngles = euler_angle;
+        _human.transform.rotation = rotation;
+    }
+
+    public void Rotation(GameObject target)
+    {
+        var direction = target.transform.position - gameObject.transform.position;
         if (direction == Vector3.zero)
             return;
         var euler_angle = Quaternion.FromToRotation(new Vector3(0, 0, 1), direction.normalized).eulerAngles;

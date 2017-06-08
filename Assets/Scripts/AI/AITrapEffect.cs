@@ -11,12 +11,14 @@ public class AITrapEffect : MonoBehaviour
     private AIController _aiController;
     private AIGenerator _aiGenerator;
     private VictimAnimation _victimAnimation;
+    private HumanAnimController _humanAnimController;
 
     void Start()
     {
         _aiGenerator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
         _aiController = GetComponent<AIController>();
         _victimAnimation = GetComponent<VictimAnimation>();
+        _humanAnimController = GetComponent<HumanAnimController>();
     }
 
     // 今のところは瞬間移動になる
@@ -93,6 +95,7 @@ public class AITrapEffect : MonoBehaviour
         door.StartOpening();
         _victimAnimation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
         _aiController.StopMovement(0.5f, () => _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL);
+        _humanAnimController.Rotation(current_node.gameObject);
     }
 
 }

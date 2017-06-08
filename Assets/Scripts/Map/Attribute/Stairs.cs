@@ -28,20 +28,9 @@ public class Stairs : AttributeBase
         {
             CreateAttribute("Stairs" + _directionTag);
 
-            var offset = 0.5f;
-            var surface_num = _nodeManager.WhichSurfaceNum(_cell_x);
-            if (surface_num == 0)
-                _attribute.transform.localPosition += new Vector3(0, 0, -offset);
-            else if (surface_num == 1)
-                _attribute.transform.localPosition += new Vector3(offset, 0, 0);
-            else if (surface_num == 2)
-                _attribute.transform.localPosition += new Vector3(0, 0, offset);
-            else if (surface_num == 3)
-                _attribute.transform.localPosition += new Vector3(-offset, 0, 0);
+            var offset = 1f;
+            _attribute.transform.localPosition += new Vector3(0, 0, -offset);
+
         }
-
-
-
-
     }
 }

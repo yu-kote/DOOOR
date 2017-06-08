@@ -139,19 +139,29 @@ public class AIChace : AITargetMove
             if (item_controller.HaveItemCheck(ItemType.GUN))
             {
                 item_controller.UseItem(ItemType.GUN);
+                // アイテム使用アニメーションに変更する
                 human.GetComponent<VictimAnimation>()
                     .AnimStatus = VictimAnimationStatus.CRISIS;
                 human.GetComponent<AIController>()
                     .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
 
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                break;
+
             }
             if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO);
+                // アイテム使用アニメーションに変更する
                 human.GetComponent<VictimAnimation>()
                     .AnimStatus = VictimAnimationStatus.CRISIS;
                 human.GetComponent<AIController>()
                     .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
+
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                break;
             }
             _targetHuman = null;
 
