@@ -34,8 +34,6 @@ public class FadeController : MonoBehaviour
     void Update()
     {
         ColorUpdate();
-
-        Debug.Log(IsFadeComplete());
     }
 
     private void ColorUpdate()
