@@ -54,9 +54,10 @@ public class GameManager : MonoBehaviour
             {
                 human.GetComponent<AIItemController>().UseItem(ItemType.LASTKEY);
 
-                var _aiController = human.GetComponent<AIController>();
-                _aiController.AnimStatus = AnimationStatus.OPEN_DOOR;
-                _aiController.StopMovement(0.5f, () => _aiController.AnimStatus = AnimationStatus.IDOL);
+                var ai_controller = human.GetComponent<AIController>();
+                var animation = human.GetComponent<VictimAnimation>();
+                animation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
+                ai_controller.StopMovement(0.5f, () => animation.AnimStatus = VictimAnimationStatus.IDOL);
                 return true;
             }
             return false;

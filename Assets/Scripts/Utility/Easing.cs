@@ -4,32 +4,21 @@ using UnityEngine;
 using System.Linq;
 using System;
 
-
 public class Easing : MonoBehaviour
 {
-    void Start()
+    void Awake()
     {
         // 使い方
-        // 現状の設計ではlocalPositionしか動かせませんｍ（_ _）ｍ
         // EasingInitiator.Add(gameObject, new Vector3(10,10,10), 1, EaseType.BackIn);
+        // EasingInitiator.Add(gameObject, new Vector3(90, 90, 90), 2, EaseType.BackIn, EaseValue.ROTATION);
+        // EasingInitiator.Add(gameObject, new Vector3(2, 2, 2), 2, EaseType.BackIn, EaseValue.SCALE);
+        // EasingInitiator.Wait(gameObject, 1, EaseValue.ROTATION);
 
-        // テスト
-        EasingInitiator.Add(gameObject, new Vector3(3, 3, -3), 1, EaseType.BackIn);
-        EasingInitiator.Add(gameObject, new Vector3(-3, -3, 3), 1, EaseType.BackIn);
-        EasingInitiator.Add(gameObject, new Vector3(3, 3, -3), 1, EaseType.BackIn);
-        EasingInitiator.Add(gameObject, new Vector3(-3, -3, 3), 1, EaseType.BackIn);
-
-
-        EasingInitiator.Add(gameObject, new Vector3(90, 90, 90), 2, EaseType.BackIn, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(-270, 90, 90), 0.5f, EaseType.BackIn, EaseValue.ROTATION);
-        EasingInitiator.Wait(gameObject, 1, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(90, -90, -90), 2, EaseType.BackIn, EaseValue.ROTATION);
-        EasingInitiator.Add(gameObject, new Vector3(-180, 0, 0), 4, EaseType.BackIn, EaseValue.ROTATION);
-
-        EasingInitiator.Add(gameObject, new Vector3(2, 2, 2), 2, EaseType.BackIn, EaseValue.SCALE);
-        EasingInitiator.Add(gameObject, new Vector3(-1, -1, -1), 4, EaseType.BackIn, EaseValue.SCALE);
-        EasingInitiator.Add(gameObject, new Vector3(1, 1, 1), 1, EaseType.BackIn, EaseValue.SCALE);
-
+        GameObject obj = GameObject.Find("EasingManager");
+        if (obj == null)
+            Destroy(gameObject);
+        else
+            DontDestroyOnLoad(gameObject);
     }
 
     void Update()

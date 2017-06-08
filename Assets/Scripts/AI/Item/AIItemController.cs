@@ -52,8 +52,8 @@ public class AIItemController : MonoBehaviour
     public void UseItem(ItemType type)
     {
         var ai_controller = GetComponent<AIController>();
-        ai_controller.AnimStatus = AnimationStatus.USE_ITEM;
-        ai_controller.StopMovement(0.5f, () => GetComponent<AIController>().AnimStatus = AnimationStatus.IDOL);
+        GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.USE_ITEM;
+        ai_controller.StopMovement(0.5f, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
         _haveItems.Remove(type);
     }
 
