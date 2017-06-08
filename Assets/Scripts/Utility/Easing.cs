@@ -14,8 +14,8 @@ public class Easing : MonoBehaviour
         // EasingInitiator.Add(gameObject, new Vector3(2, 2, 2), 2, EaseType.BackIn, EaseValue.SCALE);
         // EasingInitiator.Wait(gameObject, 1, EaseValue.ROTATION);
 
-        GameObject obj = GameObject.Find("EasingManager");
-        if (obj == null)
+        GameObject[] obj = GameObject.FindGameObjectsWithTag("EasingManager");
+        if (obj.Length > 1)
             Destroy(gameObject);
         else
             DontDestroyOnLoad(gameObject);
