@@ -46,6 +46,17 @@ public class AISoundManager : MonoBehaviour
         return ai_sound;
     }
 
+    public bool CheckSound(GameObject obj)
+    {
+        return _aiSounds.ContainsKey(obj);
+    }
+
+    public void RemoveSound(GameObject obj)
+    {
+        if (CheckSound(obj))
+            _aiSounds.Remove(obj);
+    }
+    
     void Update()
     {
         foreach (var sound in _aiSounds)

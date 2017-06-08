@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class AIGenerator : MonoBehaviour
 {
@@ -36,55 +37,43 @@ public class AIGenerator : MonoBehaviour
         StartCoroutine(Setup());
     }
 
+    private void StartNodeSetup()
+    {
+        _field = GameObject.Find("Field");
+        _startNode = _field.GetComponent<NodeManager>().StartNode;
+    }
+
     private IEnumerator Setup()
     {
         yield return null;
 
-        _field = GameObject.Find("Field");
-        _startNode = _field.GetComponent<NodeManager>().StartNode;
-
+        StartNodeSetup();
         _view3dCamera = Instantiate(_view3dCamera, transform);
 
-        Observable.Timer(TimeSpan.FromSeconds(0.5f)).Subscribe(_ =>
-        {
-            CreateVictim(GetVictimName(VictimType.WOMAN));
-        }).AddTo(gameObject);
-
-        Observable.Timer(TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
-        {
-            CreateVictim(GetVictimName(VictimType.TALLMAN));
-        }).AddTo(gameObject);
-
-        Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
-        {
-            CreateVictim(GetVictimName(VictimType.FAT));
-        }).AddTo(gameObject);
-
-        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
-        {
-            for (int i = 0; i < _killerCount; i++)
-                CreateKiller();
-        }).AddTo(gameObject);
+        if (SceneManager.GetSceneByName("Title").name != null)
+            TitlePopHuman();
     }
 
-    void CreateHuman(GameObject human)
+    GameObject CreateHuman(GameObject human)
     {
-        human = Instantiate(human, transform);
+        var create_human = Instantiate(human, transform);
 
         var start_node = _startNode;
-        var start_pos = start_node.transform.position;
+        var start_pos = start_node.transform.position
+                        + new Vector3(0, 0, -5);
 
-        human.transform.position = start_pos;
-        human.transform.position += new Vector3(0, human.transform.localScale.y, 0);
+        create_human.transform.position = start_pos;
+        create_human.transform.position += new Vector3(0, create_human.transform.localScale.y, 0);
 
-        var my_number = human.GetComponent<MyNumber>();
+        var my_number = create_human.GetComponent<MyNumber>();
         my_number.Number = _generateCount;
 
-        start_node.GetComponent<FootPrint>().StepIn(human);
+        start_node.GetComponent<FootPrint>().StepIn(create_human);
 
-        _humans.Add(human);
+        _humans.Add(create_human);
 
         _generateCount++;
+        return create_human;
     }
 
     public string GetVictimName(VictimType type)
@@ -106,19 +95,76 @@ public class AIGenerator : MonoBehaviour
         return _humans.First(human => human.tag == "Killer");
     }
 
-    void CreateVictim(string name)
+    GameObject CreateVictim(string name)
     {
-        CreateHuman(Resources.Load<GameObject>("Prefabs/Human/" + name));
+        return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/" + name));
     }
 
-    void CreateKiller()
+    GameObject CreateKiller()
     {
-        CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
+        return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
+    }
+
+
+
+    private void TitlePopHuman()
+    {
+        Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
+        {
+            CreateVictim(GetVictimName(VictimType.WOMAN));
+        }).AddTo(gameObject);
+        Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
+        {
+            CreateVictim(GetVictimName(VictimType.TALLMAN));
+        }).AddTo(gameObject);
+        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
+        {
+            CreateVictim(GetVictimName(VictimType.FAT));
+        }).AddTo(gameObject);
+    }
+
+    public void InstanceHumans(int stage_num)
+    {
+        OnDestroy();
+
+        StartCoroutine(CreateHumans(stage_num));
+    }
+
+    private IEnumerator CreateHumans(int stage_num)
+    {
+        yield return null;
+
+        StartNodeSetup();
+        var text = Resources.Load<TextAsset>
+            ("PlannerData/MapData/Stage" + stage_num + "/Human");
+
+        var human_data = JsonUtility.FromJson<StageDataJson>(text.text);
+
+        for (int i = 0; i < human_data.woman; i++)
+            CreateVictim(GetVictimName(VictimType.WOMAN));
+        for (int i = 0; i < human_data.tallman; i++)
+            CreateVictim(GetVictimName(VictimType.TALLMAN));
+        for (int i = 0; i < human_data.fat; i++)
+            CreateVictim(GetVictimName(VictimType.FAT));
+    }
+
+    public void MoveStartHumans()
+    {
+        foreach (var human in _humans)
+        {
+            human.GetComponent<AIBeginMove>().BeginMoveStart();
+        }
+
+        Observable.Timer(TimeSpan.FromSeconds(_victimCount + 5.0f)).Subscribe(_ =>
+        {
+            var killer = CreateKiller();
+            killer.GetComponent<AIBeginMove>().BeginMoveStart();
+        }).AddTo(gameObject);
     }
 
     private void OnDestroy()
     {
-        foreach (var human in _humans)
+        foreach (var human in _humans.ToList())
             Destroy(human);
         _humans.Clear();
     }

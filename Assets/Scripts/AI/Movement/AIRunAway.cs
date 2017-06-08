@@ -9,7 +9,7 @@ public class AIRunAway : AIRouteSearch
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
     [SerializeField]
-    private int _endNodeDistance = 8;
+    private int _endNodeDistance = 9;
 
     private int _endFlame;
 
@@ -73,13 +73,12 @@ public class AIRunAway : AIRouteSearch
         var distance = vec.magnitude;
 
         // 逃げ切ったら終わり
+        if (distance > _endDistance)
+            return true;
+        if (SearchCount > _endNodeDistance)
+            return true;
         if (_endFlame-- < 0)
-        {
-            if (distance > _endDistance)
-                return true;
-            if (SearchCount > _endNodeDistance)
-                return true;
-        }
+            return true;
 
         // 逃げる対象が人間だった場合は遠ざかるノードを更新する
         if (_targetHuman)

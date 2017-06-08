@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UniRx;
 using System;
+using UnityEngine.SceneManagement;
 
 public class AIController : MonoBehaviour
 {
@@ -54,7 +55,6 @@ public class AIController : MonoBehaviour
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         GetMovement().Speed = _defaultSpeed;
-        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange);
     }
 
     void Update()
@@ -63,6 +63,26 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
 
+        if (SceneManager.GetSceneByName("Title").name == null)
+            SoundUpdate();
+    }
+
+    private void SoundUpdate()
+    {
+        var movement = GetMovement();
+        if (movement == null)
+            return;
+        // すでに音を鳴らしていたらはじく
+        if (_aiSoundManager.CheckSound(gameObject))
+            return;
+        // 移動できる状態なら音を鳴らす。移動できない場合は音を消す
+        if (movement.CanMove == false)
+        {
+            _aiSoundManager.RemoveSound(gameObject);
+            return;
+        }
+
+        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange);
     }
 
     private void MoveSpeedChange()
@@ -193,17 +213,34 @@ public class AIController : MonoBehaviour
         return exit_node;
     }
 
+    float _stopTime;
+
     public void StopMovement(float time)
     {
         var movement = GetMovement();
         if (movement == null)
             return;
-
-        movement.CanMove = false;
+        _stopTime = time;
+        StartCoroutine(StopMove());
         Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
         {
             movement.CanMove = true;
         }).AddTo(gameObject);
+    }
+
+    private IEnumerator StopMove()
+    {
+        int count = 0;
+        while (count < (_stopTime * 60))
+        {
+            count++;
+            var movement = GetMovement();
+            if (movement)
+                movement.CanMove = false;
+            yield return null;
+        }
+        GetMovement().MoveSetup();
+        GetMovement().CanMove = true;
     }
 
     public void StopMovement(float time, Action action)
@@ -213,7 +250,8 @@ public class AIController : MonoBehaviour
             return;
         movement.MoveSetup();
 
-        movement.CanMove = false;
+        _stopTime = time;
+        StartCoroutine(StopMove());
         Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
         {
             movement.CanMove = true;

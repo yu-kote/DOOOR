@@ -60,4 +60,10 @@ public class Node : MonoBehaviour
         }
         return default(T);
     }
+
+    private void OnDestroy()
+    {
+        _linkNodes.Clear();
+        _linkLines.Clear();
+    }
 }

@@ -4,6 +4,16 @@ using UnityEngine;
 using System.Linq;
 using UniRx;
 using System;
+using System.IO;
+
+public enum GameState
+{
+    SELECT,
+    TUTORIAL,
+    GAMEMAIN,
+    GAMECLEAR,
+    GAMEOVER,
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -14,16 +24,68 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _gameOver;
 
+    private GameState _currentGameState;
+    public GameState CurrentGameState { get { return _currentGameState; } set { _currentGameState = value; } }
+    private GameState _prevGameState;
+
+    private bool _isGameEnd;
+    public bool IsGameEnd { get { return _isGameEnd; } set { _isGameEnd = value; } }
+
 
     void Start()
     {
         //var field = GameObject.Find("Field");
         var human_manager = GameObject.Find("HumanManager");
         _aiGenerator = human_manager.GetComponent<AIGenerator>();
+        _currentGameState = GameState.SELECT;
     }
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.Return))
+        {
+            _currentGameState = GameState.GAMEMAIN;
+            GetComponent<Select>().SelectEnd();
+        }
+
+        GameMainStateUpdate();
+        GameEndUpdate();
+    }
+
+    private void GameMainStateUpdate()
+    {
+        if (_currentGameState == _prevGameState)
+            return;
+        if (_currentGameState != GameState.GAMEMAIN)
+            return;
+        _prevGameState = _currentGameState;
+
+        StartGameMain(() =>
+        {
+            _aiGenerator.MoveStartHumans();
+        });
+    }
+
+    public void StartGameMain(Action action)
+    {
+        StartCoroutine(CheckGameMain(action));
+    }
+    private IEnumerator CheckGameMain(Action action)
+    {
+        while (true)
+        {
+            yield return null;
+            if (_currentGameState != GameState.GAMEMAIN)
+                continue;
+            action();
+            break;
+        }
+    }
+
+    void GameEndUpdate()
+    {
+        if (_isGameEnd)
+            return;
         GameClear();
         GameOver();
     }
@@ -35,6 +97,8 @@ public class GameManager : MonoBehaviour
         if (humans.FirstOrDefault(human => human.tag == "Victim") != null)
             return;
         _gameClear.SetActive(true);
+        _isGameEnd = true;
+        _currentGameState = GameState.GAMECLEAR;
     }
 
     void GameOver()
@@ -67,6 +131,8 @@ public class GameManager : MonoBehaviour
             return;
 
         _gameOver.SetActive(true);
+        _isGameEnd = true;
+        _currentGameState = GameState.GAMEOVER;
     }
 
 }

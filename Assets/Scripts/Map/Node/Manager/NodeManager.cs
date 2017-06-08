@@ -35,13 +35,15 @@ public class NodeManager : MonoBehaviour
 
     }
 
-    void Start()
+    public void Start()
     {
+        OnDestroy();
         MapLoader mapLoader = GetComponent<MapLoader>();
         List<string[]> mapDatas = mapLoader._mapDatas;
         NodesInitialize(mapDatas.Count, mapDatas[0].Length);
         NodesLink();
         CreateMap(mapLoader);
+        GetComponent<MapBackgrounds>().CreateMapBackgrond();
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -299,4 +301,19 @@ public class NodeManager : MonoBehaviour
         return null;
     }
 
+    public void OnDestroy()
+    {
+        foreach (var y in _nodes)
+        {
+            foreach (var node in y)
+            {
+                Destroy(node);
+            }
+        }
+        foreach (var y in _nodes)
+        {
+            y.Clear();
+        }
+        _nodes.Clear();
+    }
 }
