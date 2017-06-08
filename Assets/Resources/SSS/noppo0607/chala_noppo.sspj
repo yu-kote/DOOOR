@@ -104,8 +104,7 @@
 		<value>chala_noppo.ssae</value>
 	</animepackNames>
 	<lastAnimeFile>chala_noppo.ssae</lastAnimeFile>
-	<lastAnimeName>03_run_hurikaeri</lastAnimeName>
+	<lastAnimeName>07_pinch</lastAnimeName>
 	<lastCellMapFile>chala_noppo.ssce</lastCellMapFile>
-	<lastCell>R_sune</lastCell>
-	<lastPart>R_sune</lastPart>
+	<lastCell>kao</lastCell>
 </SpriteStudioProject>
