@@ -7,18 +7,18 @@ using System;
 
 /// <summary>
 /// 基本的に何かしらのモーションが終わった後は
-/// 待機モーションに戻せばバグらないはず
+/// 待機モーションに戻せばバグらない設計にする
 /// </summary>
 public enum AnimationStatus
 {
     IDOL,       // 待機
     WALK,       // 歩き
-    RUN = 3,    // 走り
+    RUN,        // 走り
+    DEAD,       // 死亡
     OPEN_DOOR,  // ドアを開ける
     STAGGER,    // 罠にかかる(ふらつく)
     CRISIS,     // 追いつめられる
     USE_ITEM,   // アイテム使用
-    DEAD,       // 死亡
 }
 
 public class AIController : MonoBehaviour
@@ -82,7 +82,6 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
-        SoundUpdate();
         AnimStatusUpdate();
     }
 
@@ -213,15 +212,7 @@ public class AIController : MonoBehaviour
         var exit_node = exit.GetComponent<Node>();
         return exit_node;
     }
-
-    void SoundUpdate()
-    {
-        var resound = CurrentNode;//.GetComponent<Resound>();
-        if (resound == null)
-            return;
-
-    }
-
+    
     // 歩きのモーションのみ更新する
     void AnimStatusUpdate()
     {
@@ -247,9 +238,13 @@ public class AIController : MonoBehaviour
             _animStatus = AnimationStatus.RUN;
     }
 
-
+    // 追い詰められモーション
     void AnimCrisis()
     {
+        if (GetComponent<AIRunAway>() == false &&
+            _moveMode == MoveEmotion.DEFAULT)
+            return;
+
         if (_nextNode == null ||
             _currentNode == null ||
             _prevNode == null)

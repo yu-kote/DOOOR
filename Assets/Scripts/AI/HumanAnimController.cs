@@ -21,7 +21,7 @@ public class HumanAnimController : MonoBehaviour
         _human.transform.localPosition = new Vector3(0, 1.35f, 0);
         _human.transform.localRotation = Quaternion.identity;
 
-        _root = _human.transform.FindChild("chara_noppo")
+        _root = _human.transform.GetChild(0)
             .gameObject.GetComponent<Script_SpriteStudio_Root>();
 
         var camera = ai_generator.View3dCamera;

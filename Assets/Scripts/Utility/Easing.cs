@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 
+
 public class Easing : MonoBehaviour
 {
     void Start()
@@ -34,6 +35,11 @@ public class Easing : MonoBehaviour
     void Update()
     {
         EasingInitiator.EaseUpdate();
+    }
+
+    public void OnDestroy()
+    {
+        EasingInitiator.Clear();
     }
 }
 
@@ -133,6 +139,18 @@ public static class EasingInitiator
             ease.Remove(item.Key);
     }
 
+    public static void Clear()
+    {
+        foreach (var item in _easePosition)
+            item.Value.Crear();
+        foreach (var item in _easeRotation)
+            item.Value.Crear();
+        foreach (var item in _easeScale)
+            item.Value.Crear();
+        _easePosition.Clear();
+        _easeRotation.Clear();
+        _easeScale.Clear();
+    }
 }
 
 class RunEase

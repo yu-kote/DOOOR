@@ -32,16 +32,16 @@ public class NodeManager : MonoBehaviour
 
     void Awake()
     {
+
+    }
+
+    void Start()
+    {
         MapLoader mapLoader = GetComponent<MapLoader>();
         List<string[]> mapDatas = mapLoader._mapDatas;
         NodesInitialize(mapDatas.Count, mapDatas[0].Length);
         NodesLink();
         CreateMap(mapLoader);
-    }
-
-    void Start()
-    {
-
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -73,6 +73,7 @@ public class NodeManager : MonoBehaviour
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
                             stairs.DirectionTag = "Left";
+                            stairs.CellX = x;
                         }
                         break;
 
@@ -84,6 +85,7 @@ public class NodeManager : MonoBehaviour
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
                             stairs.DirectionTag = "Right";
+                            stairs.CellX = x;
                         }
                         break;
 
