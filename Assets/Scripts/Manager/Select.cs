@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Select : MonoBehaviour
 {
@@ -12,6 +13,11 @@ public class Select : MonoBehaviour
     private GameObject _camera;
     [SerializeField]
     private GameObject _player;
+
+    [SerializeField]
+    private Text _stageNum;
+    [SerializeField]
+    private Image _startButton;
 
     [SerializeField]
     string _horizontalAxis = "Horizontal";
@@ -32,8 +38,8 @@ public class Select : MonoBehaviour
 
     void Awake()
     {
-        _selectStageNum = 0;
-        _currentSelectStageNum = _selectStageNum;
+        _selectStageNum = 1;
+        _currentSelectStageNum = 0;
 
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
@@ -54,6 +60,10 @@ public class Select : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.T))
+            GameObject.Find("SceneChanger")
+                .GetComponent<SceneChanger>().SceneChange("Title");
+
         if (_isSelectEnd == true)
         {
             if (EasingInitiator.IsEaseEnd(gameObject))
@@ -83,6 +93,7 @@ public class Select : MonoBehaviour
         {
             _isSelectEnd = true;
             SelectEndStaging();
+            StartButtonChange();
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -108,6 +119,10 @@ public class Select : MonoBehaviour
 
         // 0はタイトルステージなので、1 ~ max 
         _selectStageNum = Mathf.Clamp(_selectStageNum, 1, 3);
+
+        // テキスト更新
+        StageNumTextupdate();
+
         if (_currentSelectStageNum == _selectStageNum)
             return;
         _currentSelectStageNum = _selectStageNum;
@@ -153,5 +168,16 @@ public class Select : MonoBehaviour
         var default_angle = new Vector3(0, 0, 360);
         EasingInitiator.Add(_camera, default_angle, staging_time, EaseType.CubicOut, EaseValue.ROTATION);
         EasingInitiator.Add(_frame, new Vector3(0, 0, -15), staging_time, EaseType.CubicOut, EaseValue.ROTATION);
+    }
+
+    private void StageNumTextupdate()
+    {
+        _stageNum.text = "Stage " + _selectStageNum;
+    }
+
+    private void StartButtonChange()
+    {
+        var push = Resources.Load<Sprite>("Texture/SelectUI/s-botan02");
+        _startButton.sprite = push;
     }
 }
