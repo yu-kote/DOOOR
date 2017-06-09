@@ -90,9 +90,14 @@ public class PlayerAction : MonoBehaviour
             if (other.tag == "Node")
                 CreateTrap(other.gameObject, value);
 
-        if (Input.GetButtonDown(_actionButton))
+        if (IsDoorLock())
             if (other.tag == "Attribute")
                 CraftTheInstallation(other.gameObject);
+    }
+
+    public bool IsDoorLock()
+    {
+        return Input.GetButton(_actionButton);
     }
 
     private void CreateTrap(GameObject node, TrapDirection cross_direction)
