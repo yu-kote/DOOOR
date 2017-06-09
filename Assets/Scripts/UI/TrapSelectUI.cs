@@ -65,18 +65,7 @@ public class TrapSelectUI : MonoBehaviour
         gameObject.GetComponent<Image>().sprite = System.Array.Find<Sprite>(
                     _buttonSprites, (sprite) => sprite.name.Equals(
                         "itemcross_" + (int)_trapDirection));
-
-        switch (_trapDirection)
-        {
-            case TrapDirection.UP:
-                break;
-            case TrapDirection.DOWN:
-                break;
-            case TrapDirection.RIGHT:
-                break;
-            case TrapDirection.LEFT:
-                break;
-        }
+        
 
         int num = (int)_trapDirection - 1;
         if (num == -1)

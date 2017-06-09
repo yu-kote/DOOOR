@@ -4,52 +4,56 @@ using UnityEngine;
 
 public class PlayerMover : MonoBehaviour
 {
-	// 移動量
-	[SerializeField]
-	private Vector2 _moveSpeed = Vector2.one;
-	public Vector2 MoveSpeed
-	{
-		get { return _moveSpeed; }
-		set { _moveSpeed = value; }
-	}
-	
-	private Transform _cameraTrans = null;
+    // 移動量
+    [SerializeField]
+    private Vector2 _moveSpeed = Vector2.one;
+    public Vector2 MoveSpeed
+    {
+        get { return _moveSpeed; }
+        set { _moveSpeed = value; }
+    }
 
-	void Awake()
-	{
+    private Transform _cameraTrans = null;
 
-	}
+    void Awake()
+    {
 
-	void Start()
-	{
-		_cameraTrans = GameObject.Find("MainCamera").transform;
-		if (_cameraTrans == null)
-			Debug.Log("_cameraTrans null!");
-	}
+    }
 
-	void Update()
-	{
-		if (GetComponent<Rotater>().IsRotating)
-			return;
+    void Start()
+    {
+        _cameraTrans = GameObject.Find("MainCamera").transform;
+        if (_cameraTrans == null)
+            Debug.Log("_cameraTrans null!");
+    }
 
-		// 軸の傾きを獲得
-		float horizotal = Input.GetAxis("Horizontal");
-		float vertical = Input.GetAxis("Vertical") * -1.0f;
-		// 経過時間を獲得
-		float deltaTime = Time.deltaTime;
-		// カメラからY軸の回転量を獲得
-		float cameraRotateYValue = _cameraTrans.eulerAngles.y;
+    void Update()
+    {
+        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
+            != GameState.GAMEMAIN)
+            return;
 
-		// カメラが見ている方向に対して移動軸を変更しないといけない
-		Vector3 movingAmount = new Vector3(
-			_moveSpeed.x * horizotal * Mathf.Cos(cameraRotateYValue * Mathf.Deg2Rad),
-			_moveSpeed.y * vertical,
-			_moveSpeed.x * -horizotal * Mathf.Sin(cameraRotateYValue * Mathf.Deg2Rad))
-			* deltaTime;
+        if (GetComponent<Rotater>().IsRotating)
+            return;
 
-		transform.position += movingAmount;
+        // 軸の傾きを獲得
+        float horizotal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical") * -1.0f;
+        // 経過時間を獲得
+        float deltaTime = Time.deltaTime;
+        // カメラからY軸の回転量を獲得
+        float cameraRotateYValue = _cameraTrans.eulerAngles.y;
 
-		// ステージないから出れないようにする処理
-		// 未実装
-	}
+        // カメラが見ている方向に対して移動軸を変更しないといけない
+        Vector3 movingAmount = new Vector3(
+            _moveSpeed.x * horizotal * Mathf.Cos(cameraRotateYValue * Mathf.Deg2Rad),
+            _moveSpeed.y * vertical,
+            _moveSpeed.x * -horizotal * Mathf.Sin(cameraRotateYValue * Mathf.Deg2Rad))
+            * deltaTime;
+
+        transform.position += movingAmount;
+
+        // ステージないから出れないようにする処理
+        // 未実装
+    }
 }

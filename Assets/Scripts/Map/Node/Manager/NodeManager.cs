@@ -44,6 +44,7 @@ public class NodeManager : MonoBehaviour
         NodesLink();
         CreateMap(mapLoader);
         GetComponent<MapBackgrounds>().CreateMapBackgrond();
+        
     }
 
     private void CreateMap(MapLoader mapLoader)

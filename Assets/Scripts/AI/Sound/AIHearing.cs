@@ -46,7 +46,7 @@ public abstract class AIHearing : MonoBehaviour
             if (target == null)
             {
                 _targetSounds.Remove(target);
-                break;
+                return;
             }
         }
 

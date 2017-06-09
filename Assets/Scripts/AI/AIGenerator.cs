@@ -8,16 +8,13 @@ using UnityEngine.SceneManagement;
 
 public class AIGenerator : MonoBehaviour
 {
-    [SerializeField]
-    private int _victimCount;
-    [SerializeField]
-    private int _killerCount;
 
     [SerializeField]
     private GameObject _view3dCamera;
     public GameObject View3dCamera { get { return _view3dCamera; } }
 
     private Node _startNode;
+    public Node StartNode { get { return _startNode; } }
 
     public enum VictimType
     {
@@ -104,22 +101,21 @@ public class AIGenerator : MonoBehaviour
     {
         return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
     }
-
-
+    
 
     private void TitlePopHuman()
     {
         Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
         {
-            CreateVictim(GetVictimName(VictimType.WOMAN));
+            CreateVictim(GetVictimName(VictimType.WOMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(gameObject);
         Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
         {
-            CreateVictim(GetVictimName(VictimType.TALLMAN));
+            CreateVictim(GetVictimName(VictimType.TALLMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(gameObject);
         Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
         {
-            CreateVictim(GetVictimName(VictimType.FAT));
+            CreateVictim(GetVictimName(VictimType.FAT)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(gameObject);
     }
 
@@ -127,14 +123,14 @@ public class AIGenerator : MonoBehaviour
     {
         OnDestroy();
 
+        StartNodeSetup();
         StartCoroutine(CreateHumans(stage_num));
     }
 
     private IEnumerator CreateHumans(int stage_num)
     {
         yield return null;
-
-        StartNodeSetup();
+        
         var text = Resources.Load<TextAsset>
             ("PlannerData/MapData/Stage" + stage_num + "/Human");
 
@@ -155,7 +151,7 @@ public class AIGenerator : MonoBehaviour
             human.GetComponent<AIBeginMove>().BeginMoveStart();
         }
 
-        Observable.Timer(TimeSpan.FromSeconds(_victimCount + 5.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
         {
             var killer = CreateKiller();
             killer.GetComponent<AIBeginMove>().BeginMoveStart();

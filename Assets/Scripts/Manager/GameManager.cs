@@ -17,7 +17,13 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField]
+    private string _selectEndButton = "Action";
+    [SerializeField]
+    private string _gameEndButton = "Action";
+
     private AIGenerator _aiGenerator;
+    private GameMainUIController _uiController;
 
     [SerializeField]
     private GameObject _gameClear;
@@ -38,50 +44,39 @@ public class GameManager : MonoBehaviour
         var human_manager = GameObject.Find("HumanManager");
         _aiGenerator = human_manager.GetComponent<AIGenerator>();
         _currentGameState = GameState.SELECT;
+
+        var canvas = GameObject.Find("UICanvas");
+        _uiController = canvas.GetComponent<GameMainUIController>();
+
+        StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
+        StateChangeCallBack(() => _uiController.UiStart(), GameState.GAMEMAIN);
+        StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMEOVER);
+        StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Return))
-        {
-            _currentGameState = GameState.GAMEMAIN;
-            GetComponent<Select>().SelectEnd();
-        }
-
-        GameMainStateUpdate();
         GameEndUpdate();
     }
 
-    private void GameMainStateUpdate()
+    // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
+    public void StateChangeCallBack(Action action, GameState state)
     {
-        if (_currentGameState == _prevGameState)
-            return;
-        if (_currentGameState != GameState.GAMEMAIN)
-            return;
-        _prevGameState = _currentGameState;
-
-        StartGameMain(() =>
-        {
-            _aiGenerator.MoveStartHumans();
-        });
+        StartCoroutine(CallBack(action, state));
     }
-
-    public void StartGameMain(Action action)
-    {
-        StartCoroutine(CheckGameMain(action));
-    }
-    private IEnumerator CheckGameMain(Action action)
+    private IEnumerator CallBack(Action action, GameState state)
     {
         while (true)
         {
             yield return null;
-            if (_currentGameState != GameState.GAMEMAIN)
+            if (_currentGameState != state)
                 continue;
             action();
             break;
         }
     }
 
+    // クリアかゲームオーバーの判定をするところ
     void GameEndUpdate()
     {
         if (_isGameEnd)
@@ -135,4 +130,8 @@ public class GameManager : MonoBehaviour
         _currentGameState = GameState.GAMEOVER;
     }
 
+    public bool IsPushActionButton()
+    {
+        return Input.GetButtonDown(_selectEndButton);
+    }
 }
