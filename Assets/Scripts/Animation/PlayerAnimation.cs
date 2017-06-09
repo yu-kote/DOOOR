@@ -61,8 +61,10 @@ public class PlayerAnimation : MonoBehaviour
     void Rotation()
     {
         var direction = GetComponent<PlayerMover>().MovingAmount;
+        direction = new Vector3(direction.x, 0, direction.z);
         if (direction == Vector3.zero)
             return;
+
         var euler_angle = Quaternion.FromToRotation(new Vector3(0, 0, 1), direction.normalized).eulerAngles;
         euler_angle = new Vector3(0, euler_angle.y + 90.0f, 0);
 
@@ -77,7 +79,6 @@ public class PlayerAnimation : MonoBehaviour
     {
         if (_currentPlayerAnimStatus == _animStatus)
             return;
-
         _currentPlayerAnimStatus = _animStatus;
         _root.AnimationPlay((int)_currentPlayerAnimStatus);
     }
