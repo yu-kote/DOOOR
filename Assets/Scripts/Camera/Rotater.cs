@@ -33,8 +33,12 @@ public class Rotater : MonoBehaviour
     void Update()
     {
         _interestPoint = GameObject.Find("Field").GetComponent<NodeManager>().GetNodesCenterPoint();
-        Rotating();
 
+        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
+            != GameState.GAMEMAIN)
+            return;
+
+        Rotating();
         if (Input.GetButton(_leftRotateButton))
             StartRotation(_rotateAngle);
         if (Input.GetButton(_rightRotateButton))

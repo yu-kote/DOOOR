@@ -107,7 +107,7 @@ public class Select : MonoBehaviour
             _isAxisDown = false;
 
         // 0はタイトルステージなので、1 ~ max 
-        _selectStageNum = Mathf.Clamp(_selectStageNum, 1, 3 );
+        _selectStageNum = Mathf.Clamp(_selectStageNum, 1, 3);
         if (_currentSelectStageNum == _selectStageNum)
             return;
         _currentSelectStageNum = _selectStageNum;
@@ -152,6 +152,6 @@ public class Select : MonoBehaviour
 
         var default_angle = new Vector3(0, 0, 360);
         EasingInitiator.Add(_camera, default_angle, staging_time, EaseType.CubicOut, EaseValue.ROTATION);
-        EasingInitiator.Add(_frame, Vector3.zero, staging_time, EaseType.CubicOut, EaseValue.ROTATION);
+        EasingInitiator.Add(_frame, new Vector3(0, 0, -15), staging_time, EaseType.CubicOut, EaseValue.ROTATION);
     }
 }
