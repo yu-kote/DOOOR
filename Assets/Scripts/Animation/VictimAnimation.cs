@@ -54,9 +54,9 @@ public class VictimAnimation : MonoBehaviour
             _animStatus == VictimAnimationStatus.CRISIS)
             return;
 
+        _animStatus = VictimAnimationStatus.IDOL;
         var move_mode = _aiController.MoveMode;
 
-        _animStatus = VictimAnimationStatus.IDOL;
         if (GetComponent<AISearchMove>() || GetComponent<AITargetMove>())
             _animStatus = VictimAnimationStatus.WALK;
         if (GetComponent<AIRunAway>() && move_mode == AIController.MoveEmotion.DEFAULT)
@@ -64,6 +64,11 @@ public class VictimAnimation : MonoBehaviour
         if (GetComponent<AIRunAway>() &&
             (move_mode == AIController.MoveEmotion.HURRY_UP || move_mode == AIController.MoveEmotion.REACT_SOUND))
             _animStatus = VictimAnimationStatus.RUN;
+
+        // 探索を開始していなければは待機状態
+        if (GetComponent<AIBeginMove>())
+            if (GetComponent<AIBeginMove>().IsSearchStart == false)
+                _animStatus = VictimAnimationStatus.IDOL;
     }
 
     // 追い詰められモーション

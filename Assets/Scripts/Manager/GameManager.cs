@@ -80,7 +80,13 @@ public class GameManager : MonoBehaviour
     void GameEndUpdate()
     {
         if (_isGameEnd)
+        {
+            if (Input.GetButtonDown(_gameEndButton))
+                GameObject.Find("SceneChanger")
+                    .GetComponent<SceneChanger>().SceneChange("Title");
+            
             return;
+        }
         GameClear();
         GameOver();
     }

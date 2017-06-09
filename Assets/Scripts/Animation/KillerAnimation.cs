@@ -23,6 +23,7 @@ public class KillerAnimation : MonoBehaviour
 
     void Start()
     {
+        _animStatus = KillerAnimationStatus.IDOL;
         _aiController = GetComponent<AIController>();
     }
 

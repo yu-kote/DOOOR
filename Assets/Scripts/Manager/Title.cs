@@ -7,25 +7,23 @@ public class Title : MonoBehaviour
     [SerializeField]
     string _startButton = "Action";
 
-
-    [SerializeField]
     SceneChanger _sceneChanger;
 
     void Start()
     {
-
+        _sceneChanger = GameObject.Find("SceneChanger").GetComponent<SceneChanger>();
     }
 
     void Update()
     {
         if (Input.GetButtonDown(_startButton))
         {
-            _sceneChanger.ChangeGameMain();
+            _sceneChanger.SceneChange("GameMain");
             Destroy(this);
         }
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            _sceneChanger.ChangeGameMain();
+            _sceneChanger.SceneChange("GameMain");
             Destroy(this);
         }
     }

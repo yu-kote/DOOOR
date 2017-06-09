@@ -15,6 +15,14 @@ public class PlayerMover : MonoBehaviour
 
     private Transform _cameraTrans = null;
 
+    private Vector3 _movingAmount;
+    public Vector3 MovingAmount
+    {
+        get { return _movingAmount; }
+        set { _movingAmount = value; }
+    }
+
+
     void Awake()
     {
 
@@ -45,13 +53,13 @@ public class PlayerMover : MonoBehaviour
         float cameraRotateYValue = _cameraTrans.eulerAngles.y;
 
         // カメラが見ている方向に対して移動軸を変更しないといけない
-        Vector3 movingAmount = new Vector3(
+        _movingAmount = new Vector3(
             _moveSpeed.x * horizotal * Mathf.Cos(cameraRotateYValue * Mathf.Deg2Rad),
             _moveSpeed.y * vertical,
             _moveSpeed.x * -horizotal * Mathf.Sin(cameraRotateYValue * Mathf.Deg2Rad))
             * deltaTime;
 
-        transform.position += movingAmount;
+        transform.position += _movingAmount;
 
         // ステージないから出れないようにする処理
         // 未実装

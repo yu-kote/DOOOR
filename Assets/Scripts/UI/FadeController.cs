@@ -15,6 +15,7 @@ public class FadeController : MonoBehaviour
     [SerializeField]
     float _speed;
 
+    [SerializeField]
     Image _image;
 
     private FadeState _state;
@@ -24,11 +25,8 @@ public class FadeController : MonoBehaviour
         set { _state = value; }
     }
 
-
     void Awake()
     {
-        _image = GetComponent<Image>();
-
         _state = FadeState.FADE_IN;
     }
 
@@ -77,5 +75,10 @@ public class FadeController : MonoBehaviour
         else if (_state == FadeState.FADE_IN)
             return _image.color.a <= 0.0f;
         return false;
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(this);
     }
 }
