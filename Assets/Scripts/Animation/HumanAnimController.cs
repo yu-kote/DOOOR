@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,15 +30,15 @@ public class HumanAnimController : MonoBehaviour
         var camera = ai_generator.View3dCamera;
         var prefab = _human.GetComponent<Script_SpriteStudio_ControlPrefab>();
         prefab.InstanceManagerDraw = camera.GetComponent<Script_SpriteStudio_ManagerDraw>();
+
     }
 
     void Update()
     {
         if (tag == "Victim")
             VictimAnimationStatusUpdate();
-        else if (tag == "Killer")
+        if (tag == "Killer")
             KillerAnimationStatusUpdate();
-
         Rotation();
     }
 
@@ -89,5 +90,4 @@ public class HumanAnimController : MonoBehaviour
         rotation.eulerAngles = euler_angle;
         _human.transform.rotation = rotation;
     }
-
 }
