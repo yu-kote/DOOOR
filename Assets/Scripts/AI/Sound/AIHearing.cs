@@ -52,6 +52,9 @@ public abstract class AIHearing : MonoBehaviour
 
         foreach (var target in _targetSounds)
         {
+            if (target == null)
+                continue;
+
             var p = target.gameObject.transform.position;
             var r = target.GetComponent<AISound>().Range / 2;
 

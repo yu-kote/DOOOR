@@ -148,7 +148,7 @@ public class AIChace : AITargetMove
                 break;
 
             }
-            if (item_controller.HaveItemCheck(ItemType.TYENSO))
+            else if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO);
 

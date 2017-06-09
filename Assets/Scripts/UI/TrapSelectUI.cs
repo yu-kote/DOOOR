@@ -16,9 +16,9 @@ public class TrapSelectUI : MonoBehaviour
 {
 
     [SerializeField]
-    string _horizontalAxis = "Horizontal";
+    string _horizontalAxis = "CrossHorizontal";
     [SerializeField]
-    string _verticalAxis = "Vertical";
+    string _verticalAxis = "CrossVertical";
 
     [SerializeField]
     Image[] _traps;
@@ -34,8 +34,6 @@ public class TrapSelectUI : MonoBehaviour
         _trapDirection = TrapDirection.NONE;
 
         _buttonSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/TrapUI/itemcross");
-
-
     }
 
     void Update()
@@ -44,7 +42,7 @@ public class TrapSelectUI : MonoBehaviour
         ButtonSpriteChange();
     }
 
-    TrapDirection PushValue()
+    public TrapDirection PushValue()
     {
         if (Input.GetAxis(_verticalAxis) == 1.0f)
             return TrapDirection.UP;
