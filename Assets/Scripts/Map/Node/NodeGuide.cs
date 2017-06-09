@@ -91,4 +91,11 @@ public class NodeGuide : MonoBehaviour
     {
         _prevPath.Remove(human.GetComponent<MyNumber>());
     }
+
+    private void OnDestroy()
+    {
+        _nextPath.Clear();
+        _prevPath.Clear();
+        _isSearch.Clear();
+    }
 }

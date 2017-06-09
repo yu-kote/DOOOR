@@ -49,6 +49,22 @@ public abstract class AIHearing : MonoBehaviour
                 return;
             }
         }
+
+        foreach (var target in _targetSounds)
+        {
+            if (target == null)
+                continue;
+
+            var p = target.gameObject.transform.position;
+            var r = target.GetComponent<AISound>().Range / 2;
+
+            // 聞こえる範囲に差をつける
+            r += _hearingRange;
+            if (Utility.PointToSphere(transform.position, p, r))
+                continue;
+            _targetSounds.Remove(target);
+            break;
+        }
     }
 
     protected void Hearing()
@@ -89,4 +105,8 @@ public abstract class AIHearing : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        _targetSounds.Clear();
+    }
 }

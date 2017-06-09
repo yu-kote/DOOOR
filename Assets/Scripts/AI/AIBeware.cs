@@ -15,11 +15,22 @@ public class AIBeware : MonoBehaviour
     private int _searchCount;
     private GameObject _targetHuman;
 
+    /// <summary>
+    /// 周りを確認するかどうか
+    /// </summary>
+    private bool _isBeware;
+    public bool IsBeware
+    {
+        get { return _isBeware; }
+        set { _isBeware = value; }
+    }
+
+
     void Start()
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
-
+        _isBeware = false;
         StartCoroutine(Search());
     }
 
@@ -28,7 +39,8 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
-
+            if (_isBeware == false)
+                continue;
             var ai_controller = GetComponent<AIController>();
             // 普通の移動をしている場合しか周囲を見ない
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)

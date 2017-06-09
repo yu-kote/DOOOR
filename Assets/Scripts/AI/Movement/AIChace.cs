@@ -118,6 +118,8 @@ public class AIChace : AITargetMove
 
     void KillTarget()
     {
+        if (CanMove == false)
+            return;
         if (tag != "Killer")
             return;
         var humans = _currentNode.GetComponent<FootPrint>().HumansOnNode;
@@ -139,19 +141,21 @@ public class AIChace : AITargetMove
             if (item_controller.HaveItemCheck(ItemType.GUN))
             {
                 item_controller.UseItem(ItemType.GUN);
-                human.GetComponent<VictimAnimation>()
-                    .AnimStatus = VictimAnimationStatus.CRISIS;
-                human.GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
+
+                GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                break;
 
             }
-            if (item_controller.HaveItemCheck(ItemType.TYENSO))
+            else if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO);
-                human.GetComponent<VictimAnimation>()
-                    .AnimStatus = VictimAnimationStatus.CRISIS;
-                human.GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
+
+                GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
+                GetComponent<AIController>()
+                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                break;
             }
             _targetHuman = null;
 

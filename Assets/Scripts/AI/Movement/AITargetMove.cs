@@ -35,14 +35,15 @@ public class AITargetMove : AIRouteSearch
             _targetNode = _currentNode;
             return;
         }
-
+        if (GetComponent<AIChace>())
+        {
+            Destroy(this);
+            return;
+        }
         // 目標地点までたどり着けなかった場合このスクリプトを消して普通の移動を開始させる
         if (Search() == false)
         {
-            Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
-            {
-                SearchMoveStart();
-            }).AddTo(gameObject);
+            SearchMoveStart();
             return;
         }
     }
@@ -55,7 +56,7 @@ public class AITargetMove : AIRouteSearch
             _currentNode == _targetNode)
         {
             _targetMoveEnd = true;
-            
+
             SearchMoveStart();
         }
     }

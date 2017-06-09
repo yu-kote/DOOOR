@@ -26,10 +26,12 @@ public class VictimAnimation : MonoBehaviour
     public VictimAnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
 
     private AIController _aiController;
+    private HumanAnimController _humanAnimController;
 
     void Start()
     {
         _aiController = GetComponent<AIController>();
+        _humanAnimController = GetComponent<HumanAnimController>();
     }
 
     void Update()
@@ -67,9 +69,17 @@ public class VictimAnimation : MonoBehaviour
     // 追い詰められモーション
     void AnimCrisis()
     {
-        if (GetComponent<AIRunAway>() == false &&
-            _aiController.MoveMode == AIController.MoveEmotion.DEFAULT)
+        // 移動停止の関数が呼ばれていたら更新しない
+        if (_aiController.GetMovement().CanMove == false)
             return;
+
+        if (GetComponent<AIRunAway>() == null &&
+            _aiController.MoveMode == AIController.MoveEmotion.DEFAULT)
+        {
+            if (_animStatus == VictimAnimationStatus.CRISIS)
+                _animStatus = VictimAnimationStatus.IDOL;
+            return;
+        }
 
         if (_aiController.NextNode == null ||
             _aiController.CurrentNode == null ||
@@ -86,6 +96,10 @@ public class VictimAnimation : MonoBehaviour
             return;
         }
         _animStatus = VictimAnimationStatus.CRISIS;
+
+        var approach_node = GetComponent<AIRunAway>().ApproachNode;
+        if (approach_node)
+            _humanAnimController.Rotation(approach_node.gameObject);
     }
 
     public void DeadAnimation()

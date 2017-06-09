@@ -3,54 +3,79 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum FadeType
+public enum FadeState
 {
     FADE_IN,
+    ACTION,
     FADE_OUT,
 }
 
 public class FadeController : MonoBehaviour
 {
-    float _alpha;
     [SerializeField]
     float _speed;
 
     Image _image;
-    FadeType _type;
 
-    void Start()
+    private FadeState _state;
+    public FadeState State
     {
-        _alpha = 0.0f;
+        get { return _state; }
+        set { _state = value; }
+    }
+
+
+    void Awake()
+    {
         _image = GetComponent<Image>();
 
-        _type = FadeType.FADE_IN;
+        _state = FadeState.FADE_IN;
     }
 
     void Update()
     {
-        _alpha = Mathf.Clamp(_alpha, 0.0f, 1.0f);
+        ColorUpdate();
+    }
 
-        if (_type == FadeType.FADE_OUT)
-            _image.color += new Color(0, 0, 0, _speed);
-        if (_type == FadeType.FADE_IN)
-            _image.color -= new Color(0, 0, 0, _speed);
+    private void ColorUpdate()
+    {
+        var color = _image.color;
+
+        if (_state == FadeState.FADE_OUT)
+            color.a += _speed;
+        if (_state == FadeState.FADE_IN)
+            color.a -= _speed;
+        color.a = Mathf.Clamp(color.a, 0.0f, 1.0f);
+
+        _image.color = color;
     }
 
     public void ChangeFade()
     {
-        if (_type == FadeType.FADE_OUT)
-            _type = FadeType.FADE_IN;
-        else if (_type == FadeType.FADE_IN)
-            _type = FadeType.FADE_OUT;
+        if (_state == FadeState.FADE_OUT)
+            _state = FadeState.FADE_IN;
+        else if (_state == FadeState.FADE_IN)
+            _state = FadeState.FADE_OUT;
     }
 
     public void FadeOut()
     {
-        _type = FadeType.FADE_OUT;
+        _state = FadeState.FADE_OUT;
+        ColorUpdate();
     }
 
     public void FadeIn()
     {
-        _type = FadeType.FADE_IN;
+        _state = FadeState.FADE_IN;
+        ColorUpdate();
+    }
+
+    public bool IsFadeComplete()
+    {
+        if (_state == FadeState.FADE_OUT)
+            return _image.color.a >= 1.0f;
+        else if (_state == FadeState.FADE_IN)
+            return _image.color.a <= 0.0f;
+        return false;
     }
 }

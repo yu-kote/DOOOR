@@ -9,7 +9,12 @@ public class AIRunAway : AIRouteSearch
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
     [SerializeField]
-    private int _endNodeDistance = 8;
+    private int _endNodeDistance = 9;
+
+    private int _endFlame;
+
+    private Node _approachNode;
+    public Node ApproachNode { get { return _approachNode; } set { _approachNode = value; } }
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -28,6 +33,7 @@ public class AIRunAway : AIRouteSearch
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
+        _endFlame = 900;
 
         MoveReset();
     }
@@ -37,15 +43,15 @@ public class AIRunAway : AIRouteSearch
     /// </summary>
     List<Node> EscapeNodes()
     {
-        var approach_node = ApproachNode();
+        _approachNode = SearchApproachNode();
         return _currentNode.LinkNodes
             .Where(node => node.GetComponent<Wall>() == null)
-            .Where(node => approach_node != node)
+            .Where(node => _approachNode != node)
             .ToList();
     }
 
     // 近づくルート
-    Node ApproachNode()
+    Node SearchApproachNode()
     {
         if (Search())
             return _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);
@@ -55,7 +61,7 @@ public class AIRunAway : AIRouteSearch
     bool RunAway()
     {
         if (_isEscape) return true;
-        
+
         // 逃げ切りの距離を出すための位置を取得
         var escape_pos = Vector3.zero;
         if (_targetHuman)
@@ -69,14 +75,15 @@ public class AIRunAway : AIRouteSearch
         // 逃げ切ったら終わり
         if (distance > _endDistance)
             return true;
-
         if (SearchCount > _endNodeDistance)
+            return true;
+        if (_endFlame-- < 0)
             return true;
 
         // 逃げる対象が人間だった場合は遠ざかるノードを更新する
         if (_targetHuman)
             _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
-        
+
         Node next_node = null;
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);

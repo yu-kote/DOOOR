@@ -23,7 +23,13 @@ public class MapBackgrounds : MonoBehaviour
     private Dictionary<string, Material> _backgroundMaterials = new Dictionary<string, Material>();
     public Dictionary<string, Material> BackgroundMaterials { get { return _backgroundMaterials; } set { _backgroundMaterials = value; } }
 
-    void Start()
+    public void Start()
+    {
+        LoadMaterials();
+        MaterialInit();
+    }
+
+    public void CreateMapBackgrond()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
@@ -34,16 +40,12 @@ public class MapBackgrounds : MonoBehaviour
             = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0);
         _doubleBackground.transform.localScale
             = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0);
-
-
-        LoadMaterials();
-        MaterialInit();
-        StartCoroutine(Create());
+        
+        Create();
     }
 
-    private IEnumerator Create()
+    private void Create()
     {
-        yield return null;
         for (int y = 0; y < _nodeManager.Nodes.Count; y++)
         {
             for (int x = 0; x < _nodeManager.Nodes[y].Count; x++)
@@ -111,7 +113,7 @@ public class MapBackgrounds : MonoBehaviour
         var materials = Resources.LoadAll<Material>("Prefabs/BG/Materials");
         for (int i = 0; i < materials.Count(); i++)
         {
-            _backgroundMaterials.Add(materials[i].name, materials[i]);
+            _backgroundMaterials[materials[i].name] = materials[i];
         }
     }
 
@@ -125,4 +127,14 @@ public class MapBackgrounds : MonoBehaviour
             = _backgroundMaterials["Room"];
     }
 
+    private void OnDestroy()
+    {
+        foreach (var item in _backgrounds)
+        {
+            Destroy(item);
+        }
+        _backgrounds.Clear();
+        _backgroundMaterials.Clear();
+
+    }
 }

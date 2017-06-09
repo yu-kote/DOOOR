@@ -91,4 +91,9 @@ public class AIItemController : MonoBehaviour
             }
         }
     }
+
+    private void OnDestroy()
+    {
+        _haveItems.Clear();
+    }
 }

@@ -54,4 +54,10 @@ public class FootPrint : MonoBehaviour
     {
         _humansOnNode.Remove(human);
     }
+
+    private void OnDestroy()
+    {
+        _traces.Clear();
+        _humansOnNode.Clear();
+    }
 }
