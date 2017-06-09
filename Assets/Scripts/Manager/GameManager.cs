@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        GameStateUpdate();
         GameEndUpdate();
     }
 
@@ -84,11 +85,28 @@ public class GameManager : MonoBehaviour
             if (Input.GetButtonDown(_gameEndButton))
                 GameObject.Find("SceneChanger")
                     .GetComponent<SceneChanger>().SceneChange("Title");
-            
             return;
         }
         GameClear();
         GameOver();
+    }
+
+    void GameStateUpdate()
+    {
+        if (_currentGameState == _prevGameState)
+            return;
+        _prevGameState = _currentGameState;
+
+        if (_currentGameState == GameState.GAMECLEAR)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("gameclear");
+        }
+        if (_currentGameState == GameState.GAMEOVER)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("gameover");
+        }
     }
 
     void GameClear()

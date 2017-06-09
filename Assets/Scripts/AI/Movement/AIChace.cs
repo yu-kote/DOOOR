@@ -141,16 +141,17 @@ public class AIChace : AITargetMove
             if (item_controller.HaveItemCheck(ItemType.GUN))
             {
                 item_controller.UseItem(ItemType.GUN);
+                SoundManager.Instance.PlaySE("handogan", human.gameObject);
 
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
                 GetComponent<AIController>()
                     .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
                 break;
-
             }
             else if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO);
+                SoundManager.Instance.PlaySE("tye-nso-", human.gameObject);
 
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
                 GetComponent<AIController>()
@@ -161,6 +162,7 @@ public class AIChace : AITargetMove
 
             human.GetComponent<AIController>().BeKilled();
             GetComponent<KillerAnimation>().KillAnimation();
+            SoundManager.Instance.PlaySE("korosu");
             break;
         }
     }

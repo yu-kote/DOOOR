@@ -20,8 +20,8 @@ public class AITrapEffect : MonoBehaviour
         _victimAnimation = GetComponent<VictimAnimation>();
         _humanAnimController = GetComponent<HumanAnimController>();
     }
-
-    // 今のところは瞬間移動になる
+    
+    // 落とし穴に落ちる（イージング）
     public void ToMove(Node target_node)
     {
         _currentNode = _aiController.CurrentNode;

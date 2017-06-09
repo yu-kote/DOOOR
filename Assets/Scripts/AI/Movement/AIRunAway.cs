@@ -23,6 +23,9 @@ public class AIRunAway : AIRouteSearch
     private bool _isEscape = false;
     private int _routeCount;
 
+    private bool _isDoorCaught;
+    public bool IsDoorCaught { get { return _isDoorCaught; } set { _isDoorCaught = value; } }
+
     void Start()
     {
         RouteSearchSetup();
@@ -34,6 +37,7 @@ public class AIRunAway : AIRouteSearch
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
         _endFlame = 900;
+        _isDoorCaught = false;
 
         MoveReset();
     }
@@ -94,9 +98,16 @@ public class AIRunAway : AIRouteSearch
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))
         {
-            MoveReset();
+            if (_isDoorCaught == false)
+                SoundManager.Instance.PlaySE("akanaidoa", gameObject);
+            _isDoorCaught = true;
+
+            GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.OPEN_DOOR;
+            GetComponent<AIController>().StopMovement(0.5f, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
+            GetComponent<HumanAnimController>().Rotation(next_node.gameObject);
             return false;
         }
+        _isDoorCaught = false;
 
         _nextNode = next_node;
         PrevNodeUpdate();

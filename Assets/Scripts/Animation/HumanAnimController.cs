@@ -30,7 +30,7 @@ public class HumanAnimController : MonoBehaviour
         var camera = ai_generator.View3dCamera;
         var prefab = _human.GetComponent<Script_SpriteStudio_ControlPrefab>();
         prefab.InstanceManagerDraw = camera.GetComponent<Script_SpriteStudio_ManagerDraw>();
-        
+
     }
 
     void Update()
@@ -63,6 +63,10 @@ public class HumanAnimController : MonoBehaviour
     // キャラを進む方向に回転させる
     void Rotation()
     {
+        // 落とし穴に落下してる最中に向きを変えると変な挙動する場合がある
+        if (_currentVictimAnimStatus == VictimAnimationStatus.STAGGER)
+            return;
+
         var direction = _aiController.GetMovement().MoveDirection;
         if (direction == Vector3.zero)
             return;

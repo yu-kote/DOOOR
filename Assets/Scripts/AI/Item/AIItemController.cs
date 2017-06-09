@@ -25,6 +25,9 @@ public class AIItemController : MonoBehaviour
     /// </summary>
     void AcquireItem(ItemType item)
     {
+        if (item == ItemType.LASTKEY)
+            SoundManager.Instance.PlaySE("kaginyuusyu");
+
         _haveItems.Add(item);
 
         // デバッグ用に何を持っているか表示

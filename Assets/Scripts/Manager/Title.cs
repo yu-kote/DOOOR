@@ -12,19 +12,25 @@ public class Title : MonoBehaviour
     void Start()
     {
         _sceneChanger = GameObject.Find("SceneChanger").GetComponent<SceneChanger>();
+        SoundManager.Instance.PlayBGM("title");
     }
 
     void Update()
     {
         if (Input.GetButtonDown(_startButton))
         {
-            _sceneChanger.SceneChange("GameMain");
-            Destroy(this);
+            ChangeGamemain();
         }
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            _sceneChanger.SceneChange("GameMain");
-            Destroy(this);
+            ChangeGamemain();
         }
+    }
+
+    void ChangeGamemain()
+    {
+        _sceneChanger.SceneChange("GameMain");
+        Destroy(this);
+        SoundManager.Instance.StopBGM();
     }
 }

@@ -108,15 +108,15 @@ public class AIGenerator : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.WOMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
-        }).AddTo(gameObject);
+        }).AddTo(this);
         Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.TALLMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
-        }).AddTo(gameObject);
+        }).AddTo(this);
         Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.FAT)).GetComponent<AIBeginMove>().BeginMoveStart();
-        }).AddTo(gameObject);
+        }).AddTo(this);
     }
 
     public void InstanceHumans(int stage_num)

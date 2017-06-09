@@ -58,6 +58,8 @@ public class Door : AttributeBase
         _doorStatus = DoorStatus.OPEN;
         anim.SetBool("IsOpen", true);
 
+        SoundManager.Instance.PlaySE("doaakeru", gameObject);
+
         return true;
     }
 
@@ -72,6 +74,8 @@ public class Door : AttributeBase
 
         _doorStatus = DoorStatus.CLOSE;
         anim.SetBool("IsClose", true);
+
+        SoundManager.Instance.PlaySE("doasimeru", gameObject);
 
         return true;
     }

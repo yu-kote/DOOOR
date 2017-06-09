@@ -58,6 +58,11 @@ public class Select : MonoBehaviour
         _camera.transform.position += new Vector3(0, 0, -20);
     }
 
+    private void Start()
+    {
+        SoundManager.Instance.PlayBGM("title");
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
@@ -70,6 +75,8 @@ public class Select : MonoBehaviour
             {
                 GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
                 Destroy(this);
+                SoundManager.Instance.StopBGM();
+                SoundManager.Instance.PlayBGM("ingame");
             }
         }
 
@@ -126,6 +133,9 @@ public class Select : MonoBehaviour
         if (_currentSelectStageNum == _selectStageNum)
             return;
         _currentSelectStageNum = _selectStageNum;
+
+        // 選択音
+        SoundManager.Instance.PlaySE("sentakuon");
 
         // マップを読み直す
         ChangeMap();

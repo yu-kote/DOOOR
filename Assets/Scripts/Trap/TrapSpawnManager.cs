@@ -30,17 +30,17 @@ public class TrapSpawnManager : MonoBehaviour
                 _trapObject.GetComponent<PitFall>().NodeCell
                     = new Vector2(nodeTrans.GetComponent<Node>().CellX,
                     nodeTrans.GetComponent<Node>().CellY);
+
+                SoundManager.Instance.PlaySE("wana2", _trapObject);
                 break;
             case TrapType.ROPE:
                 _trapObject.GetComponent<Rope>()._footPrint
                     = nodeTrans.GetComponent<FootPrint>();
+
+                SoundManager.Instance.PlaySE("wana", _trapObject);
                 break;
 
             case TrapType.SOUND:
-                Destroy(_trapObject);
-                GameObject.Find("Field")
-                    .GetComponent<AISoundManager>()
-                    .MakeSound(nodeTrans.gameObject, nodeTrans.position, soundRange, 3);
                 break;
 
             case TrapType.NONE:

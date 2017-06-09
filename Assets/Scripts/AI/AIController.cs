@@ -264,6 +264,9 @@ public class AIController : MonoBehaviour
         StopMovement(1.1f, () => Destroy(gameObject));
         OnDisable();
         GetComponent<VictimAnimation>().DeadAnimation();
+
+        if (GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY))
+            CurrentNode.gameObject.AddComponent<LastKey>();
     }
 
     private void OnDisable()

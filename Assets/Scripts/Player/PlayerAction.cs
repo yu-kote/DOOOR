@@ -69,6 +69,25 @@ public class PlayerAction : MonoBehaviour
 
     void Update()
     {
+        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
+            != GameState.GAMEMAIN)
+            return;
+
+        // 音だけどこでも鳴らせるので特殊処理
+        var value = _trapSelectUi.PushValue();
+
+        if (value == TrapDirection.LEFT)
+        {
+            var num = (int)value - 1;
+            if (_trapUseStatus[num].CanUse == false)
+                return;
+
+            _trapUseStatus[num].CanUse = false;
+            Callback(_trapUseStatus[num].RecastTime,
+                     () => _trapUseStatus[num].CanUse = true);
+            _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
+            SoundManager.Instance.PlaySE("otodasu", gameObject);
+        }
     }
 
     // 指定秒数後に関数を呼ぶ
@@ -84,6 +103,10 @@ public class PlayerAction : MonoBehaviour
     //今選択しているトラップが設置できる場合生成する
     public void OnTriggerStay(Collider other)
     {
+        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
+            != GameState.GAMEMAIN)
+            return;
+
         var value = _trapSelectUi.PushValue();
         //ボタン押してなかったらはじく
         if (value != TrapDirection.NONE)
@@ -102,6 +125,15 @@ public class PlayerAction : MonoBehaviour
 
     private void CreateTrap(GameObject node, TrapDirection cross_direction)
     {
+        // 音だったら鳴らしてはじく
+        if (cross_direction == TrapDirection.LEFT)
+            return;
+
+        if (cross_direction == TrapDirection.UP)
+            _selectTrapType = TrapType.PITFALLS;
+        if (cross_direction == TrapDirection.DOWN)
+            _selectTrapType = TrapType.ROPE;
+
         TrapStatus trapStatus = node.GetComponent<TrapStatus>();
 
         //生成済みだった場合はじく
@@ -123,13 +155,6 @@ public class PlayerAction : MonoBehaviour
         _trapUseStatus[num].CanUse = false;
         Callback(_trapUseStatus[num].RecastTime,
                  () => _trapUseStatus[num].CanUse = true);
-
-        // 音だったら鳴らしてはじく
-        if (cross_direction == TrapDirection.LEFT)
-        {
-            _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
-            return;
-        }
 
         //トラップ生成
         _trapSpawnManager.SpawnTrap(_selectTrapType, node.transform);
