@@ -12,6 +12,7 @@ public class AITrapEffect : MonoBehaviour
     private AIGenerator _aiGenerator;
     private VictimAnimation _victimAnimation;
     private HumanAnimController _humanAnimController;
+    private NodeManager _nodeManager;
 
     void Start()
     {
@@ -19,6 +20,8 @@ public class AITrapEffect : MonoBehaviour
         _aiController = GetComponent<AIController>();
         _victimAnimation = GetComponent<VictimAnimation>();
         _humanAnimController = GetComponent<HumanAnimController>();
+
+        _nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
     }
 
     // 落とし穴に落ちる（イージング）
@@ -74,18 +77,53 @@ public class AITrapEffect : MonoBehaviour
         DoorControl();
     }
 
+    // ドアの開き方を反対にするかどうか
+    bool _isReverseDoor = false;
+
     private void DoorControl()
     {
         if (tag != "Victim") return;
+        if (_aiController.GetMovement().CanMove == false)
+            return;
 
         var current_node = _aiController.CurrentNode;
         if (current_node == null)
             return;
 
+        var prev_node = _aiController.PrevNode;
+        if (prev_node == null)
+            return;
+
         var door = current_node.GetComponent<Door>();
         if (door == null)
             return;
-        
+
+        var side = _nodeManager.WhichSurfaceNum(current_node.CellX);
+        var direction = current_node.transform.position - prev_node.transform.position;
+
+        if (side == 0)
+            if (direction.x < 0)
+                _isReverseDoor = false;
+            else
+                _isReverseDoor = true;
+        if (side == 1)
+            if (direction.z < 0)
+                _isReverseDoor = false;
+            else
+                _isReverseDoor = true;
+        if (side == 2)
+            if (direction.x > 0)
+                _isReverseDoor = false;
+            else
+                _isReverseDoor = true;
+        if (side == 3)
+            if (direction.z > 0)
+                _isReverseDoor = false;
+            else
+                _isReverseDoor = true;
+
+
+
         Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {
             door.StartClosing();
@@ -94,7 +132,7 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN)
             return;
 
-        door.StartOpening();
+        door.StartOpening(_isReverseDoor);
         if (door.IsDoorLock())
             return;
         _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);

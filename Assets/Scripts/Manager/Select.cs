@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,6 +62,12 @@ public class Select : MonoBehaviour
     private void Start()
     {
         SoundManager.Instance.PlayBGM("title");
+        StartCoroutine(Setup());
+    }
+
+    private IEnumerator Setup()
+    {
+        yield return null;
         StageSetup();
     }
 
