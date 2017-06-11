@@ -54,9 +54,7 @@ public class AIItemController : MonoBehaviour
     /// </summary>
     public void UseItem(ItemType type)
     {
-        var ai_controller = GetComponent<AIController>();
-        GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.USE_ITEM;
-        ai_controller.StopMovement(0.5f, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
+        GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 0.5f);
         _haveItems.Remove(type);
     }
 
@@ -64,8 +62,7 @@ public class AIItemController : MonoBehaviour
     {
         ItemSearch();
     }
-
-
+    
     void ItemSearch()
     {
         var ai_controller = GetComponent<AIController>();

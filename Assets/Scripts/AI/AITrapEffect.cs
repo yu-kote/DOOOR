@@ -20,7 +20,7 @@ public class AITrapEffect : MonoBehaviour
         _victimAnimation = GetComponent<VictimAnimation>();
         _humanAnimController = GetComponent<HumanAnimController>();
     }
-    
+
     // 落とし穴に落ちる（イージング）
     public void ToMove(Node target_node)
     {
@@ -38,8 +38,7 @@ public class AITrapEffect : MonoBehaviour
 
         EasingInitiator.Add(gameObject, target_pos, 2, EaseType.BounceOut);
 
-        _victimAnimation.AnimStatus = VictimAnimationStatus.STAGGER;
-        _aiController.StopMovement(2, () => _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL);
+        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER, 2);
     }
 
     //ロープの罠にかかった時の処理
@@ -47,7 +46,7 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
-        _victimAnimation.AnimStatus = VictimAnimationStatus.STAGGER;
+        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER);
         StartCoroutine(Deceleration());
     }
 
@@ -93,8 +92,9 @@ public class AITrapEffect : MonoBehaviour
         if (door._doorStatus == Door.DoorStatus.OPEN) return;
 
         door.StartOpening();
-        _victimAnimation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
-        _aiController.StopMovement(0.5f, () => _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL);
+
+        _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
+
         _humanAnimController.Rotation(current_node.gameObject);
     }
 

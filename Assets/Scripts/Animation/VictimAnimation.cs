@@ -39,6 +39,22 @@ public class VictimAnimation : MonoBehaviour
         AnimStatusUpdate();
     }
 
+    public void ChangeAnimation(VictimAnimationStatus status)
+    {
+        if (_animStatus != VictimAnimationStatus.DEAD)
+            _animStatus = status;
+    }
+
+    public void ChangeAnimation(VictimAnimationStatus status, float time)
+    {
+        _animStatus = status;
+        _aiController.StopMovement(time, () =>
+        {
+            if (_animStatus != VictimAnimationStatus.DEAD)
+                _animStatus = VictimAnimationStatus.IDOL;
+        });
+    }
+
     // 歩きのモーションのみ更新する
     void AnimStatusUpdate()
     {
@@ -98,6 +114,7 @@ public class VictimAnimation : MonoBehaviour
             if (run_away.IsDoorCaught)
             {
                 _animStatus = VictimAnimationStatus.CRISIS;
+                ApproachRotate();
                 return;
             }
 
@@ -112,7 +129,12 @@ public class VictimAnimation : MonoBehaviour
         }
         _animStatus = VictimAnimationStatus.CRISIS;
 
-        var approach_node = run_away.ApproachNode;
+        ApproachRotate();
+    }
+
+    private void ApproachRotate()
+    {
+        var approach_node = GetComponent<AIRunAway>().ApproachNode;
         if (approach_node)
             _humanAnimController.Rotation(approach_node.gameObject);
     }

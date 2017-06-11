@@ -30,6 +30,7 @@ public class AIRunAway : AIRouteSearch
     {
         RouteSearchSetup();
         MoveSetup();
+        _isDoorCaught = false;
     }
 
     public override void MoveSetup()
@@ -37,7 +38,6 @@ public class AIRunAway : AIRouteSearch
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
         _endFlame = 900;
-        _isDoorCaught = false;
 
         MoveReset();
     }
@@ -99,12 +99,12 @@ public class AIRunAway : AIRouteSearch
         if (IsDoorLock(next_node))
         {
             if (_isDoorCaught == false)
+            {
                 SoundManager.Instance.PlaySE("akanaidoa", gameObject);
+                GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.8f);
+                GetComponent<HumanAnimController>().Rotation(next_node.gameObject);
+            }
             _isDoorCaught = true;
-
-            GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.OPEN_DOOR;
-            GetComponent<AIController>().StopMovement(0.5f, () => GetComponent<VictimAnimation>().AnimStatus = VictimAnimationStatus.IDOL);
-            GetComponent<HumanAnimController>().Rotation(next_node.gameObject);
             return false;
         }
         _isDoorCaught = false;

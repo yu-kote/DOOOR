@@ -215,20 +215,20 @@ class EaseOrigin
     {
         if (_easeFunc == null)
             return _begin;
-        var x = _easeFunc(_count / (_endTime * 60), _begin.x, _end.x);
-        var y = _easeFunc(_count / (_endTime * 60), _begin.y, _end.y);
-        var z = _easeFunc(_count / (_endTime * 60), _begin.z, _end.z);
+        var x = _easeFunc(_count / _endTime, _begin.x, _end.x);
+        var y = _easeFunc(_count / _endTime, _begin.y, _end.y);
+        var z = _easeFunc(_count / _endTime, _begin.z, _end.z);
         return new Vector3(x, y, z);
     }
 
     public bool IsDone()
     {
-        return _count > (_endTime * 60);
+        return _count > _endTime;
     }
 
     public void Update()
     {
-        _count++;
+        _count += Time.deltaTime;
     }
 
     private Vector3 _begin;
@@ -236,7 +236,7 @@ class EaseOrigin
     private Vector3 _end;
     private float _endTime;
     EasingFunction _easeFunc;
-    private int _count;
+    private float _count;
 }
 
 delegate float EasingFunction(float t, float b, float e);

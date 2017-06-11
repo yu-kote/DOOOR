@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
     }
 
+
     void Update()
     {
         GameStateUpdate();
@@ -137,10 +138,8 @@ public class GameManager : MonoBehaviour
             {
                 human.GetComponent<AIItemController>().UseItem(ItemType.LASTKEY);
 
-                var ai_controller = human.GetComponent<AIController>();
                 var animation = human.GetComponent<VictimAnimation>();
-                animation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
-                ai_controller.StopMovement(0.5f, () => animation.AnimStatus = VictimAnimationStatus.IDOL);
+                animation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
                 return true;
             }
             return false;

@@ -230,10 +230,10 @@ public class AIController : MonoBehaviour
 
     private IEnumerator StopMove()
     {
-        int count = 0;
-        while (count < (_stopTime * 60))
+        float count = 0.0f;
+        while (count < _stopTime)
         {
-            count++;
+            count += Time.deltaTime;
             var movement = GetMovement();
             if (movement)
                 movement.CanMove = false;
@@ -244,7 +244,7 @@ public class AIController : MonoBehaviour
     }
 
     public void StopMovement(float time, Action action)
-    {
+    {   
         var movement = GetMovement();
         if (movement == null)
             return;
