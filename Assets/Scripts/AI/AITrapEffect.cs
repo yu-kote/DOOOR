@@ -85,7 +85,7 @@ public class AITrapEffect : MonoBehaviour
         var door = current_node.GetComponent<Door>();
         if (door == null)
             return;
-
+        
         Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {
             door.StartClosing();

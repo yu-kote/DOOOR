@@ -64,6 +64,12 @@ public class PlayerMover : MonoBehaviour
 
         transform.position += _movingAmount;
 
+        var height_limit = _nodeManager.HeightLimit();
+        if (transform.position.y > _nodeManager.HeightLimit())
+            transform.position = new Vector3(transform.position.x, height_limit, transform.position.z);
+        if (transform.position.y < 0)
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+
         // ステージないから出れないようにする処理
 
         var camera_rotater = _camera.GetComponent<Rotater>();
@@ -72,7 +78,7 @@ public class PlayerMover : MonoBehaviour
 
         // 面の長さ
         var surface_length = _nodeManager.SurfaceNodeNum() * _nodeManager.Interval;
-        
+
         var pos = transform.position;
         if (rotater.CurrentSide == 0)
         {

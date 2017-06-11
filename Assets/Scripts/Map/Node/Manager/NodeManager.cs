@@ -242,6 +242,11 @@ public class NodeManager : MonoBehaviour
         return _loadNum / _surfaceNum;
     }
 
+    public float HeightLimit()
+    {
+        return _heightInterval * _topFloor;
+    }
+
     private void NodesLink()
     {
         for (int y = 0; y < _nodes.Count; y++)
