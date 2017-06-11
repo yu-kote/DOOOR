@@ -96,7 +96,7 @@ public class Select : MonoBehaviour
             return;
 
         // ステージ選択が終わったら演出する
-        if (_gameManager.IsPushActionButton())
+        if (_gameManager.IsPushActionButton() || Input.GetKeyDown(KeyCode.Return))
         {
             _isSelectEnd = true;
             SelectEndStaging();

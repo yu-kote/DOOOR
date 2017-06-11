@@ -79,20 +79,24 @@ public class AITrapEffect : MonoBehaviour
         if (tag != "Victim") return;
 
         var current_node = _aiController.CurrentNode;
-        if (current_node == null) return;
+        if (current_node == null)
+            return;
 
         var door = current_node.GetComponent<Door>();
-        if (door == null) return;
+        if (door == null)
+            return;
 
         Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {
             door.StartClosing();
         }).AddTo(gameObject);
 
-        if (door._doorStatus == Door.DoorStatus.OPEN) return;
+        if (door._doorStatus == Door.DoorStatus.OPEN)
+            return;
 
         door.StartOpening();
-
+        if (door.IsDoorLock())
+            return;
         _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
 
         _humanAnimController.Rotation(current_node.gameObject);

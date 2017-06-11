@@ -80,7 +80,15 @@ public class AISearchMove : AIBasicsMovement
                 var door = node.GetComponent<Door>();
                 if (door == null) return true;
                 if (IsDoorLock(node))
+                {
+                    if (tag == "Victim" && MoveComplete())
+                    {
+                        GetComponent<VictimAnimation>()
+                        .ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 1.5f);
+                        GetComponent<HumanAnimController>().Rotation(node.gameObject);
+                    }
                     return false;
+                }
 
                 // 殺人鬼の時にドアが開いてなかったら通れなくする
                 if (tag != "Killer") return true;

@@ -44,7 +44,7 @@ public class NodeManager : MonoBehaviour
         NodesLink();
         CreateMap(mapLoader);
         GetComponent<MapBackgrounds>().CreateMapBackgrond();
-        
+
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -235,6 +235,11 @@ public class NodeManager : MonoBehaviour
         if (surface_num == 3)
             return new Vector3(0, -270, 0);
         return Vector3.zero;
+    }
+
+    public int SurfaceNodeNum()
+    {
+        return _loadNum / _surfaceNum;
     }
 
     private void NodesLink()

@@ -89,7 +89,8 @@ public class Door : AttributeBase
     {
         if (_statusLockTime > 0.0f)
             return;
-
+        if (_doorStatus == DoorStatus.OPEN)
+            return;
         _statusLockTime = statusLockTime;
     }
 }

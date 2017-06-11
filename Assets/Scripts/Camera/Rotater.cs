@@ -6,6 +6,7 @@ public class Rotater : MonoBehaviour
 {
     // 一度に回転する角度
     private const float _rotateAngle = 360.0f / 4.0f;
+    public float RotateAngle { get { return _rotateAngle; } }
     private Vector3 _interestPoint = Vector3.zero;
 
     [SerializeField]
@@ -25,6 +26,15 @@ public class Rotater : MonoBehaviour
         set { _isRotating = value; }
     }
 
+    // 今どの面にいるのか
+    private int _currentSide;
+    public int CurrentSide
+    {
+        get { return _currentSide; }
+        set { _currentSide = value; }
+    }
+
+
     void Start()
     {
         // マップの中心点を獲得
@@ -32,7 +42,7 @@ public class Rotater : MonoBehaviour
 
     void Update()
     {
-        _interestPoint = GameObject.Find("Field").GetComponent<NodeManager>().GetNodesCenterPoint();
+        var interest_point = GameObject.Find("Field").GetComponent<NodeManager>().GetNodesCenterPoint();
 
         if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
             != GameState.GAMEMAIN)
@@ -40,21 +50,31 @@ public class Rotater : MonoBehaviour
 
         Rotating();
         if (Input.GetButton(_leftRotateButton))
-            StartRotation(_rotateAngle);
+            StartRotation(interest_point, _rotateAngle);
         if (Input.GetButton(_rightRotateButton))
-            StartRotation(-_rotateAngle);
+            StartRotation(interest_point, -_rotateAngle);
+
+        _currentSide = (int)Mathf.Repeat((float)_currentSide, 4);
     }
 
-    void StartRotation(float rotateAngle)
+    public bool StartRotation(Vector3 interest_point, float rotateAngle)
     {
         if (_isRotating)
-            return;
+            return false;
 
         _isRotating = true;
         _angle = rotateAngle;
+
+        if (rotateAngle > 0)
+            _currentSide--;
+        else if (rotateAngle < 0)
+            _currentSide++;
+
         _time = 0.0f;
         _beforePos = transform.position;
         _beforeRotate = transform.eulerAngles;
+        _interestPoint = interest_point;
+        return true;
     }
 
     void Rotating()
