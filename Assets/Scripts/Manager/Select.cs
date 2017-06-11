@@ -39,7 +39,7 @@ public class Select : MonoBehaviour
     void Awake()
     {
         _selectStageNum = 1;
-        _currentSelectStageNum = 0;
+        _currentSelectStageNum = _selectStageNum;
 
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
@@ -61,6 +61,7 @@ public class Select : MonoBehaviour
     private void Start()
     {
         SoundManager.Instance.PlayBGM("title");
+        StageSetup();
     }
 
     void Update()
@@ -137,6 +138,11 @@ public class Select : MonoBehaviour
         // 選択音
         SoundManager.Instance.PlaySE("sentakuon");
 
+        StageSetup();
+    }
+
+    private void StageSetup()
+    {
         // マップを読み直す
         ChangeMap();
 
@@ -155,7 +161,6 @@ public class Select : MonoBehaviour
     {
         _mapLoader.LoadMap(_selectStageNum);
         _nodeManager.Start();
-        _mapBackgrounds.CreateMapBackgrond();
     }
 
     private void PlayerPositionOffset()
