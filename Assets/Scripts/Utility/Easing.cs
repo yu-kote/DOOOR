@@ -131,6 +131,16 @@ public static class EasingInitiator
             it.Value.Update();
     }
 
+    public static void DestoryEase(GameObject target)
+    {
+        _easePosition.Where(ease => ease.Key == target)
+                             .ToList().ForEach(t => t.Value.Clear());
+        _easeRotation.Where(ease => ease.Key == target)
+                             .ToList().ForEach(t => t.Value.Clear());
+        _easeScale.Where(ease => ease.Key == target)
+                     .ToList().ForEach(t => t.Value.Clear());
+    }
+
     private static void RemoveEase(Dictionary<GameObject, RunEase> ease)
     {
         var remove_list = ease.Where(e => e.Value.IsEaseEnd()).ToList();
@@ -141,11 +151,11 @@ public static class EasingInitiator
     public static void Clear()
     {
         foreach (var item in _easePosition)
-            item.Value.Crear();
+            item.Value.Clear();
         foreach (var item in _easeRotation)
-            item.Value.Crear();
+            item.Value.Clear();
         foreach (var item in _easeScale)
-            item.Value.Crear();
+            item.Value.Clear();
         _easePosition.Clear();
         _easeRotation.Clear();
         _easeScale.Clear();
@@ -200,7 +210,7 @@ class RunEase
         }
     }
 
-    public void Crear()
+    public void Clear()
     {
         _easeAccum.Clear();
     }

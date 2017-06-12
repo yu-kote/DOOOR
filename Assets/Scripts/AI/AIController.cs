@@ -244,7 +244,7 @@ public class AIController : MonoBehaviour
     }
 
     public void StopMovement(float time, Action action)
-    {   
+    {
         var movement = GetMovement();
         if (movement == null)
             return;
@@ -280,5 +280,6 @@ public class AIController : MonoBehaviour
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
 
         _aiGenerator.Humans.Remove(gameObject);
+        EasingInitiator.DestoryEase(gameObject);
     }
 }

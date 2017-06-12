@@ -8,10 +8,12 @@ using UnityEngine.SceneManagement;
 
 public class AIGenerator : MonoBehaviour
 {
-
     [SerializeField]
     private GameObject _view3dCamera;
     public GameObject View3dCamera { get { return _view3dCamera; } }
+
+    [SerializeField]
+    HumanList _humanBoardlist;
 
     private Node _startNode;
     public Node StartNode { get { return _startNode; } }
@@ -69,6 +71,8 @@ public class AIGenerator : MonoBehaviour
 
         _humans.Add(create_human);
 
+        _humanBoardlist.HumanBoardInstantiate(create_human);
+
         _generateCount++;
         return create_human;
     }
@@ -101,7 +105,7 @@ public class AIGenerator : MonoBehaviour
     {
         return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
     }
-    
+
 
     private void TitlePopHuman()
     {
@@ -130,7 +134,7 @@ public class AIGenerator : MonoBehaviour
     private IEnumerator CreateHumans(int stage_num)
     {
         yield return null;
-        
+
         var text = Resources.Load<TextAsset>
             ("PlannerData/MapData/Stage" + stage_num + "/Human");
 
@@ -163,5 +167,14 @@ public class AIGenerator : MonoBehaviour
         foreach (var human in _humans.ToList())
             Destroy(human);
         _humans.Clear();
+
+        _humanBoardlist.OnDestroy();
+    }
+
+    public GameObject SurvivalCheckNumber(int number)
+    {
+        var target = _humans.FirstOrDefault(human =>
+                            human.GetComponent<MyNumber>().Number == number);
+        return target;
     }
 }
