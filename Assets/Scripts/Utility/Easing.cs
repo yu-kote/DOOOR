@@ -55,6 +55,8 @@ public static class EasingInitiator
     /// <param name="value">イージングさせる箇所</param>
     public static void Add(GameObject target, Vector3 end, float time, EaseType type, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return;
         if (value == EaseValue.POSITION)
             AddEase(_easePosition, target, end, time, type, value);
         if (value == EaseValue.ROTATION)
@@ -66,6 +68,8 @@ public static class EasingInitiator
     private static void AddEase(Dictionary<GameObject, RunEase> ease, GameObject target,
                                 Vector3 end, float time, EaseType type, EaseValue value)
     {
+        if (target == null)
+            return;
         if (ease.ContainsKey(target))
             ease[target].Add(target, end, time, type);
         else
@@ -80,6 +84,8 @@ public static class EasingInitiator
     /// <param name="value">停止させる箇所</param>
     public static void Wait(GameObject target, float time, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return;
         if (value == EaseValue.POSITION)
             Add(target, target.transform.localPosition, time, EaseType.NONE, value);
         if (value == EaseValue.ROTATION)
@@ -90,13 +96,15 @@ public static class EasingInitiator
 
     public static bool IsEaseEnd(GameObject target, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return true;
         if (value == EaseValue.POSITION)
             return IsEnd(_easePosition, target);
         if (value == EaseValue.ROTATION)
             return IsEnd(_easeRotation, target);
         if (value == EaseValue.SCALE)
             return IsEnd(_easeScale, target);
-        return false;
+        return true;
     }
 
     private static bool IsEnd(Dictionary<GameObject, RunEase> ease, GameObject target)
@@ -104,7 +112,9 @@ public static class EasingInitiator
         if (ease.ContainsKey(target))
             if (ease[target].IsEaseEnd())
                 return true;
-        return false;
+            else
+                return false;
+        return true;
     }
 
     public static void EaseUpdate()

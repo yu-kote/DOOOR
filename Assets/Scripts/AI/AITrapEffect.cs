@@ -101,28 +101,16 @@ public class AITrapEffect : MonoBehaviour
         var side = _nodeManager.WhichSurfaceNum(current_node.CellX);
         var direction = current_node.transform.position - prev_node.transform.position;
 
-        if (side == 0)
-            if (direction.x < 0)
-                _isReverseDoor = false;
-            else
-                _isReverseDoor = true;
-        if (side == 1)
-            if (direction.z < 0)
-                _isReverseDoor = false;
-            else
-                _isReverseDoor = true;
-        if (side == 2)
+        if (side == 0 || side == 2)
             if (direction.x > 0)
                 _isReverseDoor = false;
             else
                 _isReverseDoor = true;
-        if (side == 3)
-            if (direction.z > 0)
+        if (side == 1 || side == 3)
+            if (direction.z < 0)
                 _isReverseDoor = false;
             else
                 _isReverseDoor = true;
-
-
 
         Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {

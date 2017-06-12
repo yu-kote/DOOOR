@@ -27,12 +27,20 @@ public class ReportBoard : MonoBehaviour
 
     [SerializeField]
     private GameObject _board;
+    [SerializeField]
+    private GameObject _importantBoard;
 
     private List<GameObject> _boards = new List<GameObject>();
 
-    public void Pop(string text)
+    float _popTime = 0.7f;
+
+    public void Pop(string text, bool is_important = false)
     {
-        var board = Instantiate(_board, transform);
+        var instance_board = _board;
+        if (is_important)
+            instance_board = _importantBoard;
+
+        var board = Instantiate(instance_board, transform);
         board.transform.localPosition = new Vector3(0, board.transform.position.y, 0);
         board.transform.localScale = Vector3.one;
         board.transform.localRotation = Quaternion.identity;
@@ -42,20 +50,38 @@ public class ReportBoard : MonoBehaviour
 
         _boards.Add(board);
 
-        EasingInitiator.Add(board, new Vector3(0, 400, 0), 1, EaseType.CubicIn);
-        EasingInitiator.Wait(board, 3);
-        EasingInitiator.Add(board, board.transform.localPosition, 1, EaseType.CubicOut);
+        StartCoroutine(PopStack());
+    }
+
+    private IEnumerator PopStack()
+    {
+        var first = _boards.FirstOrDefault();
+        while (_boards.FirstOrDefault() != null)
+        {
+            while (true)
+            {
+                if (EasingInitiator.IsEaseEnd(_boards.FirstOrDefault()))
+                    break;
+                yield return null;
+            }
+            if (_boards.FirstOrDefault() == null)
+                yield break;
+            EasingInitiator.Add(_boards.FirstOrDefault(), new Vector3(0, 400, 0), _popTime, EaseType.CubicIn);
+            EasingInitiator.Wait(_boards.FirstOrDefault(), 2);
+            EasingInitiator.Add(_boards.FirstOrDefault(), _boards.FirstOrDefault().transform.localPosition, _popTime, EaseType.CubicOut);
+        }
     }
 
     void Update()
     {
-        var remove_list = _boards.Where(b => EasingInitiator.IsEaseEnd(b)).ToList();
+        var remove_list = _boards.FirstOrDefault();
 
         if (remove_list != null)
-            foreach (var item in remove_list)
+            if (EasingInitiator.IsEaseEnd(_boards.FirstOrDefault()))
             {
-                Destroy(item);
-                _boards.Remove(item);
+                Destroy(remove_list);
+                _boards.Remove(remove_list);
             }
+
     }
 }
