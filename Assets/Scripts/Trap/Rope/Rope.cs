@@ -5,8 +5,8 @@ using UnityEngine;
 public class Rope : MonoBehaviour
 {
 	public FootPrint _footPrint = null;
-
-	void Start()
+    
+    void Start()
 	{
 		if (_footPrint == null)
 			Debug.Log("_footPrint is null");

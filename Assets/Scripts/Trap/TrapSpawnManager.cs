@@ -21,7 +21,7 @@ public class TrapSpawnManager : MonoBehaviour
             return;
 
         GameObject _trapObject = Instantiate(_trapList.GetTrapObject(type));
-        _trapObject.transform.position = nodeTrans.position;
+        _trapObject.transform.position = nodeTrans.position + new Vector3(0, 0.5f, 0);
         switch (type)
         {
             case TrapType.PITFALLS:

@@ -19,7 +19,7 @@ public class PitFall : MonoBehaviour
         get { return _isUsed; }
         set { _isUsed = value; }
     }
-
+    
     void Start()
     {
         if (_footPrint == null)
@@ -48,7 +48,6 @@ public class PitFall : MonoBehaviour
         }
 
         //ここに落とし穴のアニメーション開始処理を記述する
-        //未実装
 
         List<List<GameObject>> nodes = _nodeManager.Nodes;
         GameObject underNode = nodes[(int)_nodeCell.y + 1][(int)_nodeCell.x];
