@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.SceneManagement;
 
 public class MapBackgrounds : MonoBehaviour
 {
@@ -107,6 +108,9 @@ public class MapBackgrounds : MonoBehaviour
 
     private void CreateCeiling(GameObject node)
     {
+        if (SceneManager.GetSceneByName("Title").name != null)
+            return;
+
         _lightCount++;
 
         // 壁とドアを見やすくするため、その隣にライトを設置する

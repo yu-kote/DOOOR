@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using System.Linq;
 using System;
+using UnityEngine.SceneManagement;
 
 public class AITrapEffect : MonoBehaviour
 {
@@ -111,6 +112,13 @@ public class AITrapEffect : MonoBehaviour
                 _isReverseDoor = false;
             else
                 _isReverseDoor = true;
+
+        if (SceneManager.GetSceneByName("Title").name != null)
+            if (side == 0)
+                if (direction.x > 0)
+                    _isReverseDoor = true;
+                else
+                    _isReverseDoor = false;
 
         Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
         {

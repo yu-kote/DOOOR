@@ -134,6 +134,8 @@ public class VictimAnimation : MonoBehaviour
 
     private void ApproachRotate()
     {
+        if (GetComponent<AIRunAway>() == null)
+            return;
         var approach_node = GetComponent<AIRunAway>().ApproachNode;
         if (approach_node)
             _humanAnimController.Rotation(approach_node.gameObject);

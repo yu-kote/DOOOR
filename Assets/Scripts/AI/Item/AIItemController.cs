@@ -10,13 +10,18 @@ public class AIItemController : MonoBehaviour
     public List<ItemType> HaveItems { get { return _haveItems; } set { _haveItems = value; } }
 
     [SerializeField]
-    private ItemType[] _debugItemList;
+    int _haveItemLimit;
+
+    [SerializeField]
+    private ItemType[] _itemList;
+
+    private HumanList _boardList;
 
     void Start()
     {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < _itemList.Count(); i++)
         {
-            _debugItemList[i] = ItemType.NONE;
+            _itemList[i] = ItemType.NONE;
         }
     }
 
@@ -29,13 +34,15 @@ public class AIItemController : MonoBehaviour
             SoundManager.Instance.PlaySE("kaginyuusyu");
 
         _haveItems.Add(item);
+        var board = _boardList.GetHumanBoard(GetComponent<MyNumber>().Number);
+        board.SetItem(_boardList.GetItemSprite(item));
 
         // デバッグ用に何を持っているか表示
         for (int i = 0; i < 5; i++)
         {
-            if (_debugItemList[i] == ItemType.NONE)
+            if (_itemList[i] == ItemType.NONE)
             {
-                _debugItemList[i] = item;
+                _itemList[i] = item;
                 break;
             }
         }
@@ -56,13 +63,23 @@ public class AIItemController : MonoBehaviour
     {
         GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 0.5f);
         _haveItems.Remove(type);
+        var board = _boardList.GetHumanBoard(GetComponent<MyNumber>().Number);
+        board.UseItem(_boardList.GetItemNameFromItemType(type));
+    }
+
+    /// <summary>
+    /// アイテムをUIと紐づける
+    /// </summary>
+    public void SetHumanList(HumanList board)
+    {
+        _boardList = board;
     }
 
     void Update()
     {
         ItemSearch();
     }
-    
+
     void ItemSearch()
     {
         var ai_controller = GetComponent<AIController>();
@@ -73,6 +90,9 @@ public class AIItemController : MonoBehaviour
 
         var itemstatus = node.GetComponent<ItemStatus>();
         if (itemstatus == null)
+            return;
+
+        if (_haveItems.Count >= _haveItemLimit)
             return;
 
         var setting_items = itemstatus.GetItem();
@@ -96,4 +116,6 @@ public class AIItemController : MonoBehaviour
     {
         _haveItems.Clear();
     }
+
+
 }

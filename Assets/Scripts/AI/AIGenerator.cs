@@ -71,7 +71,8 @@ public class AIGenerator : MonoBehaviour
 
         _humans.Add(create_human);
 
-        _humanBoardlist.HumanBoardInstantiate(create_human);
+        if (_humanBoardlist)
+            _humanBoardlist.HumanBoardInstantiate(create_human);
 
         _generateCount++;
         return create_human;
@@ -146,6 +147,9 @@ public class AIGenerator : MonoBehaviour
             CreateVictim(GetVictimName(VictimType.TALLMAN));
         for (int i = 0; i < human_data.fat; i++)
             CreateVictim(GetVictimName(VictimType.FAT));
+
+        if (_humanBoardlist)
+            _humanBoardlist.HumanItemSetup();
     }
 
     public void MoveStartHumans()
@@ -168,10 +172,11 @@ public class AIGenerator : MonoBehaviour
             Destroy(human);
         _humans.Clear();
 
-        _humanBoardlist.OnDestroy();
+        if (_humanBoardlist)
+            _humanBoardlist.OnDestroy();
     }
 
-    public GameObject SurvivalCheckNumber(int number)
+    public GameObject GetHumanFromMyNumber(int number)
     {
         var target = _humans.FirstOrDefault(human =>
                             human.GetComponent<MyNumber>().Number == number);

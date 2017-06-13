@@ -101,6 +101,12 @@ public class AIController : MonoBehaviour
             //if (tag == "Killer")
             //GetMovement().Speed = _defaultSpeed;
         }
+
+
+        if (Input.GetKey(KeyCode.H))
+        {
+            GetMovement().Speed = 10.0f;
+        }
     }
 
     public AIBasicsMovement GetMovement()
@@ -207,7 +213,7 @@ public class AIController : MonoBehaviour
         var exit = exit_list
             .FirstOrDefault(node => node.GetComponent<Deguti>() != null);
 
-        if (exit)
+        if (exit == null)
             return null;
         var exit_node = exit.GetComponent<Node>();
         return exit_node;

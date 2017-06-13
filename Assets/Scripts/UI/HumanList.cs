@@ -12,26 +12,78 @@ public enum BoardFaceType
     FEAR,       // 恐怖
 }
 
+public enum BoardIcon
+{
+    NONE,
+    SURPRISE,
+    ITEM_GET,
+    LAST_KEY,
+}
+
+
 public class HumanBoard
 {
     public GameObject Board;
     public GameObject DeadMark;
     public Image Face;
-    public Sprite[] Sprites;
+    public Sprite[] FaceSprites;
     public BoardFaceType FaceType = BoardFaceType.NORMAL;
     private BoardFaceType _currentFaceType = BoardFaceType.HURRY;
 
+    public Image Icon;
+    public Image[] Items;
+
     public void FaceTypeUpdate()
     {
-        //if (FaceType == _currentFaceType)
-        //    return;
-        //_currentFaceType = FaceType;
+        if (FaceType == _currentFaceType)
+            return;
+        _currentFaceType = FaceType;
 
         Face.sprite = System.Array.Find<Sprite>(
-            Sprites, (sprite) => sprite.name.Equals(
-                Sprites[(int)FaceType].name));
+            FaceSprites, (sprite) => sprite.name.Equals(
+                FaceSprites[(int)FaceType].name));
     }
 
+    public bool SetIcon(Sprite sprite)
+    {
+        Icon.sprite = sprite;
+        Icon.color = Color.white;
+        return true;
+    }
+
+    public bool EraseIcon()
+    {
+        Icon.sprite = null;
+        Icon.color = new Color(1, 1, 1, 0);
+        return true;
+    }
+
+    public bool SetItem(Sprite sprite)
+    {
+        var remnant_item = Items.FirstOrDefault(item => item.sprite == null);
+        if (remnant_item == null)
+            return false;
+
+        remnant_item.sprite = sprite;
+        remnant_item.color = Color.white;
+        return true;
+    }
+
+    public bool UseItem(string sprite_name)
+    {
+        var buried_item = Items.Where(item => item.sprite != null).ToList();
+        if (buried_item == null)
+            return false;
+
+        var use_item = buried_item.FirstOrDefault(item => item.sprite.name == sprite_name);
+        if (use_item == null)
+            return false;
+
+        use_item.sprite = null;
+        use_item.color = new Color(1, 1, 1, 0);
+
+        return true;
+    }
 }
 
 public class HumanList : MonoBehaviour
@@ -47,12 +99,20 @@ public class HumanList : MonoBehaviour
     private Sprite[] _womanSprites;
     private Sprite[] _tallmanSprites;
     private Sprite[] _fatSprites;
+    Dictionary<string, Sprite> _boardSprites = new Dictionary<string, Sprite>();
 
     private void Start()
     {
         _womanSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/HumanListUI/woman_bustup");
         _tallmanSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/HumanListUI/noppo_bustup");
         _fatSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/HumanListUI/matyo_bustup");
+
+        var sprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/HumanListUI/");
+        for (int i = 0; i < sprites.Count(); i++)
+        {
+            _boardSprites[sprites[i].name] = sprites[i];
+        }
+
         _aiGenerator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
     }
 
@@ -74,26 +134,44 @@ public class HumanList : MonoBehaviour
         // 左にずらす値
         var offset_x = -rect.sizeDelta.x * count;
 
+        // 新しいボードを追加する
         _humanBoardList.Add(number, new HumanBoard());
         var human_board = _humanBoardList[number];
         human_board.Board = Instantiate(_humanBoard, transform);
 
+        // 死んだ時用のバッテンマークを初期化
         var dead_mark = human_board.Board.transform.FindChild("DeadMark").gameObject;
         dead_mark.SetActive(false);
         human_board.DeadMark = dead_mark;
 
+        // 表情を変える変数を初期化
         var face = human_board.Board.transform.FindChild("Human").gameObject;
         human_board.Face = face.GetComponent<Image>();
-        
-        if (target.GetComponent<MyNumber>().Name == "Woman")
-            human_board.Sprites = _womanSprites;
-        else if (target.GetComponent<MyNumber>().Name == "TallMan")
-            human_board.Sprites = _tallmanSprites;
-        else if (target.GetComponent<MyNumber>().Name == "Fat")
-            human_board.Sprites = _fatSprites;
 
+        if (target.GetComponent<MyNumber>().Name == "Woman")
+            human_board.FaceSprites = _womanSprites;
+        else if (target.GetComponent<MyNumber>().Name == "TallMan")
+            human_board.FaceSprites = _tallmanSprites;
+        else if (target.GetComponent<MyNumber>().Name == "Fat")
+            human_board.FaceSprites = _fatSprites;
+
+        // 表情をノーマルにするため一度だけ呼ぶ
         human_board.FaceTypeUpdate();
 
+        // 右上のアイコンを初期化
+        var icon = human_board.Board.transform.FindChild("Icon").gameObject;
+        human_board.Icon = icon.GetComponent<Image>();
+
+        // アイテムを表示するところを初期化
+        human_board.Items = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            var item = human_board.Board.transform.FindChild("Item" + i).gameObject;
+            human_board.Items[i] = item.GetComponent<Image>();
+            human_board.Items[i].color = new Color(1, 1, 1, 0.5f);
+        }
+
+        // ボードの位置を初期化する
         StartCoroutine(TransformSetup(offset_x, number));
     }
 
@@ -109,9 +187,14 @@ public class HumanList : MonoBehaviour
 
     void Update()
     {
+        FaceUpdate();
+    }
+
+    void FaceUpdate()
+    {
         foreach (var board in _humanBoardList)
         {
-            var target = _aiGenerator.SurvivalCheckNumber(board.Key);
+            var target = _aiGenerator.GetHumanFromMyNumber(board.Key);
             if (target == null)
             {
                 board.Value.DeadMark.SetActive(true);
@@ -137,6 +220,54 @@ public class HumanList : MonoBehaviour
             board.Value.FaceType = face_type;
             board.Value.FaceTypeUpdate();
         }
+    }
+
+    public void HumanItemSetup()
+    {
+        foreach (var board in _humanBoardList)
+        {
+            var target = _aiGenerator.GetHumanFromMyNumber(board.Key);
+            if (target == null)
+                continue;
+
+            target.GetComponent<AIItemController>().SetHumanList(this);
+        }
+    }
+
+    public string GetItemNameFromItemType(ItemType type)
+    {
+        switch (type)
+        {
+            case ItemType.NONE:
+                break;
+            case ItemType.KEY:
+                break;
+            case ItemType.LASTKEY:
+                return "key";
+            case ItemType.FLASHLIGHT:
+                return "flushlight";
+            case ItemType.GUN:
+                return "hundgun";
+            case ItemType.TYENSO:
+                return "chainsaw";
+        }
+        return null;
+    }
+
+    public Sprite GetItemSprite(string name)
+    {
+        return _boardSprites[name];
+    }
+
+    public Sprite GetItemSprite(ItemType type)
+    {
+        return _boardSprites[GetItemNameFromItemType(type)];
+    }
+
+
+    public HumanBoard GetHumanBoard(int number)
+    {
+        return _humanBoardList[number];
     }
 
     public void OnDestroy()
