@@ -101,7 +101,7 @@ public class AIRunAway : AIRouteSearch
             if (_isDoorCaught == false)
             {
                 SoundManager.Instance.PlaySE("akanaidoa", gameObject);
-                GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.8f);
+                GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.7f);
                 GetComponent<HumanAnimController>().Rotation(next_node.gameObject);
             }
             _isDoorCaught = true;

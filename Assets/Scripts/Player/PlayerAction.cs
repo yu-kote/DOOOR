@@ -10,15 +10,17 @@ public class PlayerAction : MonoBehaviour
     // プレイヤーがマップに対してアクションを起こす時に押すボタン
     [SerializeField]
     private string _actionButton = "Action";
-    [SerializeField]
-    private string _upButton = "Up";
-    [SerializeField]
-    private string _downButton = "Down";
-    [SerializeField]
-    private string _soundButton = "Sound";
 
     [SerializeField]
     TrapSelectUI _trapSelectUi;
+
+    [SerializeField]
+    GameObject _buttonGuide;
+    bool _isButtonGuideView;
+    Vector3 _startEulerAngle;
+
+    [SerializeField]
+    GameObject _camera;
 
     //選択しているトラップのタイプ
     [SerializeField]
@@ -32,6 +34,9 @@ public class PlayerAction : MonoBehaviour
     [SerializeField]
     private float _statusLockTime = 2.0f;
 
+    // ドアを固定したときに出るやつ
+    GameObject _doorLock;
+
     // 音を出す
     [SerializeField]
     private AISoundManager _aiSoundManager;
@@ -44,6 +49,16 @@ public class PlayerAction : MonoBehaviour
             = GameObject.Find("TrapSpawnManager").GetComponent<TrapSpawnManager>();
         if (_trapSpawnManager == null)
             Debug.Log("_trapSpawnManager is null");
+
+        // ボタン案内の初期角度を保持する
+        _startEulerAngle = _buttonGuide.transform.eulerAngles;
+
+    }
+
+    private void FixedUpdate()
+    {
+        _isButtonGuideView = _buttonGuide.activeInHierarchy;
+        _buttonGuide.SetActive(false);
     }
 
     void Update()
@@ -77,14 +92,34 @@ public class PlayerAction : MonoBehaviour
             if (other.tag == "Node")
                 CreateTrap(other.gameObject, value);
 
+
+
         if (IsDoorLock())
             if (other.tag == "Attribute")
+            {
                 CraftTheInstallation(other.gameObject);
+                return;
+            }
+
+        if (other.tag == "Attribute")
+            if (other.name == "Door" + "(Clone)")
+            {
+                _buttonGuide.SetActive(true);
+                if (_isButtonGuideView != _buttonGuide.activeInHierarchy)
+                    ButtonGuideStart(other.gameObject);
+
+                ButtonGuideUpdate(other.gameObject);
+            }
     }
 
     public bool IsDoorLock()
     {
         return Input.GetButton(_actionButton);
+    }
+
+    public bool IsDoorLockStart()
+    {
+        return Input.GetButtonDown(_actionButton);
     }
 
     private void CreateTrap(GameObject node, TrapDirection cross_direction)
@@ -130,9 +165,74 @@ public class PlayerAction : MonoBehaviour
         {
             case "Door" + "(Clone)":
 
-                attribute.transform.parent.GetComponent<Door>().LockDoorStatus(_statusLockTime);
+                var door = attribute.transform.parent.GetComponent<Door>();
+                var complete = door.LockDoorStatus(_statusLockTime);
+                if (complete)
+                {
+                    door.DoorLock(DoorLockStart(attribute));
+                    DoorLockUpdate(door.gameObject);
+                }
+
                 break;
         }
     }
 
+    // ボタンの案内を出すときに一回だけ呼ぶ
+    private void ButtonGuideStart(GameObject target)
+    {
+        var facade_pos = CameraDistance().normalized * 2;
+        _buttonGuide.transform.position = target.transform.position - new Vector3(-facade_pos.x, -3, -facade_pos.z);
+    }
+
+    // ターゲットとプレイヤーの距離を測っていい感じのところを目指すようにする
+    private void ButtonGuideUpdate(GameObject target)
+    {
+        var distance = target.transform.position - transform.position;
+        var facade_dir = CameraDistance().normalized * 2;
+        var offset_pos = distance.normalized + new Vector3(-facade_dir.x, -3, -facade_dir.z);
+
+        _buttonGuide.GetComponent<Approach>().Target = target;
+        _buttonGuide.GetComponent<Approach>().OffsetPos = offset_pos;
+
+        _buttonGuide.transform.eulerAngles = FieldUiAngle();
+    }
+
+    // ドアのロックの印の準備をする
+    private GameObject DoorLockStart(GameObject target)
+    {
+        _doorLock = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DoorLock"), target.transform);
+        _doorLock.transform.localPosition = Vector3.zero;
+        return _doorLock;
+    }
+
+    // ドアをロックしている時に呼ぶ関数
+    private void DoorLockUpdate(GameObject door)
+    {
+        var distance = _camera.transform.position - door.transform.position;
+        var facade_dir = distance.normalized * 2;
+        var offset_value = facade_dir.x;
+        if (Mathf.Abs(facade_dir.x) < Mathf.Abs(facade_dir.z))
+            offset_value = facade_dir.z;
+
+        var offset_pos = new Vector3(0, 3, -offset_value);
+
+        _doorLock.transform.localPosition = offset_pos;
+
+        _doorLock.transform.eulerAngles = FieldUiAngle();
+    }
+
+    private Vector3 CameraDistance()
+    {
+        return _camera.transform.position - transform.position;
+    }
+
+    private Vector3 FieldUiAngle()
+    {
+        return _startEulerAngle + transform.eulerAngles;
+    }
+
+    private void OnDestroy()
+    {
+        //Destroy(_doorLock);
+    }
 }

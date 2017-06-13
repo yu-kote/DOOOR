@@ -23,6 +23,8 @@ public class Door : AttributeBase
 
     private bool _isReverse = false;
 
+    public GameObject _doorLock = null;
+
     void Awake()
     {
 
@@ -54,6 +56,10 @@ public class Door : AttributeBase
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdolReverse") &&
             anim.GetBool("IsReverseClose"))
             anim.SetBool("IsReverseClose", false);
+
+        if (IsDoorLock() == false)
+            if (_doorLock != null)
+                Destroy(_doorLock);
     }
 
     public bool StartOpening(bool is_reverse = false)
@@ -105,12 +111,21 @@ public class Door : AttributeBase
         return _statusLockTime > 0.0f;
     }
 
-    public void LockDoorStatus(float statusLockTime)
+    public bool DoorLock(GameObject lock_object)
     {
+        _doorLock = lock_object;
+        return true;
+    }
+
+    public bool LockDoorStatus(float statusLockTime)
+    {
+        bool can_lock = true;
         if (_statusLockTime > 0.0f)
-            return;
+            can_lock = false;
+
         if (_doorStatus == DoorStatus.OPEN)
-            return;
+            return false;
         _statusLockTime = statusLockTime;
+        return can_lock;
     }
 }
