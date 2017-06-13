@@ -151,7 +151,7 @@ public class PlayerAction : MonoBehaviour
             return;
 
         //トラップ生成
-        _trapSpawnManager.SpawnTrap(_selectTrapType, node.transform);
+        _trapSpawnManager.SpawnTrap(_selectTrapType, node.transform, FieldUiAngle());
         //今の所一つのノードに対して一つのトラップしか仕掛けれない状態にしている
         trapStatus.IsSpawn = true;
 
@@ -233,6 +233,5 @@ public class PlayerAction : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Destroy(_doorLock);
     }
 }
