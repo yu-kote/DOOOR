@@ -29,7 +29,8 @@ public class Rope : MonoBehaviour
 			{
 				_footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToOverturn();
 				overturnNum++;
-			}
+                _footPrint.gameObject.GetComponent<TrapStatus>().IsSpawn = false;
+            }
 				
 		}
 
