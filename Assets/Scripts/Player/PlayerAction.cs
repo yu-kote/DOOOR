@@ -18,10 +18,6 @@ public class PlayerAction : MonoBehaviour
     private string _soundButton = "Sound";
 
     [SerializeField]
-    string _horizontalAxis = "CrossHorizontal";
-    [SerializeField]
-    string _verticalAxis = "CrossVertical";
-    [SerializeField]
     TrapSelectUI _trapSelectUi;
 
     //選択しているトラップのタイプ
@@ -36,16 +32,6 @@ public class PlayerAction : MonoBehaviour
     [SerializeField]
     private float _statusLockTime = 2.0f;
 
-    [SerializeField]
-    private float[] _recastTime;
-
-    public class TrapUseStatus
-    {
-        public float RecastTime = 0.0f;
-        public bool CanUse = true;
-    }
-    TrapUseStatus[] _trapUseStatus = new TrapUseStatus[4];
-
     // 音を出す
     [SerializeField]
     private AISoundManager _aiSoundManager;
@@ -58,13 +44,6 @@ public class PlayerAction : MonoBehaviour
             = GameObject.Find("TrapSpawnManager").GetComponent<TrapSpawnManager>();
         if (_trapSpawnManager == null)
             Debug.Log("_trapSpawnManager is null");
-
-        for (int i = 0; i < _trapUseStatus.Count(); i++)
-            _trapUseStatus[i] = new TrapUseStatus();
-
-        // リキャスト時間を初期化する
-        for (int i = 0; i < _recastTime.Count(); i++)
-            _trapUseStatus[i].RecastTime = _recastTime[i];
     }
 
     void Update()
@@ -74,29 +53,14 @@ public class PlayerAction : MonoBehaviour
             return;
 
         // 音だけどこでも鳴らせるので特殊処理
-        var value = _trapSelectUi.PushValue();
-
+        var value = _trapSelectUi.PushValue;
         if (value == TrapDirection.LEFT)
         {
-            var num = (int)value - 1;
-            if (_trapUseStatus[num].CanUse == false)
+            if (_trapSelectUi.TrapRecast(value) == false)
                 return;
-
-            _trapUseStatus[num].CanUse = false;
-            Callback(_trapUseStatus[num].RecastTime,
-                     () => _trapUseStatus[num].CanUse = true);
             _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
             SoundManager.Instance.PlaySE("otodasu", gameObject);
         }
-    }
-
-    // 指定秒数後に関数を呼ぶ
-    private void Callback(float time, Action action)
-    {
-        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
-        {
-            action();
-        }).AddTo(gameObject);
     }
 
     //プレイヤーのトリガーの範囲内に入ったノードのトラップステータスの情報を見て
@@ -107,7 +71,7 @@ public class PlayerAction : MonoBehaviour
             != GameState.GAMEMAIN)
             return;
 
-        var value = _trapSelectUi.PushValue();
+        var value = _trapSelectUi.PushValue;
         //ボタン押してなかったらはじく
         if (value != TrapDirection.NONE)
             if (other.tag == "Node")
@@ -125,8 +89,11 @@ public class PlayerAction : MonoBehaviour
 
     private void CreateTrap(GameObject node, TrapDirection cross_direction)
     {
-        // 音だったら鳴らしてはじく
-        if (cross_direction == TrapDirection.LEFT)
+        // 音か停電だったらはじく
+        if (cross_direction == TrapDirection.LEFT || cross_direction == TrapDirection.RIGHT)
+            return;
+        // リキャストが終わってなかったらはじく
+        if (_trapSelectUi.CanUseTrap(cross_direction) == false)
             return;
 
         if (cross_direction == TrapDirection.UP)
@@ -148,18 +115,13 @@ public class PlayerAction : MonoBehaviour
         if (!trapStatus.IsCanSetTrap(_selectTrapType))
             return;
 
-        var num = (int)cross_direction - 1;
-        if (_trapUseStatus[num].CanUse == false)
-            return;
-
-        _trapUseStatus[num].CanUse = false;
-        Callback(_trapUseStatus[num].RecastTime,
-                 () => _trapUseStatus[num].CanUse = true);
-
         //トラップ生成
         _trapSpawnManager.SpawnTrap(_selectTrapType, node.transform);
         //今の所一つのノードに対して一つのトラップしか仕掛けれない状態にしている
         trapStatus.IsSpawn = true;
+
+        // リキャストを開始する
+        _trapSelectUi.TrapRecast(cross_direction);
     }
 
     private void CraftTheInstallation(GameObject attribute)
