@@ -34,8 +34,12 @@ public class AIItemController : MonoBehaviour
             SoundManager.Instance.PlaySE("kaginyuusyu");
 
         _haveItems.Add(item);
+
+        // UIにゲットしたアイテムを表示する
         var board = _boardList.GetHumanBoard(GetComponent<MyNumber>().Number);
         board.SetItem(_boardList.GetItemSprite(item));
+        // UIにアイテムをゲットしたときのアイコンを表示する
+        board.SetIcon(_boardList.GetSprite(_boardList.GetIconNameFromBoardIcon(BoardIcon.ITEM_GET)));
 
         // デバッグ用に何を持っているか表示
         for (int i = 0; i < 5; i++)

@@ -20,7 +20,6 @@ public enum BoardIcon
     LAST_KEY,
 }
 
-
 public class HumanBoard
 {
     public GameObject Board;
@@ -30,8 +29,9 @@ public class HumanBoard
     public BoardFaceType FaceType = BoardFaceType.NORMAL;
     private BoardFaceType _currentFaceType = BoardFaceType.HURRY;
 
-    public Image Icon;
     public Image[] Items;
+    public Image Icon;
+    public float IconDrawTime;
 
     public void FaceTypeUpdate()
     {
@@ -48,6 +48,7 @@ public class HumanBoard
     {
         Icon.sprite = sprite;
         Icon.color = Color.white;
+        IconDrawTimeStart();
         return true;
     }
 
@@ -56,6 +57,25 @@ public class HumanBoard
         Icon.sprite = null;
         Icon.color = new Color(1, 1, 1, 0);
         return true;
+    }
+
+    public void IconUpdate()
+    {
+        if (Icon.sprite == null)
+            return;
+
+        IconDrawTime -= Time.deltaTime;
+
+        if (IconDrawTime <= 0)
+        {
+            IconDrawTimeStart();
+            EraseIcon();
+        }
+    }
+
+    private void IconDrawTimeStart()
+    {
+        IconDrawTime = 3.0f;
     }
 
     public bool SetItem(Sprite sprite)
@@ -168,7 +188,7 @@ public class HumanList : MonoBehaviour
         {
             var item = human_board.Board.transform.FindChild("Item" + i).gameObject;
             human_board.Items[i] = item.GetComponent<Image>();
-            human_board.Items[i].color = new Color(1, 1, 1, 0.5f);
+            human_board.Items[i].color = new Color(1, 1, 1, 0.0f);
         }
 
         // ボードの位置を初期化する
@@ -188,6 +208,7 @@ public class HumanList : MonoBehaviour
     void Update()
     {
         FaceUpdate();
+        IconUpdate();
     }
 
     void FaceUpdate()
@@ -219,6 +240,30 @@ public class HumanList : MonoBehaviour
 
             board.Value.FaceType = face_type;
             board.Value.FaceTypeUpdate();
+        }
+    }
+
+    private void IconUpdate()
+    {
+        foreach (var board in _humanBoardList)
+        {
+            var target = _aiGenerator.GetHumanFromMyNumber(board.Key);
+            if (target == null)
+                continue;
+
+            if (target.GetComponent<VictimAnimation>().AnimStatus
+                == VictimAnimationStatus.STAGGER)
+            {
+                var s = GetSprite(GetIconNameFromBoardIcon(BoardIcon.SURPRISE));
+                board.Value.SetIcon(s);
+            }
+
+            if (target.GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY))
+            {
+                var s = GetSprite(GetIconNameFromBoardIcon(BoardIcon.LAST_KEY));
+                board.Value.SetIcon(s);
+            }
+            board.Value.IconUpdate();
         }
     }
 
@@ -254,7 +299,7 @@ public class HumanList : MonoBehaviour
         return null;
     }
 
-    public Sprite GetItemSprite(string name)
+    public Sprite GetSprite(string name)
     {
         return _boardSprites[name];
     }
@@ -264,6 +309,21 @@ public class HumanList : MonoBehaviour
         return _boardSprites[GetItemNameFromItemType(type)];
     }
 
+    public string GetIconNameFromBoardIcon(BoardIcon type)
+    {
+        switch (type)
+        {
+            case BoardIcon.NONE:
+                break;
+            case BoardIcon.SURPRISE:
+                return "surprise_icon";
+            case BoardIcon.ITEM_GET:
+                return "itemget_icon";
+            case BoardIcon.LAST_KEY:
+                return "key_icon";
+        }
+        return null;
+    }
 
     public HumanBoard GetHumanBoard(int number)
     {
