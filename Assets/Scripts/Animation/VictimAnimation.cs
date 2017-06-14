@@ -80,6 +80,7 @@ public class VictimAnimation : MonoBehaviour
         if (GetComponent<AIRunAway>() &&
             (move_mode == AIController.MoveEmotion.HURRY_UP || move_mode == AIController.MoveEmotion.REACT_SOUND))
             _animStatus = VictimAnimationStatus.RUN;
+        
 
         // 探索を開始していなければは待機状態
         if (GetComponent<AIBeginMove>())

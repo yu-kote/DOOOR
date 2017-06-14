@@ -63,8 +63,8 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
 
-        if (SceneManager.GetSceneByName("Title").name == null)
-            SoundUpdate();
+        //if (SceneManager.GetSceneByName("Title").name == null)
+        //SoundUpdate();
     }
 
     private void SoundUpdate()

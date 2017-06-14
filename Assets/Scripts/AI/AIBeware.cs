@@ -159,6 +159,13 @@ public class AIBeware : MonoBehaviour
             if (tag == "Killer")
                 if (node.gameObject.GetComponent<Door>())
                     continue;
+
+            // 階段がロックされていたら通れない
+            var stairs = node.GetComponent<Stairs>();
+            if (stairs)
+                if (stairs.IsStairsLock())
+                    continue;
+
             // ほかの階は探索しない
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())

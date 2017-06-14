@@ -75,6 +75,8 @@ public class NodeManager : MonoBehaviour
                             node.Link(next_node);
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+
+                            stairs.LinkNode = next_node;
                             stairs.DirectionTag = "Left";
                             stairs.CellX = x;
                         }
@@ -87,6 +89,8 @@ public class NodeManager : MonoBehaviour
                             node.Link(next_node);
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+
+                            stairs.LinkNode = next_node;
                             stairs.DirectionTag = "Right";
                             stairs.CellX = x;
                         }

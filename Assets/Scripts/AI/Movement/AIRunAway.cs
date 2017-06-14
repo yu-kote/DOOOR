@@ -100,6 +100,10 @@ public class AIRunAway : AIRouteSearch
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
             return false;
+        
+        // 階段がロックされていたら通れない
+        if (IsStairsLock(next_node))
+            return false;
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))

@@ -102,7 +102,8 @@ public class PlayerAction : MonoBehaviour
             }
 
         if (other.tag == "Attribute")
-            if (other.name == "Door" + "(Clone)")
+        {
+            if (other.name == "Door" + "(Clone)" || other.name.Contains("Stairs"))
             {
                 _buttonGuide.SetActive(true);
                 if (_isButtonGuideView != _buttonGuide.activeInHierarchy)
@@ -110,6 +111,7 @@ public class PlayerAction : MonoBehaviour
 
                 ButtonGuideUpdate(other.gameObject);
             }
+        }
     }
 
     public bool IsDoorLock()
@@ -161,19 +163,33 @@ public class PlayerAction : MonoBehaviour
 
     private void CraftTheInstallation(GameObject attribute)
     {
-        switch (attribute.name)
+        if (attribute.name.Contains("Door" + "(Clone)"))
         {
-            case "Door" + "(Clone)":
+            var door = attribute.transform.parent.GetComponent<Door>();
+            var complete = door.LockDoorStatus(_statusLockTime);
+            if (complete == false)
+                return;
+            door.DoorLock(LockStart(attribute.transform.parent.gameObject));
+            DoorLockUpdate(door.transform.parent.gameObject);
+        }
 
-                var door = attribute.transform.parent.GetComponent<Door>();
-                var complete = door.LockDoorStatus(_statusLockTime);
-                if (complete)
-                {
-                    door.DoorLock(DoorLockStart(attribute));
-                    DoorLockUpdate(door.transform.parent.gameObject);
-                }
+        if (attribute.name.Contains("Stairs"))
+        {
+            var root_node = attribute.transform.parent.gameObject.GetComponent<Node>();
+            var link_node = root_node.GetComponent<Stairs>().LinkNode;
 
-                break;
+
+            var stairs1 = root_node.GetComponent<Stairs>();
+            var stairs2 = link_node.GetComponent<Stairs>();
+
+            stairs1.LockStairsStatus(_statusLockTime);
+            var complate = stairs2.LockStairsStatus(_statusLockTime);
+            if (complate == false)
+                return;
+
+            stairs1.StairsLock(LockStart(stairs1.Attribute.transform.GetChild(0).gameObject));
+            StairsLockUpdate(root_node.transform.gameObject,
+                             link_node.transform.gameObject);
         }
     }
 
@@ -198,10 +214,10 @@ public class PlayerAction : MonoBehaviour
     }
 
     // ドアのロックの印の準備をする
-    private GameObject DoorLockStart(GameObject target)
+    private GameObject LockStart(GameObject target)
     {
         _doorLock = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DoorLock"),
-                                target.transform.parent.transform);
+                                target.transform);
         _doorLock.transform.localPosition = Vector3.zero;
         return _doorLock;
     }
@@ -216,13 +232,23 @@ public class PlayerAction : MonoBehaviour
         //    offset_value = facade_dir.z;
         //if (offset_value > 0)
         //    offset_value *= -1;
-        
+
         // 色々試したけど時間がないのでマジナン
         var offset_pos = new Vector3(0, 10, -6);
 
         _doorLock.transform.localPosition = offset_pos;
 
         _doorLock.transform.eulerAngles = FieldUiAngle();
+    }
+
+    // 階段をロックしている時に呼ぶ関数
+    private void StairsLockUpdate(GameObject node1, GameObject node2)
+    {
+        var offset_pos = new Vector3(0, 1, -0.3f);
+
+        _doorLock.transform.localPosition = offset_pos;
+        _doorLock.transform.eulerAngles = FieldUiAngle();
+        _doorLock.transform.localScale = Vector3.one;
     }
 
     private Vector3 CameraDistance()

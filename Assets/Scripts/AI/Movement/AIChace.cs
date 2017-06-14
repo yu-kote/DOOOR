@@ -67,6 +67,10 @@ public class AIChace : AITargetMove
         if (next_node.GetComponent<Wall>() != null)
             return false;
 
+        // 階段がロックされていたら通れない
+        if (IsStairsLock(next_node))
+            return false;
+
         // ドアだったら探索終わり
         var door = next_node.GetComponent<Door>();
         if (door)

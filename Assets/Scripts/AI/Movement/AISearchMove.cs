@@ -114,7 +114,7 @@ public class AISearchMove : AIBasicsMovement
                     {
                         // ドアが開かないモーションをさせる
                         GetComponent<VictimAnimation>()
-                    .ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 1.5f);
+                        .ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 1.5f);
                         GetComponent<HumanAnimController>().Rotation(node.gameObject);
                     }
                     return false;
@@ -127,6 +127,12 @@ public class AISearchMove : AIBasicsMovement
                     return true;
 
                 return false;
+            }).Where(node =>
+            {
+                // 階段がロックされていたら入れない
+                if (IsStairsLock(node))
+                    return false;
+                return true;
             }).ToList();
     }
 
