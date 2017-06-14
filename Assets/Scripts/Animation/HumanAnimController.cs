@@ -65,7 +65,9 @@ public class HumanAnimController : MonoBehaviour
     {
         // 落とし穴に落下してる最中に向きを変えると変な挙動する場合がある
         //if (_currentVictimAnimStatus == VictimAnimationStatus.STAGGER)
-            //return;
+        //  return;
+        if (_currentVictimAnimStatus == VictimAnimationStatus.OPEN_DOOR)
+            return;
 
         var direction = _aiController.GetMovement().MoveDirection;
         if (direction == Vector3.zero)

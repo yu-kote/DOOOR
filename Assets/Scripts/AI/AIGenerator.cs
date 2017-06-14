@@ -61,6 +61,9 @@ public class AIGenerator : MonoBehaviour
         var start_pos = start_node.transform.position
                         + new Vector3(0, 0, -5);
 
+        var r = UnityEngine.Random.Range(-2, 2);
+        start_pos += new Vector3(r, 0, r);
+
         create_human.transform.position = start_pos;
         create_human.transform.position += new Vector3(0, create_human.transform.localScale.y, 0);
 
