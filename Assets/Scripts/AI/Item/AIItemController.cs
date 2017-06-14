@@ -67,6 +67,7 @@ public class AIItemController : MonoBehaviour
     {
         GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 0.5f);
         _haveItems.Remove(type);
+
         var board = _boardList.GetHumanBoard(GetComponent<MyNumber>().Number);
         board.UseItem(_boardList.GetItemNameFromItemType(type));
     }

@@ -134,7 +134,7 @@ public class NodeManager : MonoBehaviour
                             int randNum;
                             do
                             {
-                                randNum = UnityEngine.Random.Range(2, 4);
+                                randNum = UnityEngine.Random.Range(2, 5);
                                 randNum = 1 << randNum;
                             } while (randNum == (int)ItemType.LASTKEY);
 

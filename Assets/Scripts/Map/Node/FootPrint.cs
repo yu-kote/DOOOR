@@ -22,9 +22,7 @@ public class FootPrint : MonoBehaviour
         // ノードに入った人間にこのノードにいるという情報を教える
         human.GetComponent<AIController>().CurrentNode = GetComponent<Node>();
 
-        var num = human.GetComponent<MyNumber>();
-        if (_traces.Contains(num)) return;
-        _traces.Add(num);
+        AddTrace(human);
     }
 
     public void AddTrace(GameObject human)

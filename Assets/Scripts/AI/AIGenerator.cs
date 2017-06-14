@@ -162,11 +162,11 @@ public class AIGenerator : MonoBehaviour
             human.GetComponent<AIBeginMove>().BeginMoveStart();
         }
 
-        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
-        {
-            var killer = CreateKiller();
-            killer.GetComponent<AIBeginMove>().BeginMoveStart();
-        }).AddTo(gameObject);
+        //Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
+        //{
+        //    var killer = CreateKiller();
+        //    killer.GetComponent<AIBeginMove>().BeginMoveStart();
+        //}).AddTo(gameObject);
     }
 
     private void OnDestroy()

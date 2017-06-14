@@ -25,7 +25,6 @@ public class AIBeware : MonoBehaviour
         set { _isBeware = value; }
     }
 
-
     void Start()
     {
         var field = GameObject.Find("Field");
@@ -39,22 +38,26 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
+            // ゲーム開始直後はロックする
             if (_isBeware == false)
                 continue;
-            var ai_controller = GetComponent<AIController>();
             // 普通の移動をしている場合しか周囲を見ない
+            var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 continue;
 
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
             {
+                // 向いている方向しか探索しないため、後ろのノードを探索済みにする
+                if (ai_controller.PrevNode)
+                    ai_controller.PrevNode.GetComponent<NodeGuide>().AddSearch(gameObject);
                 // 探す
                 var find_humans = SearchHuman(ai_controller.CurrentNode);
-                _roadPathManager.SearchReset(gameObject);
                 // 探した跡を消す
+                _roadPathManager.SearchReset(gameObject);
                 // 見つけたかどうかと、先頭があるかどうか
-                if (find_humans != null && find_humans.First() != null)
+                if (find_humans != null && find_humans.FirstOrDefault())
                 {
                     var find_human = find_humans.First();
                     // 見つけた場合は標的にする
@@ -78,9 +81,8 @@ public class AIBeware : MonoBehaviour
                 if (GetComponent<AITargetMove>())
                     Destroy(GetComponent<AITargetMove>());
 
-                var mover = gameObject.AddComponent<AIChace>();
-
                 // どこを目指すかを教える
+                var mover = gameObject.AddComponent<AIChace>();
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
                 mover.SetTargetHuman(_targetHuman);
             }
@@ -95,9 +97,8 @@ public class AIBeware : MonoBehaviour
                 if (GetComponent<AIChace>())
                     Destroy(GetComponent<AIChace>());
 
-                var mover = gameObject.AddComponent<AIRunAway>();
-
                 // どいつから逃げなければいけないかを教える
+                var mover = gameObject.AddComponent<AIRunAway>();
                 mover.SetTargetHuman(_targetHuman);
             }
             // 急ぐ

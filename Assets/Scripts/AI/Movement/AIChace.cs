@@ -7,7 +7,8 @@ using System;
 
 public class AIChace : AITargetMove
 {
-    private int _endNodeDistance = 5;
+
+    private int _endNodeDistance = 7;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -62,20 +63,14 @@ public class AIChace : AITargetMove
         if (next_node == null)
             return false;
 
+        // 壁だったら進めない
         if (next_node.GetComponent<Wall>() != null)
             return false;
 
+        // ドアだったら探索終わり
         var door = next_node.GetComponent<Door>();
-        if (door != null)
-            //if (door._doorStatus == Door.DoorStatus.CLOSE)
+        if (door)
             return true;
-
-        // ドアの鍵が閉まっているかどうか
-        if (IsDoorLock(next_node))
-        {
-            MoveReset();
-            return false;
-        }
 
         _nextNode = next_node;
         PrevNodeUpdate();
@@ -98,8 +93,7 @@ public class AIChace : AITargetMove
     {
         if (_targetMoveEnd) return;
 
-        if (//MoveComplete() &&
-            _isChaceEnd)
+        if (_isChaceEnd)
         {
             _targetMoveEnd = true;
 
@@ -143,9 +137,10 @@ public class AIChace : AITargetMove
                 item_controller.UseItem(ItemType.GUN);
                 SoundManager.Instance.PlaySE("handogan", human.gameObject);
 
+                // 攻撃されたたときのアニメーションに切り替える
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
                 GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                    .StopMovement(4, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
                 break;
             }
             else if (item_controller.HaveItemCheck(ItemType.TYENSO))
@@ -153,9 +148,10 @@ public class AIChace : AITargetMove
                 item_controller.UseItem(ItemType.TYENSO);
                 SoundManager.Instance.PlaySE("tye-nso-", human.gameObject);
 
+                // 攻撃されたたときのアニメーションに切り替える
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
                 GetComponent<AIController>()
-                    .StopMovement(2, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                    .StopMovement(4, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
                 break;
             }
             _targetHuman = null;
