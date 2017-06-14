@@ -25,11 +25,8 @@ public class PlayerAction : MonoBehaviour
     //選択しているトラップのタイプ
     [SerializeField]
     private TrapType _selectTrapType = TrapType.PITFALLS;
-    public TrapType SelectTrapType
-    {
-        get { return _selectTrapType; }
-        set { _selectTrapType = value; }
-    }
+    public TrapType SelectTrapType { get { return _selectTrapType; } set { _selectTrapType = value; } }
+
     //ドアの状態固定時間
     [SerializeField]
     private float _statusLockTime = 2.0f;
@@ -40,6 +37,8 @@ public class PlayerAction : MonoBehaviour
     // 音を出す
     [SerializeField]
     private AISoundManager _aiSoundManager;
+    [SerializeField]
+    private MapBackgrounds _mapBackgrounds;
 
     private TrapSpawnManager _trapSpawnManager = null;
 
@@ -76,6 +75,22 @@ public class PlayerAction : MonoBehaviour
             _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
             SoundManager.Instance.PlaySE("otodasu", gameObject);
         }
+
+        if (value == TrapDirection.RIGHT)
+        {
+            if (_trapSelectUi.TrapRecast(value) == false)
+                return;
+            _mapBackgrounds.LightAllControll(false);
+            StartCoroutine(CallBack(_trapSelectUi.GetRecastTime(TrapDirection.RIGHT),
+               () => _mapBackgrounds.LightAllControll(true)));
+        }
+    }
+
+    // 指定秒数後に関数を呼ぶ
+    private IEnumerator CallBack(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     //プレイヤーのトリガーの範囲内に入ったノードのトラップステータスの情報を見て
@@ -91,8 +106,6 @@ public class PlayerAction : MonoBehaviour
         if (value != TrapDirection.NONE)
             if (other.tag == "Node")
                 CreateTrap(other.gameObject, value);
-
-
 
         if (IsDoorLock())
             if (other.tag == "Attribute")

@@ -19,21 +19,19 @@ public class AIBeware : MonoBehaviour
     private RoadPathManager _roadPathManager;
     private int _searchCount;
     private GameObject _targetHuman;
+    private MapBackgrounds _mapBackground;
 
     /// <summary>
     /// 周りを確認するかどうか
     /// </summary>
     private bool _isBeware;
-    public bool IsBeware
-    {
-        get { return _isBeware; }
-        set { _isBeware = value; }
-    }
+    public bool IsBeware { get { return _isBeware; } set { _isBeware = value; } }
 
     void Start()
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
+        _mapBackground = field.GetComponent<MapBackgrounds>();
         _isBeware = false;
         StartCoroutine(Search());
     }
@@ -52,6 +50,10 @@ public class AIBeware : MonoBehaviour
                     _searchLimit = _defaultSearchLimit;
                 else
                     _searchLimit = _LongSearchLimit;
+
+            // 停電の時は探索距離が短くなる
+            if (_mapBackground.IsLightOn == false)
+                _searchLimit = _blackoutSearchLimit;
 
             // 普通の移動をしている場合しか周囲を見ない
             var ai_controller = GetComponent<AIController>();

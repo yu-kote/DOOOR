@@ -26,9 +26,14 @@ public class MapBackgrounds : MonoBehaviour
 
     private List<GameObject> _backgrounds = new List<GameObject>();
     private List<GameObject> _ceilings = new List<GameObject>();
+    private List<GameObject> _lights = new List<GameObject>();
 
     private Dictionary<string, Material> _backgroundMaterials = new Dictionary<string, Material>();
     public Dictionary<string, Material> BackgroundMaterials { get { return _backgroundMaterials; } set { _backgroundMaterials = value; } }
+
+    private bool _isLightOn;
+    public bool IsLightOn { get { return _isLightOn; } set { _isLightOn = value; } }
+
 
     public void Start()
     {
@@ -38,6 +43,8 @@ public class MapBackgrounds : MonoBehaviour
 
     public void CreateMapBackgrond()
     {
+        OnDestroy();
+
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
 
@@ -49,6 +56,8 @@ public class MapBackgrounds : MonoBehaviour
             = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0.01f);
 
         Create();
+        OnLightSelect();
+        LightAllControll();
     }
 
     private void Create()
@@ -148,6 +157,9 @@ public class MapBackgrounds : MonoBehaviour
         ceiling.transform.position += offset_pos;
 
         _ceilings.Add(ceiling);
+
+        var light_bulb = ceiling.transform.FindChild("LightBulb").gameObject;
+        _lights.Add(light_bulb);
     }
 
     public void OffsetSurface(int x, ref Vector3 offset_pos, float value)
@@ -181,14 +193,27 @@ public class MapBackgrounds : MonoBehaviour
             = _backgroundMaterials["Room"];
     }
 
+    // ライトをすべてオンオフできる関数
+    public void LightAllControll(bool is_on = true)
+    {
+        _isLightOn = is_on;
+        foreach (var light in _lights)
+            light.SetActive(is_on);
+    }
+
+    void OnLightSelect()
+    {
+        var lights = _lights.Where(l => l.activeInHierarchy == true).ToList();
+        _lights.Clear();
+        _lights = lights;
+    }
+
     private void OnDestroy()
     {
         foreach (var item in _backgrounds)
-        {
             Destroy(item);
-        }
         _backgrounds.Clear();
         _backgroundMaterials.Clear();
-
+        _lights.Clear();
     }
 }

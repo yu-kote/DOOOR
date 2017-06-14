@@ -114,6 +114,13 @@ public class TrapSelectUI : MonoBehaviour
         return _trapUseStatus[(int)dir - 1].CanUse;
     }
 
+    // リキャスト時間をもらう
+    public float GetRecastTime(TrapDirection dir)
+    {
+        var num = (int)dir - 1;
+        return _trapUseStatus[num].RecastTime;
+    }
+
     // 指定秒数後に関数を呼ぶ
     private void Callback(float time, Action action)
     {
@@ -122,7 +129,7 @@ public class TrapSelectUI : MonoBehaviour
             action();
         }).AddTo(gameObject);
     }
-
+    // 指定秒数後に関数を呼ぶ
     private IEnumerator CallBack(float time, Action action)
     {
         yield return new WaitForSeconds(time);
@@ -177,6 +184,7 @@ public class TrapSelectUI : MonoBehaviour
             () => _trapUseStatus[num].PushButtonEffect.SetActive(false)));
     }
 
+    // 全てのリキャストを増減させる
     void RecastBarUpdate()
     {
         for (int i = 0; i < _trapUseStatus.Count(); i++)
