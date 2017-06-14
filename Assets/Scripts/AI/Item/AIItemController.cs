@@ -9,6 +9,7 @@ public class AIItemController : MonoBehaviour
     private List<ItemType> _haveItems = new List<ItemType>();
     public List<ItemType> HaveItems { get { return _haveItems; } set { _haveItems = value; } }
 
+    // デバッグ用に表示
     [SerializeField]
     int _haveItemLimit;
 

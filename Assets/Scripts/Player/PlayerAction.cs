@@ -170,7 +170,7 @@ public class PlayerAction : MonoBehaviour
                 if (complete)
                 {
                     door.DoorLock(DoorLockStart(attribute));
-                    DoorLockUpdate(door.gameObject);
+                    DoorLockUpdate(door.transform.parent.gameObject);
                 }
 
                 break;
@@ -200,21 +200,25 @@ public class PlayerAction : MonoBehaviour
     // ドアのロックの印の準備をする
     private GameObject DoorLockStart(GameObject target)
     {
-        _doorLock = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DoorLock"), target.transform);
+        _doorLock = Instantiate(Resources.Load<GameObject>("Prefabs/UI/DoorLock"),
+                                target.transform.parent.transform);
         _doorLock.transform.localPosition = Vector3.zero;
         return _doorLock;
     }
 
     // ドアをロックしている時に呼ぶ関数
-    private void DoorLockUpdate(GameObject door)
+    private void DoorLockUpdate(GameObject door_node)
     {
-        var distance = _camera.transform.position - door.transform.position;
-        var facade_dir = distance.normalized * 2;
-        var offset_value = facade_dir.x;
-        if (Mathf.Abs(facade_dir.x) < Mathf.Abs(facade_dir.z))
-            offset_value = facade_dir.z;
-
-        var offset_pos = new Vector3(0, 3, -offset_value);
+        //var distance = _camera.transform.position - door_node.transform.position;
+        //var facade_dir = distance.normalized * 10;
+        //var offset_value = facade_dir.x;
+        //if (Mathf.Abs(facade_dir.x) < Mathf.Abs(facade_dir.z))
+        //    offset_value = facade_dir.z;
+        //if (offset_value > 0)
+        //    offset_value *= -1;
+        
+        // 色々試したけど時間がないのでマジナン
+        var offset_pos = new Vector3(0, 10, -6);
 
         _doorLock.transform.localPosition = offset_pos;
 
