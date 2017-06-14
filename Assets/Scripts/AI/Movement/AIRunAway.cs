@@ -37,7 +37,7 @@ public class AIRunAway : AIRouteSearch
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
-        _endFlame = 900;
+        _endFlame = 300;
 
         MoveReset();
     }
@@ -76,21 +76,27 @@ public class AIRunAway : AIRouteSearch
         var vec = escape_pos - _currentNode.transform.position;
         var distance = vec.magnitude;
 
-        // 逃げ切ったら終わり
-        if (distance > _endDistance)
-            return true;
-        if (SearchCount > _endNodeDistance)
-            return true;
-        if (_endFlame-- < 0)
-            return true;
+        // 逃げ切り判定
+        {
+            // 逃げ切ったら終わり
+            if (distance > _endDistance)
+                return true;
+            if (SearchCount > _endNodeDistance)
+                return true;
+            if (_endFlame-- < 0)
+                return true;
+        }
 
         // 逃げる対象が人間だった場合は遠ざかるノードを更新する
         if (_targetHuman)
             _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
 
         Node next_node = null;
+
+        // 階段の時は逃げ道の数を数えてより多く逃げられる方向に進む
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);
+
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
             return false;

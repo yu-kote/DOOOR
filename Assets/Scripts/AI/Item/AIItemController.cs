@@ -72,6 +72,29 @@ public class AIItemController : MonoBehaviour
         board.UseItem(_boardList.GetItemNameFromItemType(type));
     }
 
+    float _itemEffectTime = 0.0f;
+    /// <summary>
+    /// アイテムを使い、指定時間後消滅させる
+    /// </summary>
+    public void UseItem(ItemType type, float time)
+    {
+        StartCoroutine(ItemEffect(type, time));
+    }
+
+    private IEnumerator ItemEffect(ItemType type, float time)
+    {
+        while (true)
+        {
+            yield return null;
+            _itemEffectTime += Time.deltaTime;
+            if (_itemEffectTime < time)
+                continue;
+            _itemEffectTime = 0.0f;
+            UseItem(type);
+            yield break;
+        }
+    }
+
     /// <summary>
     /// アイテムをUIと紐づける
     /// </summary>
@@ -82,6 +105,7 @@ public class AIItemController : MonoBehaviour
 
     void Update()
     {
+        // アイテムを探す
         ItemSearch();
     }
 
@@ -89,7 +113,6 @@ public class AIItemController : MonoBehaviour
     {
         var ai_controller = GetComponent<AIController>();
         var node = ai_controller.CurrentNode;
-
         if (node == null)
             return;
 
@@ -97,15 +120,24 @@ public class AIItemController : MonoBehaviour
         if (itemstatus == null)
             return;
 
+        // 所持数上限だったらはじく
         if (_haveItems.Count >= _haveItemLimit)
             return;
 
-        var setting_items = itemstatus.GetItem();
-        if (setting_items == ItemType.NONE)
+        var setting_item = itemstatus.GetItem();
+        if (setting_item == ItemType.NONE)
             return;
-        Func<ItemType, bool> Check =
-            (type) => ((uint)setting_items & (uint)type) > 0;
 
+        // すでに所持していたらはじく
+        if (HaveItemCheck(setting_item))
+            return;
+
+        // そのアイテムを持てるかどうか調べる
+        if (CanHaveItem(setting_item) == false)
+            return;
+
+        Func<ItemType, bool> Check =
+            (type) => ((uint)setting_item & (uint)type) > 0;
 
         for (uint type = (uint)ItemType.TYENSO << 1; type > 0; type = type >> 1)
         {
@@ -115,6 +147,27 @@ public class AIItemController : MonoBehaviour
                 this.AcquireItem((ItemType)type);
             }
         }
+
+        if (setting_item == ItemType.FLASHLIGHT)
+        {
+            float light_time = 30;
+            UseItem(setting_item, light_time);
+            gameObject.AddComponent<FlushLightEffect>().EffectTime = light_time;
+        }
+    }
+
+    bool CanHaveItem(ItemType type)
+    {
+        var name = GetComponent<MyNumber>().Name;
+        if (type == ItemType.FLASHLIGHT || type == ItemType.LASTKEY)
+            return true;
+        if (type == ItemType.GUN)
+            if (name == "TallMan")
+                return true;
+        if (type == ItemType.TYENSO)
+            if (name == "Fat")
+                return true;
+        return false;
     }
 
     private void OnDestroy()

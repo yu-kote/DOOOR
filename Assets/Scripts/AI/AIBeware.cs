@@ -6,12 +6,17 @@ using System.Linq;
 
 public class AIBeware : MonoBehaviour
 {
-    private RoadPathManager _roadPathManager;
-
     [SerializeField]
+    private int _blackoutSearchLimit = 1;
+    [SerializeField]
+    private int _defaultSearchLimit = 5;
+    [SerializeField]
+    private int _LongSearchLimit = 10;
+
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
+    private RoadPathManager _roadPathManager;
     private int _searchCount;
     private GameObject _targetHuman;
 
@@ -41,6 +46,13 @@ public class AIBeware : MonoBehaviour
             // ゲーム開始直後はロックする
             if (_isBeware == false)
                 continue;
+            // 懐中電灯を持っている間は探索距離が延びる
+            if (tag == "Victim")
+                if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
+                    _searchLimit = _defaultSearchLimit;
+                else
+                    _searchLimit = _LongSearchLimit;
+
             // 普通の移動をしている場合しか周囲を見ない
             var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)

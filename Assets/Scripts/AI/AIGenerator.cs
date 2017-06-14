@@ -18,6 +18,8 @@ public class AIGenerator : MonoBehaviour
     private Node _startNode;
     public Node StartNode { get { return _startNode; } }
 
+    private Node _killerStartNode;
+
     public enum VictimType
     {
         WOMAN,
@@ -40,6 +42,7 @@ public class AIGenerator : MonoBehaviour
     {
         _field = GameObject.Find("Field");
         _startNode = _field.GetComponent<NodeManager>().StartNode;
+        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[0][6].GetComponent<Node>();
     }
 
     private IEnumerator Setup()
@@ -58,12 +61,20 @@ public class AIGenerator : MonoBehaviour
         var create_human = Instantiate(human, transform);
 
         var start_node = _startNode;
-        var start_pos = start_node.transform.position
-                        + new Vector3(0, 0, -5);
+        // 殺人鬼は指定されたノードに出す
+        if (human.tag == "Killer")
+            start_node = _killerStartNode;
+        
+        // 最初は探索者の位置を少し後ろに配置する
+        var start_pos = start_node.transform.position;
+        if (human.tag == "Victim")
+            start_pos += new Vector3(0, 0, -5);
 
+        // 探索者の位置をばらけさせる
         var r = UnityEngine.Random.Range(-2, 2);
         start_pos += new Vector3(r, 0, r);
 
+        // 初期値が地面に接するようにするため半分浮かせる
         create_human.transform.position = start_pos;
         create_human.transform.position += new Vector3(0, create_human.transform.localScale.y, 0);
 
@@ -109,19 +120,18 @@ public class AIGenerator : MonoBehaviour
     {
         return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
     }
-
-
+    
     private void TitlePopHuman()
     {
         Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.WOMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
-        Observable.Timer(TimeSpan.FromSeconds(4.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.TALLMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
-        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(10.0f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.FAT)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
@@ -162,11 +172,11 @@ public class AIGenerator : MonoBehaviour
             human.GetComponent<AIBeginMove>().BeginMoveStart();
         }
 
-        //Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
-        //{
-        //    var killer = CreateKiller();
-        //    killer.GetComponent<AIBeginMove>().BeginMoveStart();
-        //}).AddTo(gameObject);
+        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
+        {
+            var killer = CreateKiller();
+            killer.GetComponent<AIBeginMove>().BeginMoveStart();
+        }).AddTo(gameObject);
     }
 
     private void OnDestroy()
