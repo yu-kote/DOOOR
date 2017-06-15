@@ -64,9 +64,15 @@ public class AIItemController : MonoBehaviour
     /// <summary>
     /// アイテムを使う
     /// </summary>
-    public void UseItem(ItemType type)
+    public void UseItem(ItemType type, GameObject target = null)
     {
-        GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 0.5f);
+        if (type == ItemType.GUN || type == ItemType.TYENSO)
+        {
+            if (target)
+                GetComponent<HumanAnimController>().Rotation(target.gameObject);
+            GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 1f);
+        }
+
         _haveItems.Remove(type);
 
         var board = _boardList.GetHumanBoard(GetComponent<MyNumber>().Number);

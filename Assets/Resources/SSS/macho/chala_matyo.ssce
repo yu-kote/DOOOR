@@ -92,6 +92,15 @@
 			<posStable>0</posStable>
 		</cell>
 		<cell>
+			<name>NewCell</name>
+			<pos>1372 964</pos>
+			<size>356 352</size>
+			<pivot>-0.275280892848969 -0.1875</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
 			<name>R_momo</name>
 			<pos>1496 428</pos>
 			<size>282 478</size>
@@ -150,6 +159,15 @@
 			<pos>1780 428</pos>
 			<size>176 370</size>
 			<pivot>0.0397727265954018 0.400000005960464</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>NewCell_1</name>
+			<pos>0 1144</pos>
+			<size>600 396</size>
+			<pivot>-0.353333324193954 -0.219696968793869</pivot>
 			<rotated>0</rotated>
 			<orgImageName></orgImageName>
 			<posStable>0</posStable>
