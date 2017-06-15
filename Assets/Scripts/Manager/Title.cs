@@ -19,18 +19,25 @@ public class Title : MonoBehaviour
     {
         if (Input.GetButtonDown(_startButton))
         {
-            ChangeGamemain();
+            //ChangeGamemain();
+            ChangeTutorial();
         }
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            ChangeGamemain();
+            //ChangeGamemain();
+            ChangeTutorial();
         }
     }
 
     void ChangeGamemain()
     {
         _sceneChanger.SceneChange("GameMain");
-        Destroy(this);
+        SoundManager.Instance.StopBGM();
+    }
+
+    void ChangeTutorial()
+    {
+        _sceneChanger.SceneChange("Tutorial");
         SoundManager.Instance.StopBGM();
     }
 }
