@@ -10,6 +10,8 @@ public class PlayerAction : MonoBehaviour
     // プレイヤーがマップに対してアクションを起こす時に押すボタン
     [SerializeField]
     private string _actionButton = "Action";
+    [SerializeField]
+    private string _soundButton = "Sound";
 
     [SerializeField]
     TrapSelectUI _trapSelectUi;
@@ -68,20 +70,21 @@ public class PlayerAction : MonoBehaviour
 
         // 音だけどこでも鳴らせるので特殊処理
         var value = _trapSelectUi.PushValue;
-        if (value == TrapDirection.LEFT)
+        if (Input.GetButtonDown(_soundButton))
         {
-            if (_trapSelectUi.TrapRecast(value) == false)
-                return;
+            //if (_trapSelectUi.TrapRecast(value) == false)
+            //    return;
             _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
             SoundManager.Instance.PlaySE("otodasu", gameObject);
         }
 
-        if (value == TrapDirection.RIGHT)
+        // 停電を発動させる
+        if (value == TrapDirection.UP)
         {
             if (_trapSelectUi.TrapRecast(value) == false)
                 return;
             _mapBackgrounds.LightAllControll(false);
-            StartCoroutine(CallBack(_trapSelectUi.GetRecastTime(TrapDirection.RIGHT),
+            StartCoroutine(CallBack(_trapSelectUi.GetRecastTime(TrapDirection.UP),
                () => _mapBackgrounds.LightAllControll(true)));
         }
     }
@@ -107,16 +110,29 @@ public class PlayerAction : MonoBehaviour
             if (other.tag == "Node")
                 CreateTrap(other.gameObject, value);
 
+        // 階段隠しの発動
+        if (value == TrapDirection.LEFT)
+            if (other.tag == "Attribute")
+                if (other.name.Contains("Stairs"))
+                {
+                    if (_trapSelectUi.TrapRecast(value) == false)
+                        return;
+                    CraftTheInstallation(other.gameObject);
+                    return;
+                }
+
+        // ドアをロックする
         if (IsDoorLock())
             if (other.tag == "Attribute")
-            {
-                CraftTheInstallation(other.gameObject);
-                return;
-            }
+                if (other.name == "Door" + "(Clone)")
+                {
+                    CraftTheInstallation(other.gameObject);
+                    return;
+                }
 
+        // ドアをロックするためのボタン案内を出す
         if (other.tag == "Attribute")
-        {
-            if (other.name == "Door" + "(Clone)" || other.name.Contains("Stairs"))
+            if (other.name == "Door" + "(Clone)")
             {
                 _buttonGuide.SetActive(true);
                 if (_isButtonGuideView != _buttonGuide.activeInHierarchy)
@@ -124,7 +140,7 @@ public class PlayerAction : MonoBehaviour
 
                 ButtonGuideUpdate(other.gameObject);
             }
-        }
+
     }
 
     public bool IsDoorLock()
@@ -139,16 +155,16 @@ public class PlayerAction : MonoBehaviour
 
     private void CreateTrap(GameObject node, TrapDirection cross_direction)
     {
-        // 音か停電だったらはじく
-        if (cross_direction == TrapDirection.LEFT || cross_direction == TrapDirection.RIGHT)
+        // 階段隠しか停電だったらはじく
+        if (cross_direction == TrapDirection.LEFT || cross_direction == TrapDirection.UP)
             return;
         // リキャストが終わってなかったらはじく
         if (_trapSelectUi.CanUseTrap(cross_direction) == false)
             return;
 
-        if (cross_direction == TrapDirection.UP)
-            _selectTrapType = TrapType.PITFALLS;
         if (cross_direction == TrapDirection.DOWN)
+            _selectTrapType = TrapType.PITFALLS;
+        if (cross_direction == TrapDirection.RIGHT)
             _selectTrapType = TrapType.ROPE;
 
         TrapStatus trapStatus = node.GetComponent<TrapStatus>();
