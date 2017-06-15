@@ -47,6 +47,15 @@
 			<posStable>0</posStable>
 		</cell>
 		<cell>
+			<name>NewCell</name>
+			<pos>828 1288</pos>
+			<size>618 234</size>
+			<pivot>-0.00647249212488532 -0.290598303079605</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
 			<name>dou</name>
 			<pos>1238 4</pos>
 			<size>452 724</size>

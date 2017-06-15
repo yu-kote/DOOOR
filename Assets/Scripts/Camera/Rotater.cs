@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ public class Rotater : MonoBehaviour
     private bool _isRotating = false;
     public bool IsRotating
     {
-        get { return _isRotating; }
+        get { return _isRotating || _isRotateStop; }
         set { _isRotating = value; }
     }
 
@@ -34,6 +35,25 @@ public class Rotater : MonoBehaviour
         set { _currentSide = value; }
     }
 
+    // 回転を止める
+    private bool _isRotateStop;
+    public bool IsRotateStop
+    {
+        get { return _isRotateStop; }
+        set { _isRotateStop = value; }
+    }
+
+    public void StopRotating(float time)
+    {
+        StartCoroutine(Stop(time));
+    }
+
+    private IEnumerator Stop(float time)
+    {
+        _isRotateStop = true;
+        yield return new WaitForSeconds(time);
+        _isRotateStop = false;
+    }
 
     void Start()
     {
@@ -59,10 +79,10 @@ public class Rotater : MonoBehaviour
 
     public bool StartRotation(Vector3 interest_point, float rotateAngle)
     {
-        if (_isRotating)
+        if (IsRotating)
             return false;
 
-        _isRotating = true;
+        IsRotating = true;
         _angle = rotateAngle;
 
         if (rotateAngle > 0)

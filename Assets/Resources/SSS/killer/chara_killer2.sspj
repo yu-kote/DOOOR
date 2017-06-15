@@ -28,7 +28,7 @@
 			<reverseZRotSignForNegativeScale>1</reverseZRotSignForNegativeScale>
 			<numberOfPivotDecimals>0</numberOfPivotDecimals>
 		</ssaxExport>
-		<player>any</player>
+		<player>ss5p_for_unity</player>
 		<strictVer4>0</strictVer4>
 		<dontUseMatrixForTransform>0</dontUseMatrixForTransform>
 		<rootPartFunctionAsVer4>0</rootPartFunctionAsVer4>
@@ -106,5 +106,6 @@
 	<lastAnimeFile>chara_killer2.ssae</lastAnimeFile>
 	<lastAnimeName>04_attack</lastAnimeName>
 	<lastCellMapFile>chara_killer2.ssce</lastCellMapFile>
-	<lastCell>L_ude_sita</lastCell>
+	<lastCell>NewCell</lastCell>
+	<lastPart>NewCell_1</lastPart>
 </SpriteStudioProject>

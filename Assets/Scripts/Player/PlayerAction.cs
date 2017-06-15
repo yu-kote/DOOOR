@@ -74,6 +74,7 @@ public class PlayerAction : MonoBehaviour
         {
             //if (_trapSelectUi.TrapRecast(value) == false)
             //    return;
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
             _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
             SoundManager.Instance.PlaySE("otodasu", gameObject);
         }
@@ -86,6 +87,7 @@ public class PlayerAction : MonoBehaviour
             _mapBackgrounds.LightAllControll(false);
             StartCoroutine(CallBack(_trapSelectUi.GetRecastTime(TrapDirection.UP),
                () => _mapBackgrounds.LightAllControll(true)));
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.UP_TRAP, 0.6f);
         }
     }
 
@@ -188,6 +190,12 @@ public class PlayerAction : MonoBehaviour
 
         // リキャストを開始する
         _trapSelectUi.TrapRecast(cross_direction);
+
+        if (cross_direction == TrapDirection.DOWN)
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.DOWN_TRAP, 0.6f);
+        if (cross_direction == TrapDirection.RIGHT)
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.RIGHT_TRAP, 0.6f);
+
     }
 
     private void CraftTheInstallation(GameObject attribute)
@@ -278,6 +286,9 @@ public class PlayerAction : MonoBehaviour
         _doorLock.transform.localPosition = offset_pos;
         _doorLock.transform.eulerAngles = FieldUiAngle();
         _doorLock.transform.localScale = Vector3.one;
+
+        GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.LEFT_TRAP, 0.6f);
+
     }
 
     private Vector3 CameraDistance()

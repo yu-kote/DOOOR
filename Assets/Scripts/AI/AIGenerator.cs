@@ -42,7 +42,7 @@ public class AIGenerator : MonoBehaviour
     {
         _field = GameObject.Find("Field");
         _startNode = _field.GetComponent<NodeManager>().StartNode;
-        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[0][6].GetComponent<Node>();
+        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[3][6].GetComponent<Node>();
     }
 
     private IEnumerator Setup()

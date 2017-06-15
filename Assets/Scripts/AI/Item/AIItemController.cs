@@ -70,7 +70,7 @@ public class AIItemController : MonoBehaviour
         {
             if (target)
                 GetComponent<HumanAnimController>().Rotation(target.gameObject);
-            GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 1f);
+            GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.USE_ITEM, 1.5f);
         }
 
         _haveItems.Remove(type);
