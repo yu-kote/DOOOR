@@ -28,7 +28,7 @@
 			<reverseZRotSignForNegativeScale>1</reverseZRotSignForNegativeScale>
 			<numberOfPivotDecimals>0</numberOfPivotDecimals>
 		</ssaxExport>
-		<player>any</player>
+		<player>ss5p_for_unity</player>
 		<strictVer4>0</strictVer4>
 		<dontUseMatrixForTransform>0</dontUseMatrixForTransform>
 		<rootPartFunctionAsVer4>0</rootPartFunctionAsVer4>

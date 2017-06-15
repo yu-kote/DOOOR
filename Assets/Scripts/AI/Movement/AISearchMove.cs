@@ -120,10 +120,8 @@ public class AISearchMove : AIBasicsMovement
                     return false;
                 }
 
-                // 殺人鬼の時にドアが開いてなかったら通れなくする
+                // 殺人鬼
                 if (tag != "Killer")
-                    return true;
-                if (door._doorStatus != Door.DoorStatus.CLOSE)
                     return true;
 
                 return false;

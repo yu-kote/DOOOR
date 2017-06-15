@@ -38,6 +38,15 @@
 			<posStable>0</posStable>
 		</cell>
 		<cell>
+			<name>NewCell</name>
+			<pos>1424 1634</pos>
+			<size>590 360</size>
+			<pivot>-0.40338984131813 -0.275000005960464</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
 			<name>L_ude_ue</name>
 			<pos>1754 4</pos>
 			<size>268 460</size>

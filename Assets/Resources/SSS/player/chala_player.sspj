@@ -28,8 +28,8 @@
 			<reverseZRotSignForNegativeScale>1</reverseZRotSignForNegativeScale>
 			<numberOfPivotDecimals>0</numberOfPivotDecimals>
 		</ssaxExport>
-		<player>ssp_for_unity</player>
-		<strictVer4>1</strictVer4>
+		<player>ss5p_for_unity</player>
+		<strictVer4>0</strictVer4>
 		<dontUseMatrixForTransform>0</dontUseMatrixForTransform>
 		<rootPartFunctionAsVer4>0</rootPartFunctionAsVer4>
 		<interpolateColorBlendAsVer4>1</interpolateColorBlendAsVer4>
@@ -104,7 +104,8 @@
 		<value>chala_player.ssae</value>
 	</animepackNames>
 	<lastAnimeFile>chala_player.ssae</lastAnimeFile>
-	<lastAnimeName>01_wana</lastAnimeName>
+	<lastAnimeName>05_rope</lastAnimeName>
 	<lastCellMapFile>chala_player.ssce</lastCellMapFile>
-	<lastCell>L_ude</lastCell>
+	<lastCell>R_kata</lastCell>
+	<lastPart>R_kata</lastPart>
 </SpriteStudioProject>

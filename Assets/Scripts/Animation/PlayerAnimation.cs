@@ -1,12 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using UniRx;
+using System;
 
 public enum PlayerAnimationStatus
 {
     USETRAP,
     WALK,
-    IDOL,
+    USETRAP2,
+    UP_TRAP,
+    RIGHT_TRAP,
+    LEFT_TRAP,
+    DOWN_TRAP,
 }
 
 public class PlayerAnimation : MonoBehaviour
@@ -43,8 +50,9 @@ public class PlayerAnimation : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical") * -1.0f;
 
-        if (horizontal != 0.0f || vertical != 0.0f)
-            _animStatus = PlayerAnimationStatus.WALK;
+        if (IsTrapAnimation())
+            if (horizontal != 0.0f || vertical != 0.0f)
+                _animStatus = PlayerAnimationStatus.WALK;
         //else
         //_animStatus = PlayerAnimationStatus.IDOL;
 
@@ -83,5 +91,33 @@ public class PlayerAnimation : MonoBehaviour
             return;
         _currentPlayerAnimStatus = _animStatus;
         _root.AnimationPlay((int)_currentPlayerAnimStatus);
+    }
+
+    public void ChangeAnimation(PlayerAnimationStatus status, float time)
+    {
+        _animStatus = status;
+        StopMove(time, () =>
+        {
+            _animStatus = PlayerAnimationStatus.WALK;
+        });
+    }
+
+    void StopMove(float time, Action action)
+    {
+        //GetComponent<Rotater>().StopRotating(time);
+        //GameObject.Find("MainCamera").GetComponent<Rotater>().StopRotating(time);
+        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
+        {
+            action();
+        }).AddTo(gameObject);
+    }
+
+    bool IsTrapAnimation()
+    {
+        return _animStatus != PlayerAnimationStatus.UP_TRAP &&
+                _animStatus != PlayerAnimationStatus.DOWN_TRAP &&
+                _animStatus != PlayerAnimationStatus.RIGHT_TRAP &&
+                _animStatus != PlayerAnimationStatus.LEFT_TRAP &&
+                _animStatus != PlayerAnimationStatus.USETRAP2;
     }
 }

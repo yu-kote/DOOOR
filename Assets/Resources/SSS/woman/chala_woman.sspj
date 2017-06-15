@@ -28,7 +28,7 @@
 			<reverseZRotSignForNegativeScale>1</reverseZRotSignForNegativeScale>
 			<numberOfPivotDecimals>0</numberOfPivotDecimals>
 		</ssaxExport>
-		<player>any</player>
+		<player>ss5c_for_unity2d</player>
 		<strictVer4>0</strictVer4>
 		<dontUseMatrixForTransform>0</dontUseMatrixForTransform>
 		<rootPartFunctionAsVer4>0</rootPartFunctionAsVer4>
@@ -107,5 +107,4 @@
 	<lastAnimeName>07_pinch</lastAnimeName>
 	<lastCellMapFile>chala_woman.ssce</lastCellMapFile>
 	<lastCell>dou</lastCell>
-	<lastPart>dou</lastPart>
 </SpriteStudioProject>

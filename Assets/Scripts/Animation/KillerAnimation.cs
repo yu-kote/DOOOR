@@ -11,6 +11,8 @@ public enum KillerAnimationStatus
     WALK,       // 歩き
     RUN,        // 走り
     ATTACK,     // 攻撃
+    HAPPY,      // 喜び
+    HIT,        // 攻撃された
 }
 
 public class KillerAnimation : MonoBehaviour
@@ -37,6 +39,8 @@ public class KillerAnimation : MonoBehaviour
     {
         if (_animStatus == KillerAnimationStatus.ATTACK)
             return;
+        if (_animStatus == KillerAnimationStatus.HIT)
+            return;
 
         var move_mode = _aiController.MoveMode;
 
@@ -54,7 +58,7 @@ public class KillerAnimation : MonoBehaviour
     {
         _animStatus = KillerAnimationStatus.ATTACK;
         GetComponent<AIController>()
-        .StopMovement(1f, () => GetComponent<KillerAnimation>().AnimStatus
+        .StopMovement(1.5f, () => GetComponent<KillerAnimation>().AnimStatus
                                              = KillerAnimationStatus.IDOL);
     }
 
