@@ -53,8 +53,7 @@ public class GameManager : MonoBehaviour
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMEOVER);
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
     }
-
-
+    
     void Update()
     {
         GameStateUpdate();

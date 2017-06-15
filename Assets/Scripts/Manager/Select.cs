@@ -21,6 +21,12 @@ public class Select : MonoBehaviour
     private Image _startButton;
 
     [SerializeField]
+    private GameObject _rightArrow;
+    [SerializeField]
+    private GameObject _leftArrow;
+
+
+    [SerializeField]
     string _horizontalAxis = "Horizontal";
     bool _isAxisDown;
 
@@ -202,4 +208,10 @@ public class Select : MonoBehaviour
         var push = Resources.Load<Sprite>("Texture/SelectUI/s-botan02");
         _startButton.sprite = push;
     }
+
+    private void ArrowEffect()
+    {
+
+    }
+
 }

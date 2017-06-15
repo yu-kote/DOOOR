@@ -7,7 +7,6 @@ using System;
 
 public class AIChace : AITargetMove
 {
-
     private int _endNodeDistance = 7;
 
     private GameObject _targetHuman;
@@ -31,7 +30,6 @@ public class AIChace : AITargetMove
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isChaceEnd = false;
-        _endNodeDistance = GetComponent<AIBeware>().SearchLimit;
 
         MoveReset();
     }
