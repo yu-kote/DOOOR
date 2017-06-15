@@ -55,6 +55,8 @@ public static class EasingInitiator
     /// <param name="value">イージングさせる箇所</param>
     public static void Add(GameObject target, Vector3 end, float time, EaseType type, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return;
         if (value == EaseValue.POSITION)
             AddEase(_easePosition, target, end, time, type, value);
         if (value == EaseValue.ROTATION)
@@ -66,6 +68,8 @@ public static class EasingInitiator
     private static void AddEase(Dictionary<GameObject, RunEase> ease, GameObject target,
                                 Vector3 end, float time, EaseType type, EaseValue value)
     {
+        if (target == null)
+            return;
         if (ease.ContainsKey(target))
             ease[target].Add(target, end, time, type);
         else
@@ -80,6 +84,8 @@ public static class EasingInitiator
     /// <param name="value">停止させる箇所</param>
     public static void Wait(GameObject target, float time, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return;
         if (value == EaseValue.POSITION)
             Add(target, target.transform.localPosition, time, EaseType.NONE, value);
         if (value == EaseValue.ROTATION)
@@ -90,13 +96,15 @@ public static class EasingInitiator
 
     public static bool IsEaseEnd(GameObject target, EaseValue value = EaseValue.POSITION)
     {
+        if (target == null)
+            return true;
         if (value == EaseValue.POSITION)
             return IsEnd(_easePosition, target);
         if (value == EaseValue.ROTATION)
             return IsEnd(_easeRotation, target);
         if (value == EaseValue.SCALE)
             return IsEnd(_easeScale, target);
-        return false;
+        return true;
     }
 
     private static bool IsEnd(Dictionary<GameObject, RunEase> ease, GameObject target)
@@ -104,7 +112,9 @@ public static class EasingInitiator
         if (ease.ContainsKey(target))
             if (ease[target].IsEaseEnd())
                 return true;
-        return false;
+            else
+                return false;
+        return true;
     }
 
     public static void EaseUpdate()
@@ -121,6 +131,16 @@ public static class EasingInitiator
             it.Value.Update();
     }
 
+    public static void DestoryEase(GameObject target)
+    {
+        _easePosition.Where(ease => ease.Key == target)
+                             .ToList().ForEach(t => t.Value.Clear());
+        _easeRotation.Where(ease => ease.Key == target)
+                             .ToList().ForEach(t => t.Value.Clear());
+        _easeScale.Where(ease => ease.Key == target)
+                     .ToList().ForEach(t => t.Value.Clear());
+    }
+
     private static void RemoveEase(Dictionary<GameObject, RunEase> ease)
     {
         var remove_list = ease.Where(e => e.Value.IsEaseEnd()).ToList();
@@ -131,11 +151,11 @@ public static class EasingInitiator
     public static void Clear()
     {
         foreach (var item in _easePosition)
-            item.Value.Crear();
+            item.Value.Clear();
         foreach (var item in _easeRotation)
-            item.Value.Crear();
+            item.Value.Clear();
         foreach (var item in _easeScale)
-            item.Value.Crear();
+            item.Value.Clear();
         _easePosition.Clear();
         _easeRotation.Clear();
         _easeScale.Clear();
@@ -190,7 +210,7 @@ class RunEase
         }
     }
 
-    public void Crear()
+    public void Clear()
     {
         _easeAccum.Clear();
     }
@@ -215,20 +235,20 @@ class EaseOrigin
     {
         if (_easeFunc == null)
             return _begin;
-        var x = _easeFunc(_count / (_endTime * 60), _begin.x, _end.x);
-        var y = _easeFunc(_count / (_endTime * 60), _begin.y, _end.y);
-        var z = _easeFunc(_count / (_endTime * 60), _begin.z, _end.z);
+        var x = _easeFunc(_count / _endTime, _begin.x, _end.x);
+        var y = _easeFunc(_count / _endTime, _begin.y, _end.y);
+        var z = _easeFunc(_count / _endTime, _begin.z, _end.z);
         return new Vector3(x, y, z);
     }
 
     public bool IsDone()
     {
-        return _count > (_endTime * 60);
+        return _count > _endTime;
     }
 
     public void Update()
     {
-        _count++;
+        _count += Time.deltaTime;
     }
 
     private Vector3 _begin;
@@ -236,7 +256,7 @@ class EaseOrigin
     private Vector3 _end;
     private float _endTime;
     EasingFunction _easeFunc;
-    private int _count;
+    private float _count;
 }
 
 delegate float EasingFunction(float t, float b, float e);

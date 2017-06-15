@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using System.Linq;
 
 public abstract class AIBasicsMovement : MonoBehaviour
 {
@@ -33,6 +34,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
     // next_nodeがcurrent_nodeと同じだった場合
     // 移動を許可する
     protected bool _updateNewMove = false;
+
 
     // デバッグ用にSerializeField
     [SerializeField]
@@ -79,6 +81,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         // ドアが閉まっているかどうか
         if (IsDoorLock(_nextNode))
+            return;
+        // 階段がロックされているかどうか
+        if (IsStairsLock(_nextNode))
             return;
 
         if (_nextNode == null)
@@ -202,6 +207,20 @@ public abstract class AIBasicsMovement : MonoBehaviour
                     //Debug.Log("通れません");
                     return true;
                 }
+        return false;
+    }
+
+    protected bool IsStairsLock(Node node)
+    {
+        if (node == null)
+            return true;
+
+        var stairs1 = _currentNode.GetComponent<Stairs>();
+        var stairs2 = node.GetComponent<Stairs>();
+        if (stairs1)
+            if (stairs2)
+                if (stairs1.IsStairsLock())
+                    return true;
         return false;
     }
 

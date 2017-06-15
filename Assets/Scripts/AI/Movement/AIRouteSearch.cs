@@ -117,6 +117,13 @@ public abstract class AIRouteSearch : AIBasicsMovement
                     continue;
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
+
+                // 階段がロックされていたら通れない
+                var stairs = node.GetComponent<Stairs>();
+                if (stairs)
+                    if (stairs.IsStairsLock())
+                        continue;
+
                 var ai = GetComponent<AIController>();
                 // 殺人鬼の時は扉の向こうに行けなくする
                 if (tag == "Killer" &&

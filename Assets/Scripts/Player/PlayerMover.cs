@@ -13,7 +13,7 @@ public class PlayerMover : MonoBehaviour
         set { _moveSpeed = value; }
     }
 
-    private Transform _cameraTrans = null;
+    private GameObject _camera = null;
 
     private Vector3 _movingAmount;
     public Vector3 MovingAmount
@@ -21,6 +21,8 @@ public class PlayerMover : MonoBehaviour
         get { return _movingAmount; }
         set { _movingAmount = value; }
     }
+
+    private NodeManager _nodeManager;
 
 
     void Awake()
@@ -30,9 +32,10 @@ public class PlayerMover : MonoBehaviour
 
     void Start()
     {
-        _cameraTrans = GameObject.Find("MainCamera").transform;
-        if (_cameraTrans == null)
+        _camera = GameObject.Find("MainCamera");
+        if (_camera == null)
             Debug.Log("_cameraTrans null!");
+        _nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
     }
 
     void Update()
@@ -50,7 +53,7 @@ public class PlayerMover : MonoBehaviour
         // 経過時間を獲得
         float deltaTime = Time.deltaTime;
         // カメラからY軸の回転量を獲得
-        float cameraRotateYValue = _cameraTrans.eulerAngles.y;
+        float cameraRotateYValue = _camera.transform.eulerAngles.y;
 
         // カメラが見ている方向に対して移動軸を変更しないといけない
         _movingAmount = new Vector3(
@@ -61,7 +64,73 @@ public class PlayerMover : MonoBehaviour
 
         transform.position += _movingAmount;
 
+        var height_limit = _nodeManager.HeightLimit();
+        if (transform.position.y > _nodeManager.HeightLimit())
+            transform.position = new Vector3(transform.position.x, height_limit, transform.position.z);
+        if (transform.position.y < 0)
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+
         // ステージないから出れないようにする処理
-        // 未実装
+
+        var camera_rotater = _camera.GetComponent<Rotater>();
+        var rotater = GetComponent<Rotater>();
+        var angle = rotater.RotateAngle;
+
+        // 面の長さ
+        var surface_length = _nodeManager.SurfaceNodeNum() * _nodeManager.Interval;
+
+        var pos = transform.position;
+        if (rotater.CurrentSide == 0)
+        {
+            if (pos.x < 0)
+            {
+                rotater.StartRotation(new Vector3(0, 0, 0), angle);
+                camera_rotater.StartRotation(new Vector3(0, 0, 0), angle);
+            }
+            if (pos.x > surface_length)
+            {
+                rotater.StartRotation(new Vector3(surface_length, 0, 0), -angle);
+                camera_rotater.StartRotation(new Vector3(surface_length, 0, 0), -angle);
+            }
+        }
+        if (rotater.CurrentSide == 1)
+        {
+            if (pos.z < 0)
+            {
+                rotater.StartRotation(new Vector3(surface_length, 0, 0), angle);
+                camera_rotater.StartRotation(new Vector3(surface_length, 0, 0), angle);
+            }
+            if (pos.z > surface_length)
+            {
+                rotater.StartRotation(new Vector3(surface_length, 0, surface_length), -angle);
+                camera_rotater.StartRotation(new Vector3(surface_length, 0, surface_length), -angle);
+            }
+        }
+        if (rotater.CurrentSide == 2)
+        {
+            if (pos.x < 0)
+            {
+                rotater.StartRotation(new Vector3(0, 0, surface_length), -angle);
+                camera_rotater.StartRotation(new Vector3(0, 0, surface_length), -angle);
+            }
+            if (pos.x > surface_length)
+            {
+                rotater.StartRotation(new Vector3(surface_length, 0, surface_length), angle);
+                camera_rotater.StartRotation(new Vector3(surface_length, 0, surface_length), angle);
+            }
+        }
+        if (rotater.CurrentSide == 3)
+        {
+            if (pos.z < 0)
+            {
+                rotater.StartRotation(new Vector3(0, 0, 0), -angle);
+                camera_rotater.StartRotation(new Vector3(0, 0, 0), -angle);
+            }
+            if (pos.z > surface_length)
+            {
+                rotater.StartRotation(new Vector3(0, 0, surface_length), angle);
+                camera_rotater.StartRotation(new Vector3(0, 0, surface_length), angle);
+            }
+        }
     }
 }

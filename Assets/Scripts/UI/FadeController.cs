@@ -40,10 +40,17 @@ public class FadeController : MonoBehaviour
         var color = _image.color;
 
         if (_state == FadeState.FADE_OUT)
+        {
+            SoundManager.Instance.volume.Bgm -= _speed;
             color.a += _speed;
+        }
         if (_state == FadeState.FADE_IN)
+        {
+            SoundManager.Instance.volume.Bgm += _speed;
             color.a -= _speed;
+        }
         color.a = Mathf.Clamp(color.a, 0.0f, 1.0f);
+        SoundManager.Instance.volume.Bgm = Mathf.Clamp(SoundManager.Instance.volume.Bgm, 0.0f, 1.0f);
 
         _image.color = color;
     }

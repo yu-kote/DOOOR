@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +40,7 @@ public class Select : MonoBehaviour
     void Awake()
     {
         _selectStageNum = 1;
-        _currentSelectStageNum = 0;
+        _currentSelectStageNum = _selectStageNum;
 
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
@@ -58,6 +59,18 @@ public class Select : MonoBehaviour
         _camera.transform.position += new Vector3(0, 0, -20);
     }
 
+    private void Start()
+    {
+        SoundManager.Instance.PlayBGM("title");
+        StartCoroutine(Setup());
+    }
+
+    private IEnumerator Setup()
+    {
+        yield return null;
+        StageSetup();
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
@@ -70,6 +83,8 @@ public class Select : MonoBehaviour
             {
                 GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
                 Destroy(this);
+                SoundManager.Instance.StopBGM();
+                SoundManager.Instance.PlayBGM("ingame");
             }
         }
 
@@ -89,7 +104,7 @@ public class Select : MonoBehaviour
             return;
 
         // ステージ選択が終わったら演出する
-        if (_gameManager.IsPushActionButton())
+        if (_gameManager.IsPushActionButton() || Input.GetKeyDown(KeyCode.Return))
         {
             _isSelectEnd = true;
             SelectEndStaging();
@@ -127,6 +142,14 @@ public class Select : MonoBehaviour
             return;
         _currentSelectStageNum = _selectStageNum;
 
+        // 選択音
+        SoundManager.Instance.PlaySE("sentakuon");
+
+        StageSetup();
+    }
+
+    private void StageSetup()
+    {
         // マップを読み直す
         ChangeMap();
 
@@ -145,7 +168,6 @@ public class Select : MonoBehaviour
     {
         _mapLoader.LoadMap(_selectStageNum);
         _nodeManager.Start();
-        _mapBackgrounds.CreateMapBackgrond();
     }
 
     private void PlayerPositionOffset()

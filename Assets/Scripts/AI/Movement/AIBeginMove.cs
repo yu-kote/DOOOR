@@ -30,17 +30,26 @@ public class AIBeginMove : MonoBehaviour
         Observable.Timer(TimeSpan.FromSeconds(_startMoveTime)).Subscribe(_ =>
         {
             GetComponent<AIBeware>().IsBeware = true;
-            Destroy(this);
         }).AddTo(gameObject);
     }
 
     private IEnumerator EasePosition()
     {
         yield return null;
-        var start_pos = GetComponent<AIController>().GetMovement().CurrentNode.transform.position;
+        var current_node = GetComponent<AIController>().GetMovement().CurrentNode;
+        var start_pos = current_node.transform.position;
         start_pos += new Vector3(0, transform.localScale.y, 0);
 
         EasingInitiator.Add(gameObject, start_pos,
                             _startMoveTime, EaseType.Linear);
+
+        var deguti = current_node.GetComponent<Deguti>();
+        if (deguti == null)
+            yield break;
+
+        deguti.StartOpening();
+        yield return new WaitForSeconds(_startMoveTime);
+        deguti.StartClosing();
+        Destroy(this);
     }
 }

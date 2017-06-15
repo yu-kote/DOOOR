@@ -63,8 +63,8 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
 
-        if (SceneManager.GetSceneByName("Title").name == null)
-            SoundUpdate();
+        //if (SceneManager.GetSceneByName("Title").name == null)
+        //SoundUpdate();
     }
 
     private void SoundUpdate()
@@ -100,6 +100,12 @@ public class AIController : MonoBehaviour
             GetMovement().Speed = _hurryUpSpeed;
             //if (tag == "Killer")
             //GetMovement().Speed = _defaultSpeed;
+        }
+
+
+        if (Input.GetKey(KeyCode.H))
+        {
+            GetMovement().Speed = 10.0f;
         }
     }
 
@@ -207,7 +213,7 @@ public class AIController : MonoBehaviour
         var exit = exit_list
             .FirstOrDefault(node => node.GetComponent<Deguti>() != null);
 
-        if (exit)
+        if (exit == null)
             return null;
         var exit_node = exit.GetComponent<Node>();
         return exit_node;
@@ -230,10 +236,10 @@ public class AIController : MonoBehaviour
 
     private IEnumerator StopMove()
     {
-        int count = 0;
-        while (count < (_stopTime * 60))
+        float count = 0.0f;
+        while (count < _stopTime)
         {
-            count++;
+            count += Time.deltaTime;
             var movement = GetMovement();
             if (movement)
                 movement.CanMove = false;
@@ -264,6 +270,9 @@ public class AIController : MonoBehaviour
         StopMovement(1.1f, () => Destroy(gameObject));
         OnDisable();
         GetComponent<VictimAnimation>().DeadAnimation();
+
+        if (GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY))
+            CurrentNode.gameObject.AddComponent<LastKey>();
     }
 
     private void OnDisable()
@@ -277,5 +286,6 @@ public class AIController : MonoBehaviour
             _currentNode.GetComponent<FootPrint>().EraseHumanOnNode(gameObject);
 
         _aiGenerator.Humans.Remove(gameObject);
+        EasingInitiator.DestoryEase(gameObject);
     }
 }

@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
+    [SerializeField]
     private int cell_x;
     public int CellX { get { return cell_x; } set { cell_x = value; } }
+    [SerializeField]
     private int cell_y;
     public int CellY { get { return cell_y; } set { cell_y = value; } }
 

@@ -39,6 +39,22 @@ public class VictimAnimation : MonoBehaviour
         AnimStatusUpdate();
     }
 
+    public void ChangeAnimation(VictimAnimationStatus status)
+    {
+        if (_animStatus != VictimAnimationStatus.DEAD)
+            _animStatus = status;
+    }
+
+    public void ChangeAnimation(VictimAnimationStatus status, float time)
+    {
+        _animStatus = status;
+        _aiController.StopMovement(time, () =>
+        {
+            if (_animStatus != VictimAnimationStatus.DEAD)
+                _animStatus = VictimAnimationStatus.IDOL;
+        });
+    }
+
     // 歩きのモーションのみ更新する
     void AnimStatusUpdate()
     {
@@ -64,6 +80,7 @@ public class VictimAnimation : MonoBehaviour
         if (GetComponent<AIRunAway>() &&
             (move_mode == AIController.MoveEmotion.HURRY_UP || move_mode == AIController.MoveEmotion.REACT_SOUND))
             _animStatus = VictimAnimationStatus.RUN;
+        
 
         // 探索を開始していなければは待機状態
         if (GetComponent<AIBeginMove>())
@@ -78,7 +95,9 @@ public class VictimAnimation : MonoBehaviour
         if (_aiController.GetMovement().CanMove == false)
             return;
 
-        if (GetComponent<AIRunAway>() == null &&
+        var run_away = GetComponent<AIRunAway>();
+
+        if (run_away == null &&
             _aiController.MoveMode == AIController.MoveEmotion.DEFAULT)
         {
             if (_animStatus == VictimAnimationStatus.CRISIS)
@@ -91,6 +110,15 @@ public class VictimAnimation : MonoBehaviour
             _aiController.PrevNode == null)
             return;
 
+        // ドアが閉まっていたらいきどまる
+        if (run_away)
+            if (run_away.IsDoorCaught)
+            {
+                _animStatus = VictimAnimationStatus.CRISIS;
+                ApproachRotate();
+                return;
+            }
+
         // 移動先がある場合ははじく(追いつめられていたらモーションを終了する)
         if (_aiController.NextNode != _aiController.CurrentNode ||
             _aiController.NextNode != _aiController.PrevNode ||
@@ -102,6 +130,13 @@ public class VictimAnimation : MonoBehaviour
         }
         _animStatus = VictimAnimationStatus.CRISIS;
 
+        ApproachRotate();
+    }
+
+    private void ApproachRotate()
+    {
+        if (GetComponent<AIRunAway>() == null)
+            return;
         var approach_node = GetComponent<AIRunAway>().ApproachNode;
         if (approach_node)
             _humanAnimController.Rotation(approach_node.gameObject);

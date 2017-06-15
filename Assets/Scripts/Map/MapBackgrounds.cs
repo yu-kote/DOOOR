@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.SceneManagement;
 
 public class MapBackgrounds : MonoBehaviour
 {
@@ -18,10 +19,21 @@ public class MapBackgrounds : MonoBehaviour
     [SerializeField]
     private GameObject _doubleBackground;
 
+    [SerializeField]
+    private GameObject _ceiling;
+    [SerializeField]
+    private GameObject _light;
+
     private List<GameObject> _backgrounds = new List<GameObject>();
+    private List<GameObject> _ceilings = new List<GameObject>();
+    private List<GameObject> _lights = new List<GameObject>();
 
     private Dictionary<string, Material> _backgroundMaterials = new Dictionary<string, Material>();
     public Dictionary<string, Material> BackgroundMaterials { get { return _backgroundMaterials; } set { _backgroundMaterials = value; } }
+
+    private bool _isLightOn;
+    public bool IsLightOn { get { return _isLightOn; } set { _isLightOn = value; } }
+
 
     public void Start()
     {
@@ -31,17 +43,21 @@ public class MapBackgrounds : MonoBehaviour
 
     public void CreateMapBackgrond()
     {
+        OnDestroy();
+
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
 
         _singleBackground0.transform.localScale
-            = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0);
+            = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0.01f);
         _singleBackground1.transform.localScale
-            = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0);
+            = new Vector3(_nodeManager.Interval, _nodeManager.HeightInterval, 0.01f);
         _doubleBackground.transform.localScale
-            = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0);
-        
+            = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0.01f);
+
         Create();
+        OnLightSelect();
+        LightAllControll();
     }
 
     private void Create()
@@ -50,6 +66,7 @@ public class MapBackgrounds : MonoBehaviour
         {
             for (int x = 0; x < _nodeManager.Nodes[y].Count; x++)
             {
+                CreateCeiling(_nodeManager.Nodes[y][x]);
                 if (_nodeManager.Nodes[y][x].GetComponent<Corner>())
                     continue;
                 CreateBackground(_nodeManager.Nodes[y][x]);
@@ -96,6 +113,55 @@ public class MapBackgrounds : MonoBehaviour
         _backgrounds.Add(bg);
     }
 
+    int _lightCount = 0;
+
+    private void CreateCeiling(GameObject node)
+    {
+        if (SceneManager.GetSceneByName("Title").name != null)
+            return;
+
+        _lightCount++;
+
+        // 壁とドアを見やすくするため、その隣にライトを設置する
+        var light_node = node.GetComponent<Node>().LinkNodes.FirstOrDefault(n => n.GetComponent<Wall>());
+        if (light_node == null)
+            light_node = node.GetComponent<Node>().LinkNodes.FirstOrDefault(n => n.GetComponent<Door>());
+
+        if (light_node)
+            _light.SetActive(true);
+        else
+            _light.SetActive(false);
+
+        // 壁とドアがない状態が続くと暗くなってしまうので、3つ間隔をあけて配置する
+        if (_lightCount > 3)
+            _light.SetActive(true);
+
+        // 間隔をあけて配置した場合リセットする
+        if (_light.activeSelf == true)
+            _lightCount = 0;
+
+        // 壁とドアにライトを設置しない
+        if (node.GetComponent<Wall>() || node.GetComponent<Door>())
+            _light.SetActive(false);
+
+        var ceiling = Instantiate(_ceiling, node.transform);
+
+        ceiling.transform.localPosition = Vector3.zero;
+        ceiling.transform.localEulerAngles = Vector3.zero;
+
+        var offset_pos = new Vector3(0, _nodeManager.HeightInterval - 0.2f, 0);
+        float offset = 0.0f;
+
+        OffsetSurface(node.GetComponent<Node>().CellX, ref offset_pos, offset);
+
+        ceiling.transform.position += offset_pos;
+
+        _ceilings.Add(ceiling);
+
+        var light_bulb = ceiling.transform.FindChild("LightBulb").gameObject;
+        _lights.Add(light_bulb);
+    }
+
     public void OffsetSurface(int x, ref Vector3 offset_pos, float value)
     {
         if (_nodeManager.WhichSurfaceNum(x) == 0)
@@ -127,14 +193,27 @@ public class MapBackgrounds : MonoBehaviour
             = _backgroundMaterials["Room"];
     }
 
+    // ライトをすべてオンオフできる関数
+    public void LightAllControll(bool is_on = true)
+    {
+        _isLightOn = is_on;
+        foreach (var light in _lights)
+            light.SetActive(is_on);
+    }
+
+    void OnLightSelect()
+    {
+        var lights = _lights.Where(l => l.activeInHierarchy == true).ToList();
+        _lights.Clear();
+        _lights = lights;
+    }
+
     private void OnDestroy()
     {
         foreach (var item in _backgrounds)
-        {
             Destroy(item);
-        }
         _backgrounds.Clear();
         _backgroundMaterials.Clear();
-
+        _lights.Clear();
     }
 }

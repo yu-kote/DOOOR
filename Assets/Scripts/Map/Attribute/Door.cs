@@ -21,6 +21,10 @@ public class Door : AttributeBase
         set { _statusLockTime = value; }
     }
 
+    private bool _isReverse = false;
+
+    public GameObject _doorLock = null;
+
     void Awake()
     {
 
@@ -41,12 +45,24 @@ public class Door : AttributeBase
             anim.GetBool("IsOpen"))
             anim.SetBool("IsOpen", false);
 
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdol") &&
+            anim.GetBool("IsReverse"))
+            anim.SetBool("IsReverse", false);
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("CloseIdol") &&
             anim.GetBool("IsClose"))
             anim.SetBool("IsClose", false);
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdolReverse") &&
+            anim.GetBool("IsReverseClose"))
+            anim.SetBool("IsReverseClose", false);
+
+        if (IsDoorLock() == false)
+            if (_doorLock != null)
+                Destroy(_doorLock);
     }
 
-    public bool StartOpening()
+    public bool StartOpening(bool is_reverse = false)
     {
         if (_statusLockTime > 0.0f)
             return false;
@@ -56,8 +72,13 @@ public class Door : AttributeBase
             return false;
 
         _doorStatus = DoorStatus.OPEN;
-        anim.SetBool("IsOpen", true);
 
+        _isReverse = is_reverse;
+        anim.SetBool("IsReverse", is_reverse);
+        if (_isReverse == false)
+            anim.SetBool("IsOpen", true);
+
+        SoundManager.Instance.PlaySE("doaakeru", gameObject);
         return true;
     }
 
@@ -67,12 +88,21 @@ public class Door : AttributeBase
             return false;
         if (_doorStatus != DoorStatus.OPEN)
             return false;
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdol"))
-            return false;
+        if (_isReverse == false)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdol"))
+                return false;
+        if (_isReverse)
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsName("OpenIdolReverse"))
+                return false;
 
         _doorStatus = DoorStatus.CLOSE;
-        anim.SetBool("IsClose", true);
 
+        anim.SetBool("IsReverse", false);
+
+        anim.SetBool("IsClose", true);
+        anim.SetBool("IsReverseClose", true);
+
+        SoundManager.Instance.PlaySE("doasimeru", gameObject);
         return true;
     }
 
@@ -81,11 +111,21 @@ public class Door : AttributeBase
         return _statusLockTime > 0.0f;
     }
 
-    public void LockDoorStatus(float statusLockTime)
+    public bool DoorLock(GameObject lock_object)
     {
-        if (_statusLockTime > 0.0f)
-            return;
+        _doorLock = lock_object;
+        return true;
+    }
 
+    public bool LockDoorStatus(float statusLockTime)
+    {
+        bool can_lock = true;
+        if (_statusLockTime > 0.0f)
+            can_lock = false;
+
+        if (_doorStatus == DoorStatus.OPEN)
+            return false;
         _statusLockTime = statusLockTime;
+        return can_lock;
     }
 }

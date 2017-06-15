@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.Assertions;
 using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// 使い方
@@ -34,8 +35,6 @@ public class SoundManager : MonoBehaviour
     // 16個のSEが同時に鳴らせる限界とします
     private AudioSource[] _seSource = new AudioSource[16];
 
-    //private AudioSource[] _voiceSouce = new AudioSource[8];
-
     // AudioClip
 
     private Dictionary<string, int> _bgmList = new Dictionary<string, int>();
@@ -43,9 +42,6 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<string, int> _seList = new Dictionary<string, int>();
     private AudioClip[] _se;
-
-    //private Dictionary<string, int> _voiceList = new Dictionary<string, int>();
-    //private AudioClip[] _voice;
 
 
     private void Awake()
@@ -62,9 +58,6 @@ public class SoundManager : MonoBehaviour
         for (int i = 0; i < _seSource.Length; i++)
             _seSource[i] = gameObject.AddComponent<AudioSource>();
 
-        //for (int i = 0; i < _seSource.Length; i++)
-        //_voiceSouce[i] = gameObject.AddComponent<AudioSource>();
-
         _bgm = Resources.LoadAll<AudioClip>("Audio/BGM");
         _se = Resources.LoadAll<AudioClip>("Audio/SE");
 
@@ -72,9 +65,7 @@ public class SoundManager : MonoBehaviour
             _bgmList[_bgm[i].name] = i;
 
         for (int i = 0; i < _se.Length; i++)
-        {
             _seList[_se[i].name] = i;
-        }
     }
 
     private void Update()
@@ -84,16 +75,12 @@ public class SoundManager : MonoBehaviour
 
         foreach (var s in _seSource)
             s.mute = volume.Mute;
-        //foreach (var s in _voiceSouce)
-        //s.mute = volume.Mute;
 
         // ボリューム
-        _bgmSource.volume = volume.Bgm;
+        _bgmSource.volume = volume.Bgm * 0.3f;
 
         foreach (var s in _seSource)
             s.volume = volume.Se;
-        //foreach (var s in _voiceSouce)
-        //s.volume = volume.Voice;
     }
 
     // BGM 再生
@@ -145,7 +132,7 @@ public class SoundManager : MonoBehaviour
     }
 
     // GameObjectを指定して SE 再生
-    public void PlaySE(string name, GameObject target)
+    public void PlaySE(string name, GameObject target, bool is_loop = false)
     {
         var s = target.AddComponent<AudioSource>();
 
@@ -154,6 +141,7 @@ public class SoundManager : MonoBehaviour
 
         s.clip = _se[_seList[name]];
         s.Play();
+        s.loop = is_loop;
 
         // 3D上でしか聞こえなくする
         s.spatialBlend = 1.0f;
@@ -188,31 +176,17 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // 音声 再生
-    //public void PlayVoice(int index)
-    //{
-    //    if (0 > index || _voice.Length <= index) return;
-    //    foreach (var s in _voiceSouce)
-    //    {
-    //        if (s.isPlaying == false)
-    //        {
-    //            s.clip = _voice[index];
-    //            s.Play();
-    //            return;
-    //        }
-    //    }
-    //}
+    public void StopSE(GameObject target)
+    {
+        var audio_sources = target.GetComponents<AudioSource>();
 
-    // 音声 停止
-    //public void StopVoice()
-    //{
-    //    foreach (var s in _voiceSouce)
-    //    {
-    //        s.Stop();
-    //        s.clip = null;
-    //    }
-    //}
-
+        foreach (var s in audio_sources.ToList())
+        {
+            //s.Stop();
+            //s.clip = null;
+            Destroy(s);
+        }
+    }
 }
 
 

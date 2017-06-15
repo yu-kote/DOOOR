@@ -55,6 +55,8 @@ public class PlayerAnimation : MonoBehaviour
 
         if (GetComponent<Rotater>().IsRotating == false)
             Rotation();
+        else
+            GetComponent<PlayerMover>().MovingAmount = Vector3.zero;
     }
 
     // キャラを進む方向に回転させる

@@ -6,30 +6,32 @@ using System.Linq;
 
 public class AIBeware : MonoBehaviour
 {
-    private RoadPathManager _roadPathManager;
-
     [SerializeField]
+    private int _blackoutSearchLimit = 1;
+    [SerializeField]
+    private int _defaultSearchLimit = 5;
+    [SerializeField]
+    private int _LongSearchLimit = 10;
+
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
+    private RoadPathManager _roadPathManager;
     private int _searchCount;
     private GameObject _targetHuman;
+    private MapBackgrounds _mapBackground;
 
     /// <summary>
     /// 周りを確認するかどうか
     /// </summary>
     private bool _isBeware;
-    public bool IsBeware
-    {
-        get { return _isBeware; }
-        set { _isBeware = value; }
-    }
-
+    public bool IsBeware { get { return _isBeware; } set { _isBeware = value; } }
 
     void Start()
     {
         var field = GameObject.Find("Field");
         _roadPathManager = field.GetComponent<RoadPathManager>();
+        _mapBackground = field.GetComponent<MapBackgrounds>();
         _isBeware = false;
         StartCoroutine(Search());
     }
@@ -39,22 +41,37 @@ public class AIBeware : MonoBehaviour
         while (true)
         {
             yield return null;
+            // ゲーム開始直後はロックする
             if (_isBeware == false)
                 continue;
-            var ai_controller = GetComponent<AIController>();
+            // 懐中電灯を持っている間は探索距離が延びる
+            if (tag == "Victim")
+                if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
+                    _searchLimit = _defaultSearchLimit;
+                else
+                    _searchLimit = _LongSearchLimit;
+
+            // 停電の時は探索距離が短くなる
+            if (_mapBackground.IsLightOn == false)
+                _searchLimit = _blackoutSearchLimit;
+
             // 普通の移動をしている場合しか周囲を見ない
+            var ai_controller = GetComponent<AIController>();
             if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
                 continue;
 
             // 標的が見つかっているかどうか
             if (_targetHuman == null)
             {
+                // 向いている方向しか探索しないため、後ろのノードを探索済みにする
+                if (ai_controller.PrevNode)
+                    ai_controller.PrevNode.GetComponent<NodeGuide>().AddSearch(gameObject);
                 // 探す
                 var find_humans = SearchHuman(ai_controller.CurrentNode);
-                _roadPathManager.SearchReset(gameObject);
                 // 探した跡を消す
+                _roadPathManager.SearchReset(gameObject);
                 // 見つけたかどうかと、先頭があるかどうか
-                if (find_humans != null && find_humans.First() != null)
+                if (find_humans != null && find_humans.FirstOrDefault())
                 {
                     var find_human = find_humans.First();
                     // 見つけた場合は標的にする
@@ -78,9 +95,8 @@ public class AIBeware : MonoBehaviour
                 if (GetComponent<AITargetMove>())
                     Destroy(GetComponent<AITargetMove>());
 
-                var mover = gameObject.AddComponent<AIChace>();
-
                 // どこを目指すかを教える
+                var mover = gameObject.AddComponent<AIChace>();
                 mover.SetTargetNode(_targetHuman.GetComponent<AIController>().CurrentNode);
                 mover.SetTargetHuman(_targetHuman);
             }
@@ -95,9 +111,8 @@ public class AIBeware : MonoBehaviour
                 if (GetComponent<AIChace>())
                     Destroy(GetComponent<AIChace>());
 
-                var mover = gameObject.AddComponent<AIRunAway>();
-
                 // どいつから逃げなければいけないかを教える
+                var mover = gameObject.AddComponent<AIRunAway>();
                 mover.SetTargetHuman(_targetHuman);
             }
             // 急ぐ
@@ -146,6 +161,13 @@ public class AIBeware : MonoBehaviour
             if (tag == "Killer")
                 if (node.gameObject.GetComponent<Door>())
                     continue;
+
+            // 階段がロックされていたら通れない
+            var stairs = node.GetComponent<Stairs>();
+            if (stairs)
+                if (stairs.IsStairsLock())
+                    continue;
+
             // ほかの階は探索しない
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())

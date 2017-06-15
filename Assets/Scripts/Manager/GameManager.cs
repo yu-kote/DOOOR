@@ -54,8 +54,10 @@ public class GameManager : MonoBehaviour
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
     }
 
+
     void Update()
     {
+        GameStateUpdate();
         GameEndUpdate();
     }
 
@@ -84,11 +86,28 @@ public class GameManager : MonoBehaviour
             if (Input.GetButtonDown(_gameEndButton))
                 GameObject.Find("SceneChanger")
                     .GetComponent<SceneChanger>().SceneChange("Title");
-            
             return;
         }
         GameClear();
         GameOver();
+    }
+
+    void GameStateUpdate()
+    {
+        if (_currentGameState == _prevGameState)
+            return;
+        _prevGameState = _currentGameState;
+
+        if (_currentGameState == GameState.GAMECLEAR)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("gameclear");
+        }
+        if (_currentGameState == GameState.GAMEOVER)
+        {
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("gameover");
+        }
     }
 
     void GameClear()
@@ -119,10 +138,8 @@ public class GameManager : MonoBehaviour
             {
                 human.GetComponent<AIItemController>().UseItem(ItemType.LASTKEY);
 
-                var ai_controller = human.GetComponent<AIController>();
                 var animation = human.GetComponent<VictimAnimation>();
-                animation.AnimStatus = VictimAnimationStatus.OPEN_DOOR;
-                ai_controller.StopMovement(0.5f, () => animation.AnimStatus = VictimAnimationStatus.IDOL);
+                animation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
                 return true;
             }
             return false;

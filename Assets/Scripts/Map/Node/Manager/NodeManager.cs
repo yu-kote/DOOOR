@@ -44,7 +44,7 @@ public class NodeManager : MonoBehaviour
         NodesLink();
         CreateMap(mapLoader);
         GetComponent<MapBackgrounds>().CreateMapBackgrond();
-        
+
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -75,6 +75,8 @@ public class NodeManager : MonoBehaviour
                             node.Link(next_node);
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+
+                            stairs.LinkNode = next_node;
                             stairs.DirectionTag = "Left";
                             stairs.CellX = x;
                         }
@@ -87,6 +89,8 @@ public class NodeManager : MonoBehaviour
                             node.Link(next_node);
                             var stairs = node.gameObject.AddComponent<Stairs>();
                             next_node.gameObject.AddComponent<Stairs>().IsInstanceAttribute = false;
+
+                            stairs.LinkNode = next_node;
                             stairs.DirectionTag = "Right";
                             stairs.CellX = x;
                         }
@@ -134,7 +138,7 @@ public class NodeManager : MonoBehaviour
                             int randNum;
                             do
                             {
-                                randNum = UnityEngine.Random.Range(2, 4);
+                                randNum = UnityEngine.Random.Range(2, 5);
                                 randNum = 1 << randNum;
                             } while (randNum == (int)ItemType.LASTKEY);
 
@@ -235,6 +239,16 @@ public class NodeManager : MonoBehaviour
         if (surface_num == 3)
             return new Vector3(0, -270, 0);
         return Vector3.zero;
+    }
+
+    public int SurfaceNodeNum()
+    {
+        return _loadNum / _surfaceNum;
+    }
+
+    public float HeightLimit()
+    {
+        return _heightInterval * _topFloor;
     }
 
     private void NodesLink()

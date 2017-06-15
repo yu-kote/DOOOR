@@ -5,7 +5,9 @@ using UnityEngine;
 public class TrapSpawnManager : MonoBehaviour
 {
     private TrapList _trapList = null;
-    public float soundRange = 10;
+
+    [SerializeField]
+    public GameObject _camera;
 
     void Start()
     {
@@ -14,14 +16,16 @@ public class TrapSpawnManager : MonoBehaviour
             Debug.Log("_trapList is null");
     }
 
-    public void SpawnTrap(TrapType type, Transform nodeTrans)
+    public void SpawnTrap(TrapType type, Transform nodeTrans, Vector3 angle)
     {
         //TrapTypeがNONEだった場合はじく
         if (type == TrapType.NONE)
             return;
 
         GameObject _trapObject = Instantiate(_trapList.GetTrapObject(type));
-        _trapObject.transform.position = nodeTrans.position;
+        _trapObject.transform.position = nodeTrans.position + new Vector3(0, 0.5f, 0);
+        _trapObject.transform.eulerAngles = angle;
+
         switch (type)
         {
             case TrapType.PITFALLS:
@@ -30,17 +34,17 @@ public class TrapSpawnManager : MonoBehaviour
                 _trapObject.GetComponent<PitFall>().NodeCell
                     = new Vector2(nodeTrans.GetComponent<Node>().CellX,
                     nodeTrans.GetComponent<Node>().CellY);
+
+                SoundManager.Instance.PlaySE("wana2", _trapObject);
                 break;
             case TrapType.ROPE:
                 _trapObject.GetComponent<Rope>()._footPrint
                     = nodeTrans.GetComponent<FootPrint>();
+
+                SoundManager.Instance.PlaySE("wana", _trapObject);
                 break;
 
             case TrapType.SOUND:
-                Destroy(_trapObject);
-                GameObject.Find("Field")
-                    .GetComponent<AISoundManager>()
-                    .MakeSound(nodeTrans.gameObject, nodeTrans.position, soundRange, 3);
                 break;
 
             case TrapType.NONE:

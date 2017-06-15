@@ -23,17 +23,21 @@ public class AIRunAway : AIRouteSearch
     private bool _isEscape = false;
     private int _routeCount;
 
+    private bool _isDoorCaught;
+    public bool IsDoorCaught { get { return _isDoorCaught; } set { _isDoorCaught = value; } }
+
     void Start()
     {
         RouteSearchSetup();
         MoveSetup();
+        _isDoorCaught = false;
     }
 
     public override void MoveSetup()
     {
         _currentNode = GetComponent<AIController>().CurrentNode;
         _isEscape = false;
-        _endFlame = 900;
+        _endFlame = 300;
 
         MoveReset();
     }
@@ -72,31 +76,48 @@ public class AIRunAway : AIRouteSearch
         var vec = escape_pos - _currentNode.transform.position;
         var distance = vec.magnitude;
 
-        // 逃げ切ったら終わり
-        if (distance > _endDistance)
-            return true;
-        if (SearchCount > _endNodeDistance)
-            return true;
-        if (_endFlame-- < 0)
-            return true;
+        // 逃げ切り判定
+        {
+            // 逃げ切ったら終わり
+            if (distance > _endDistance)
+                return true;
+            if (SearchCount > _endNodeDistance)
+                return true;
+            if (_endFlame-- < 0)
+                return true;
+        }
 
         // 逃げる対象が人間だった場合は遠ざかるノードを更新する
         if (_targetHuman)
             _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
 
         Node next_node = null;
+
+        // 階段の時は逃げ道の数を数えてより多く逃げられる方向に進む
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);
+
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
+            return false;
+        
+        // 階段がロックされていたら通れない
+        if (IsStairsLock(next_node))
             return false;
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))
         {
-            MoveReset();
+            if (_isDoorCaught == false)
+            {
+                SoundManager.Instance.PlaySE("akanaidoa", gameObject);
+                GetComponent<VictimAnimation>().ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.7f);
+                GetComponent<HumanAnimController>().Rotation(next_node.gameObject);
+            }
+            _isDoorCaught = true;
             return false;
         }
+        _isDoorCaught = false;
 
         _nextNode = next_node;
         PrevNodeUpdate();
