@@ -130,6 +130,11 @@ public class AIChace : AITargetMove
             if (_currentNode.GetComponent<Stairs>() &&
                 human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
                 continue;
+            // 対象が階段上にいる場合は殺せなくなる
+            var target_node = human.GetComponent<AIController>().CurrentNode;
+            if (target_node)
+                if (target_node.GetComponent<Stairs>())
+                    continue;
             // 追っている目標じゃなかったら殺さない
             if (_targetHuman != human)
                 continue;
