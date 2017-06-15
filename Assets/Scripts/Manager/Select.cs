@@ -21,6 +21,18 @@ public class Select : MonoBehaviour
     private Image _startButton;
 
     [SerializeField]
+    private GameObject _rightArrow;
+    [SerializeField]
+    private GameObject _leftArrow;
+
+    [SerializeField]
+    private int _stageMin;
+    [SerializeField]
+    private int _stageMax;
+
+
+
+    [SerializeField]
     string _horizontalAxis = "Horizontal";
     bool _isAxisDown;
 
@@ -76,6 +88,8 @@ public class Select : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
             GameObject.Find("SceneChanger")
                 .GetComponent<SceneChanger>().SceneChange("Title");
+
+        ArrowEffect();
 
         if (_isSelectEnd == true)
         {
@@ -133,7 +147,7 @@ public class Select : MonoBehaviour
             _isAxisDown = false;
 
         // 0はタイトルステージなので、1 ~ max 
-        _selectStageNum = Mathf.Clamp(_selectStageNum, 1, 3);
+        _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, _stageMax);
 
         // テキスト更新
         StageNumTextupdate();
@@ -202,4 +216,19 @@ public class Select : MonoBehaviour
         var push = Resources.Load<Sprite>("Texture/SelectUI/s-botan02");
         _startButton.sprite = push;
     }
+
+
+    private void ArrowEffect()
+    {
+        if (_selectStageNum <= _stageMin)
+            _leftArrow.SetActive(false);
+        else if (_selectStageNum > _stageMin)
+            _leftArrow.SetActive(true);
+
+        if (_selectStageNum >= _stageMax)
+            _rightArrow.SetActive(false);
+        else if (_selectStageNum < _stageMax)
+            _rightArrow.SetActive(true);
+    }
+
 }

@@ -67,7 +67,8 @@ public class VictimAnimation : MonoBehaviour
 
         if (_animStatus == VictimAnimationStatus.OPEN_DOOR ||
             _animStatus == VictimAnimationStatus.STAGGER ||
-            _animStatus == VictimAnimationStatus.CRISIS)
+            _animStatus == VictimAnimationStatus.CRISIS ||
+            _animStatus == VictimAnimationStatus.USE_ITEM)
             return;
 
         _animStatus = VictimAnimationStatus.IDOL;
@@ -80,7 +81,7 @@ public class VictimAnimation : MonoBehaviour
         if (GetComponent<AIRunAway>() &&
             (move_mode == AIController.MoveEmotion.HURRY_UP || move_mode == AIController.MoveEmotion.REACT_SOUND))
             _animStatus = VictimAnimationStatus.RUN;
-        
+
 
         // 探索を開始していなければは待機状態
         if (GetComponent<AIBeginMove>())

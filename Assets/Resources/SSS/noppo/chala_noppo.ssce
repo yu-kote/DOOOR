@@ -65,7 +65,7 @@
 			<posStable>0</posStable>
 		</cell>
 		<cell>
-			<name>  </name>
+			<name></name>
 			<pos>1356 4</pos>
 			<size>212 498</size>
 			<pivot>-0.0660377368330956 0.363453805446625</pivot>
@@ -87,6 +87,24 @@
 			<pos>438 4</pos>
 			<size>466 460</size>
 			<pivot>0.00429184548556805 -0.413043469190598</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>NewCell</name>
+			<pos>456 694</pos>
+			<size>256 288</size>
+			<pivot>0.2890625 -0.0277777779847383</pivot>
+			<rotated>0</rotated>
+			<orgImageName></orgImageName>
+			<posStable>0</posStable>
+		</cell>
+		<cell>
+			<name>NewCell_1</name>
+			<pos>716 788</pos>
+			<size>356 146</size>
+			<pivot>0.379213482141495 -0.0890410989522934</pivot>
 			<rotated>0</rotated>
 			<orgImageName></orgImageName>
 			<posStable>0</posStable>

@@ -140,9 +140,11 @@ public abstract class AIBasicsMovement : MonoBehaviour
     {
         if (_canMove == false) return;
         if (this == null) return;
-        transform.Translate(_moveDirection);
-        _moveLength -= Vector3Abs(_moveDirection);
+        float delta = Time.deltaTime * 60;
 
+        transform.Translate(_moveDirection * delta);
+        _moveLength -= Vector3Abs(_moveDirection * delta);
+        
         if (MoveComplete())
         {
             transform.Translate(_moveLength);

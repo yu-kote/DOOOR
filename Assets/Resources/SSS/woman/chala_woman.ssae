@@ -3266,7 +3266,7 @@
 			<overrideSettings>0</overrideSettings>
 			<settings>
 				<fps>30</fps>
-				<frameCount>35</frameCount>
+				<frameCount>61</frameCount>
 				<sortMode>prio</sortMode>
 				<canvasSize>512 512</canvasSize>
 				<pivot>0 0</pivot>
@@ -3330,11 +3330,20 @@
 							<key time="14" ipType="linear">
 								<value>-66.0909194946289</value>
 							</key>
-							<key time="17" ipType="linear">
-								<value>-394.818176269531</value>
+							<key time="21" ipType="linear">
+								<value>141.909103393555</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-189.727264404297</value>
+							<key time="32" ipType="linear">
+								<value>181.181838989258</value>
+							</key>
+							<key time="41" ipType="linear">
+								<value>-159.18180847168</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-194.090896606445</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-207.181793212891</value>
 							</key>
 						</attribute>
 						<attribute tag="POSY">
@@ -3344,11 +3353,20 @@
 							<key time="14" ipType="linear">
 								<value>72.1818237304688</value>
 							</key>
-							<key time="17" ipType="linear">
-								<value>-365.636352539063</value>
+							<key time="21" ipType="linear">
+								<value>-330.727233886719</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-553.272705078125</value>
+							<key time="32" ipType="linear">
+								<value>-352.54541015625</value>
+							</key>
+							<key time="41" ipType="linear">
+								<value>-496.54541015625</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-723.454528808594</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-762.727233886719</value>
 							</key>
 						</attribute>
 						<attribute tag="ROTZ">
@@ -3358,11 +3376,20 @@
 							<key time="14" ipType="linear">
 								<value>-22.9724578857422</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>-1.93960332870483</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>13.819504737854</value>
+							<key time="32" ipType="linear">
+								<value>14.4813413619995</value>
+							</key>
+							<key time="41" ipType="linear">
+								<value>38.1110458374023</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>85.7229385375977</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>97.6888427734375</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3390,22 +3417,6 @@
 									<RT>0 0</RT>
 									<LB>2 -26</LB>
 									<RB>13 21</RB>
-								</value>
-							</key>
-							<key time="22" ipType="linear">
-								<value>
-									<LT>-9 -38</LT>
-									<RT>0 0</RT>
-									<LB>-44 37</LB>
-									<RB>-72 17</RB>
-								</value>
-							</key>
-							<key time="34" ipType="linear">
-								<value>
-									<LT>13 -74</LT>
-									<RT>0 0</RT>
-									<LB>-44 37</LB>
-									<RB>-72 17</RB>
 								</value>
 							</key>
 						</attribute>
@@ -3439,14 +3450,17 @@
 							<key time="14" ipType="linear">
 								<value>-17.5941982269287</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>9.37107944488525</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>13.9755306243896</value>
+							<key time="32" ipType="linear">
+								<value>4.3428783416748</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>26.1301383972168</value>
+							<key time="41" ipType="linear">
+								<value>-42.4706192016602</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>-21.7511768341064</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3489,14 +3503,20 @@
 							<key time="14" ipType="linear">
 								<value>53.7232513427734</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>81.8282318115234</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-4.75954723358154</value>
+							<key time="32" ipType="linear">
+								<value>81.8282318115234</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-21.447660446167</value>
+							<key time="41" ipType="linear">
+								<value>10.788387298584</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-100.40372467041</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-125.737998962402</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3539,14 +3559,20 @@
 							<key time="14" ipType="linear">
 								<value>122.295883178711</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>72.2909622192383</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-1.89831686019897</value>
+							<key time="32" ipType="linear">
+								<value>40.1432609558105</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>42.1469535827637</value>
+							<key time="41" ipType="linear">
+								<value>228.734970092773</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>288.273803710938</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>294.418487548828</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3576,15 +3602,9 @@
 							<key time="0" ipType="linear">
 								<value>51.8213081359863</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>51.8213081359863</value>
-							</key>
 						</attribute>
 						<attribute tag="POSY">
 							<key time="0" ipType="linear">
-								<value>-180.54931640625</value>
-							</key>
-							<key time="34" ipType="linear">
 								<value>-180.54931640625</value>
 							</key>
 						</attribute>
@@ -3620,16 +3640,10 @@
 							<key time="0" ipType="linear">
 								<value>-52.3390159606934</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-24.6943531036377</value>
-							</key>
 						</attribute>
 						<attribute tag="POSY">
 							<key time="0" ipType="linear">
 								<value>456.155334472656</value>
-							</key>
-							<key time="34" ipType="linear">
-								<value>422.392852783203</value>
 							</key>
 						</attribute>
 						<attribute tag="ROTZ">
@@ -3639,14 +3653,20 @@
 							<key time="14" ipType="linear">
 								<value>-72.3227310180664</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>-101.378158569336</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-35.9907188415527</value>
+							<key time="32" ipType="linear">
+								<value>-71.6672668457031</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-17.3892402648926</value>
+							<key time="41" ipType="linear">
+								<value>-14.8122406005859</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-135.892364501953</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-171.567184448242</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3689,14 +3709,20 @@
 							<key time="14" ipType="linear">
 								<value>-112.450546264648</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>-76.1736907958984</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>21.6088428497314</value>
+							<key time="32" ipType="linear">
+								<value>-76.1736907958984</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-6.62548732757568</value>
+							<key time="41" ipType="linear">
+								<value>-124.797668457031</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-83.1195526123047</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-171.9140625</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3735,6 +3761,9 @@
 						<attribute tag="ROTZ">
 							<key time="0" ipType="linear">
 								<value>0</value>
+							</key>
+							<key time="32" ipType="linear">
+								<value>-40.3760070800781</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3783,14 +3812,20 @@
 							<key time="14" ipType="linear">
 								<value>37.6889228820801</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>4.24979639053345</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-49.632625579834</value>
+							<key time="32" ipType="linear">
+								<value>-16.5419082641602</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-70.2435607910156</value>
+							<key time="41" ipType="linear">
+								<value>22.7490272521973</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>-25.0920810699463</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>-29.2023735046387</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3833,11 +3868,20 @@
 							<key time="14" ipType="linear">
 								<value>11.2270421981812</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>115.352485656738</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>159.615158081055</value>
+							<key time="32" ipType="linear">
+								<value>115.352485656738</value>
+							</key>
+							<key time="41" ipType="linear">
+								<value>38.1688385009766</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>28.0728645324707</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>16.9258079528809</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3880,11 +3924,17 @@
 							<key time="14" ipType="linear">
 								<value>-18.8177795410156</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>-21.649112701416</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>12.9636096954346</value>
+							<key time="32" ipType="linear">
+								<value>-21.649112701416</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>28.9734649658203</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>45.9646263122559</value>
 							</key>
 						</attribute>
 						<attribute tag="SCLX">
@@ -3943,14 +3993,23 @@
 							<key time="14" ipType="linear">
 								<value>19.1651172637939</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>14.8052978515625</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>-63.3051643371582</value>
+							<key time="32" ipType="linear">
+								<value>-20.6019077301025</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>-79.9206390380859</value>
+							<key time="41" ipType="linear">
+								<value>12.456521987915</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>17.4019222259521</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>-2.90204381942749</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>-9.74307918548584</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -3993,11 +4052,23 @@
 							<key time="14" ipType="linear">
 								<value>16.4310054779053</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>101.908805847168</value>
 							</key>
-							<key time="22" ipType="linear">
-								<value>155.402938842773</value>
+							<key time="32" ipType="linear">
+								<value>119.582641601563</value>
+							</key>
+							<key time="41" ipType="linear">
+								<value>61.3542327880859</value>
+							</key>
+							<key time="50" ipType="linear">
+								<value>19.6149311065674</value>
+							</key>
+							<key time="56" ipType="linear">
+								<value>44.9560470581055</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>-0.339941740036011</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
@@ -4007,6 +4078,9 @@
 						</attribute>
 						<attribute tag="HIDE">
 							<key time="0">
+								<value>0</value>
+							</key>
+							<key time="50">
 								<value>0</value>
 							</key>
 						</attribute>
@@ -4040,11 +4114,14 @@
 							<key time="14" ipType="linear">
 								<value>-9.74814605712891</value>
 							</key>
-							<key time="17" ipType="linear">
+							<key time="21" ipType="linear">
 								<value>-18.3276863098145</value>
 							</key>
-							<key time="34" ipType="linear">
-								<value>55.3243103027344</value>
+							<key time="32" ipType="linear">
+								<value>-18.3276863098145</value>
+							</key>
+							<key time="60" ipType="linear">
+								<value>12.1912889480591</value>
 							</key>
 						</attribute>
 						<attribute tag="PRIO">
