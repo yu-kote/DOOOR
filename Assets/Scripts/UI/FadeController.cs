@@ -39,6 +39,7 @@ public class FadeController : MonoBehaviour
     {
         var color = _image.color;
 
+
         if (_state == FadeState.FADE_OUT)
         {
             SoundManager.Instance.volume.Bgm -= _speed;
