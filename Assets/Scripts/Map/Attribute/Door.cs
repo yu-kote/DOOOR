@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+using UnityEngine.SceneManagement;
 
 public class Door : AttributeBase
 {
@@ -32,7 +32,11 @@ public class Door : AttributeBase
 
     void Start()
     {
-        CreateAttribute("Door");
+        if (SceneManager.GetSceneByName("Title").name != null)
+            CreateAttribute("TitleDoor");
+        else
+            CreateAttribute("Door");
+
         anim = _attribute.transform.GetChild(0).GetComponent<Animator>();
         _attribute.transform.localPosition = new Vector3(0, 1, 0);
     }

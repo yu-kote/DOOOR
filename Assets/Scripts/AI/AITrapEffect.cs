@@ -132,9 +132,12 @@ public class AITrapEffect : MonoBehaviour
         door.StartOpening(_isReverseDoor);
         if (door.IsDoorLock())
             return;
-        //_victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
 
-        //_humanAnimController.Rotation(current_node.gameObject);
+        if (SceneManager.GetSceneByName("Title").name != null)
+        {
+            _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
+            _humanAnimController.Rotation(current_node.gameObject);
+        }
     }
 
 }
