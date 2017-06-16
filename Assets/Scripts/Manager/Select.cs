@@ -77,6 +77,7 @@ public class Select : MonoBehaviour
 
         // ヘルプの初期化
         _help.color = new Color(1, 1, 1, 0);
+        _help.gameObject.SetActive(true);
     }
 
     private void Start()
@@ -92,7 +93,8 @@ public class Select : MonoBehaviour
         StartCoroutine(StageSelectStart());
     }
 
-    // すぐにゲームを開始できないように少しガードする
+    // すぐにゲームを開始できないように少しガードして、
+    // ステージを切り替えたときにフェードする
     private IEnumerator StageSelectStart()
     {
         yield return new WaitForSeconds(1.0f);

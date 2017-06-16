@@ -185,19 +185,25 @@ public class AIGenerator : MonoBehaviour
         }).AddTo(gameObject);
     }
 
+    // 全ての人間の動きを止め続ける
     public void MoveEndHumans()
     {
         foreach (var human in _humans)
-        {
             StartCoroutine(MoveStop(human));
-        }
     }
 
-    private IEnumerator MoveStop(GameObject human)
+    // 全ての人間の動きを動かすかどうか決める
+    public void HumanMoveControll(bool can_move)
+    {
+        foreach (var human in _humans)
+            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
+    }
+
+    private IEnumerator MoveStop(GameObject human, bool can_move = false)
     {
         while (true)
         {
-            human.GetComponent<AIController>().GetMovement().CanMove = false;
+            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
             yield return null;
         }
     }

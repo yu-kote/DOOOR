@@ -82,6 +82,10 @@ public class TrapSelectUI : MonoBehaviour
 
     void Update()
     {
+        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
+            != GameState.GAMEMAIN)
+            return;
+
         _trapDirection = GetTrapDirection();
         _pushValue = _trapDirection;
         ButtonSpriteChange();

@@ -101,8 +101,7 @@ public class AIController : MonoBehaviour
             //if (tag == "Killer")
             //GetMovement().Speed = _defaultSpeed;
         }
-
-
+        
         if (Input.GetKey(KeyCode.H))
         {
             GetMovement().Speed = 10.0f;
