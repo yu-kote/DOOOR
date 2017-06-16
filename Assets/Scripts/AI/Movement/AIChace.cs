@@ -7,7 +7,7 @@ using System;
 
 public class AIChace : AITargetMove
 {
-    private int _endNodeDistance = 7;
+    private int _endNodeDistance = 10;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
