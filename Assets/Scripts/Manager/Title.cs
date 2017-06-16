@@ -31,13 +31,13 @@ public class Title : MonoBehaviour
 
     void ChangeGamemain()
     {
-        _sceneChanger.SceneChange("GameMain");
+        _sceneChanger.SceneChange("GameMain",()=> SoundManager.Instance.StopBGM());
         SoundManager.Instance.StopBGM();
     }
 
     void ChangeTutorial()
     {
-        _sceneChanger.SceneChange("Tutorial");
+        _sceneChanger.SceneChange("Tutorial", () => SoundManager.Instance.StopBGM());
         SoundManager.Instance.StopBGM();
     }
 }
