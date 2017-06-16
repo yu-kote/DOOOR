@@ -4,13 +4,14 @@ using UnityEngine;
 using System.Linq;
 using UniRx;
 using System;
-using System.IO;
+using UnityEngine.UI;
 
 public enum GameState
 {
     SELECT,
     TUTORIAL,
     GAMEMAIN,
+    STOP,
     GAMECLEAR,
     GAMEOVER,
 }
@@ -22,6 +23,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private string _gameEndButton = "Action";
 
+    [SerializeField]
+    private string _gameStopButton;
+    [SerializeField]
+    private Image _help;
+
     private AIGenerator _aiGenerator;
     private GameMainUIController _uiController;
 
@@ -32,6 +38,8 @@ public class GameManager : MonoBehaviour
     private bool _isGameEnd;
     public bool IsGameEnd { get { return _isGameEnd; } set { _isGameEnd = value; } }
 
+    private bool _isStop = false;
+    private bool _canHelpUpdate = true;
 
     void Start()
     {
@@ -62,6 +70,7 @@ public class GameManager : MonoBehaviour
     {
         GameStateUpdate();
         GameEndUpdate();
+        HelpUpdate();
     }
 
     // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
@@ -106,7 +115,7 @@ public class GameManager : MonoBehaviour
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             ShareData.instance.Status = ResultStatus.GAMEOVER;
         }
-        
+
         GameClear();
         GameOver();
     }
@@ -124,7 +133,7 @@ public class GameManager : MonoBehaviour
         if (_currentGameState == _prevGameState)
             return;
         _prevGameState = _currentGameState;
-        
+
     }
 
     void GameClear()
@@ -176,5 +185,69 @@ public class GameManager : MonoBehaviour
     public bool IsPushActionButton()
     {
         return Input.GetButtonDown(_selectEndButton);
+    }
+
+    //---------------------------------------------------------------------------------------------
+    // ヘルプの処理
+    //---------------------------------------------------------------------------------------------
+
+    private void HelpUpdate()
+    {
+        if (_isStop)
+            MovementAllStop();
+
+        if (_canHelpUpdate == false)
+            return;
+
+        if (Input.GetButtonDown(_gameStopButton))
+        {
+            _isStop = !_isStop;
+            if (_isStop)
+                StartCoroutine(HelpViewStart());
+            else
+                StartCoroutine(HelpViewEnd());
+        }
+    }
+
+    private IEnumerator HelpViewStart()
+    {
+        _canHelpUpdate = false;
+        _help.color = new Color(1, 1, 1, 0);
+        var color = _help.color;
+        while (color.a < 1)
+        {
+            yield return null;
+            color.a += Time.deltaTime * 3;
+            color.a = Mathf.Clamp(color.a, 0, 1);
+            _help.color = color;
+        }
+        _canHelpUpdate = true;
+    }
+
+    private IEnumerator HelpViewEnd()
+    {
+        _canHelpUpdate = false;
+        var color = _help.color;
+        while (color.a > 0)
+        {
+            yield return null;
+            color.a -= Time.deltaTime * 3;
+            color.a = Mathf.Clamp(color.a, 0, 1);
+            _help.color = color;
+        }
+        _canHelpUpdate = true;
+        MovementAllStart();
+    }
+
+    public void MovementAllStop()
+    {
+        _currentGameState = GameState.STOP;
+        _aiGenerator.HumanMoveControll(false);
+    }
+
+    public void MovementAllStart()
+    {
+        _currentGameState = GameState.GAMEMAIN;
+        _aiGenerator.HumanMoveControll(true);
     }
 }

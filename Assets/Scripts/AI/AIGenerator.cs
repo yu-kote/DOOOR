@@ -42,7 +42,7 @@ public class AIGenerator : MonoBehaviour
     {
         _field = GameObject.Find("Field");
         _startNode = _field.GetComponent<NodeManager>().StartNode;
-        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[3][6].GetComponent<Node>();
+        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[0][6].GetComponent<Node>();
     }
 
     private IEnumerator Setup()
@@ -178,26 +178,32 @@ public class AIGenerator : MonoBehaviour
             human.GetComponent<AIBeginMove>().BeginMoveStart();
         }
 
-        Observable.Timer(TimeSpan.FromSeconds(7.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
         {
             var killer = CreateKiller();
             killer.GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(gameObject);
     }
 
+    // 全ての人間の動きを止め続ける
     public void MoveEndHumans()
     {
         foreach (var human in _humans)
-        {
             StartCoroutine(MoveStop(human));
-        }
     }
 
-    private IEnumerator MoveStop(GameObject human)
+    // 全ての人間の動きを動かすかどうか決める
+    public void HumanMoveControll(bool can_move)
+    {
+        foreach (var human in _humans)
+            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
+    }
+
+    private IEnumerator MoveStop(GameObject human, bool can_move = false)
     {
         while (true)
         {
-            human.GetComponent<AIController>().GetMovement().CanMove = false;
+            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
             yield return null;
         }
     }
