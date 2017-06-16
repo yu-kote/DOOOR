@@ -58,7 +58,7 @@ public class KillerAnimation : MonoBehaviour
     {
         _animStatus = KillerAnimationStatus.ATTACK;
         GetComponent<AIController>()
-        .StopMovement(1.5f, () => GetComponent<KillerAnimation>().AnimStatus
+        .StopMovement(2f, () => GetComponent<KillerAnimation>().AnimStatus
                                              = KillerAnimationStatus.IDOL);
     }
 

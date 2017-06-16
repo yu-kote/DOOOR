@@ -29,17 +29,17 @@ public class SceneChanger : MonoBehaviour
     {
     }
 
-    public void SceneChange(string scene_name)
+    public void SceneChange(string scene_name, Action action = null)
     {
         if (_fadeController.State == FadeState.FADE_IN)
             _fadeController.FadeOut();
         if (_isSceneChange == true)
             return;
         _isSceneChange = true;
-        StartCoroutine(ChangeScene(scene_name));
+        StartCoroutine(ChangeScene(scene_name, action));
     }
 
-    private IEnumerator ChangeScene(string scene_name)
+    private IEnumerator ChangeScene(string scene_name, Action action)
     {
         while (_fadeController.IsFadeComplete() == false)
         {
@@ -47,6 +47,8 @@ public class SceneChanger : MonoBehaviour
 
             if (_fadeController.IsFadeComplete())
             {
+                if (action != null)
+                    action();
                 SceneManager.LoadScene(scene_name);
                 _fadeController.FadeIn();
                 _isSceneChange = false;

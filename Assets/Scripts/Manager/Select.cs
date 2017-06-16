@@ -30,6 +30,8 @@ public class Select : MonoBehaviour
     [SerializeField]
     private int _stageMax;
 
+    [SerializeField]
+    private Image _fade;
 
 
     [SerializeField]
@@ -81,13 +83,42 @@ public class Select : MonoBehaviour
     {
         yield return null;
         StageSetup();
+        StartCoroutine(StageSelectStart());
+    }
+
+    // すぐにゲームを開始できないように少しガードする
+    private IEnumerator StageSelectStart()
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        while (true)
+        {
+            yield return null;
+
+            var color = _fade.color;
+            color.a -= Time.deltaTime * 2;
+            color.a = Mathf.Clamp(color.a, 0, 1);
+            _fade.color = color;
+
+
+            if (MapSelect() == false)
+                continue;
+
+            while (_fade.color.a < 1.0f)
+            {
+                color.a += Time.deltaTime * 2;
+                _fade.color = color;
+                yield return null;
+            }
+            StageSetup();
+        }
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
-            GameObject.Find("SceneChanger")
-                .GetComponent<SceneChanger>().SceneChange("Title");
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                .SceneChange("Title", () => SoundManager.Instance.StopBGM());
 
         ArrowEffect();
 
@@ -108,14 +139,12 @@ public class Select : MonoBehaviour
             return;
         }
         _selectCanvas.SetActive(true);
-
-        MapSelect();
     }
 
-    private void MapSelect()
+    private bool MapSelect()
     {
         if (_isSelectEnd)
-            return;
+            return false;
 
         // ステージ選択が終わったら演出する
         if (_gameManager.IsPushActionButton() || Input.GetKeyDown(KeyCode.Return))
@@ -153,13 +182,14 @@ public class Select : MonoBehaviour
         StageNumTextupdate();
 
         if (_currentSelectStageNum == _selectStageNum)
-            return;
+            return false;
         _currentSelectStageNum = _selectStageNum;
 
         // 選択音
         SoundManager.Instance.PlaySE("sentakuon");
 
-        StageSetup();
+
+        return true;
     }
 
     private void StageSetup()

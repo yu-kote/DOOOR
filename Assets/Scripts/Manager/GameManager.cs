@@ -25,11 +25,6 @@ public class GameManager : MonoBehaviour
     private AIGenerator _aiGenerator;
     private GameMainUIController _uiController;
 
-    [SerializeField]
-    private GameObject _gameClear;
-    [SerializeField]
-    private GameObject _gameOver;
-
     private GameState _currentGameState;
     public GameState CurrentGameState { get { return _currentGameState; } set { _currentGameState = value; } }
     private GameState _prevGameState;
@@ -50,10 +45,19 @@ public class GameManager : MonoBehaviour
 
         StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
         StateChangeCallBack(() => _uiController.UiStart(), GameState.GAMEMAIN);
+
+        // 人間の動きを止める
+        StateChangeCallBack(() => _aiGenerator.MoveEndHumans(), GameState.GAMEOVER);
+
+        // UIを隠す
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMEOVER);
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
+
+        // リザルトに移行する
+        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(3.0f)), GameState.GAMEOVER);
+        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(3.0f)), GameState.GAMECLEAR);
     }
-    
+
     void Update()
     {
         GameStateUpdate();
@@ -65,6 +69,7 @@ public class GameManager : MonoBehaviour
     {
         StartCoroutine(CallBack(action, state));
     }
+
     private IEnumerator CallBack(Action action, GameState state)
     {
         while (true)
@@ -83,12 +88,36 @@ public class GameManager : MonoBehaviour
         if (_isGameEnd)
         {
             if (Input.GetButtonDown(_gameEndButton))
-                GameObject.Find("SceneChanger")
-                    .GetComponent<SceneChanger>().SceneChange("Title");
+                GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                    .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             return;
         }
+
+        // デバッグ用
+        if (Input.GetKey(KeyCode.T) && Input.GetKey("1"))
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                .SceneChange("Result", () => SoundManager.Instance.StopBGM());
+            ShareData.instance.Status = ResultStatus.GAMECLEAR;
+        }
+        else if (Input.GetKey(KeyCode.T) && Input.GetKey("2"))
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                .SceneChange("Result", () => SoundManager.Instance.StopBGM());
+            ShareData.instance.Status = ResultStatus.GAMEOVER;
+        }
+
+
         GameClear();
         GameOver();
+    }
+
+    // リザルトに移行する
+    private IEnumerator ScenaChangeResult(float time)
+    {
+        yield return new WaitForSeconds(time);
+        GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                .SceneChange("Result", () => SoundManager.Instance.StopBGM());
     }
 
     void GameStateUpdate()
@@ -96,17 +125,7 @@ public class GameManager : MonoBehaviour
         if (_currentGameState == _prevGameState)
             return;
         _prevGameState = _currentGameState;
-
-        if (_currentGameState == GameState.GAMECLEAR)
-        {
-            SoundManager.Instance.StopBGM();
-            SoundManager.Instance.PlayBGM("gameclear");
-        }
-        if (_currentGameState == GameState.GAMEOVER)
-        {
-            SoundManager.Instance.StopBGM();
-            SoundManager.Instance.PlayBGM("gameover");
-        }
+        
     }
 
     void GameClear()
@@ -115,9 +134,10 @@ public class GameManager : MonoBehaviour
         if (humans.Count == 0) return;
         if (humans.FirstOrDefault(human => human.tag == "Victim") != null)
             return;
-        _gameClear.SetActive(true);
+
         _isGameEnd = true;
         _currentGameState = GameState.GAMECLEAR;
+        ShareData.instance.Status = ResultStatus.GAMECLEAR;
     }
 
     void GameOver()
@@ -133,8 +153,10 @@ public class GameManager : MonoBehaviour
             var current_node = human.GetComponent<AIController>().CurrentNode;
             if (current_node == null)
                 return false;
-            if (current_node.GetComponent<Deguti>())
+            var deguti = current_node.GetComponent<Deguti>();
+            if (deguti)
             {
+                deguti.StartOpening();
                 human.GetComponent<AIItemController>().UseItem(ItemType.LASTKEY);
 
                 var animation = human.GetComponent<VictimAnimation>();
@@ -147,9 +169,9 @@ public class GameManager : MonoBehaviour
         if (goal_human == null)
             return;
 
-        _gameOver.SetActive(true);
         _isGameEnd = true;
         _currentGameState = GameState.GAMEOVER;
+        ShareData.instance.Status = ResultStatus.GAMEOVER;
     }
 
     public bool IsPushActionButton()

@@ -93,23 +93,33 @@ public class PlayerAnimation : MonoBehaviour
         _root.AnimationPlay((int)_currentPlayerAnimStatus);
     }
 
-    public void ChangeAnimation(PlayerAnimationStatus status, float time)
+    public void ChangeAnimation(PlayerAnimationStatus status, float time, bool is_stop = false)
     {
         _animStatus = status;
-        StopMove(time, () =>
+        if (is_stop)
+            StopRotateAndMove(time);
+
+        CallBack(time, () =>
         {
             _animStatus = PlayerAnimationStatus.WALK;
         });
     }
 
-    void StopMove(float time, Action action)
+    public void StopRotateAndMove(float time)
     {
-        //GetComponent<Rotater>().StopRotating(time);
-        //GameObject.Find("MainCamera").GetComponent<Rotater>().StopRotating(time);
-        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
-        {
-            action();
-        }).AddTo(gameObject);
+        GetComponent<Rotater>().StopRotating(time);
+        GameObject.Find("MainCamera").GetComponent<Rotater>().StopRotating(time);
+    }
+
+    void CallBack(float time, Action action)
+    {
+        StartCoroutine(CallBackStart(time, action));
+    }
+
+    private IEnumerator CallBackStart(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     bool IsTrapAnimation()

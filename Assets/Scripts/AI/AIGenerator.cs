@@ -64,7 +64,7 @@ public class AIGenerator : MonoBehaviour
         // 殺人鬼は指定されたノードに出す
         if (human.tag == "Killer")
             start_node = _killerStartNode;
-        
+
         // 最初は探索者の位置を少し後ろに配置する
         var start_pos = start_node.transform.position;
         if (human.tag == "Victim")
@@ -120,7 +120,7 @@ public class AIGenerator : MonoBehaviour
     {
         return CreateHuman(Resources.Load<GameObject>("Prefabs/Human/Killer"));
     }
-    
+
     private void TitlePopHuman()
     {
         Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
@@ -161,6 +161,12 @@ public class AIGenerator : MonoBehaviour
         for (int i = 0; i < human_data.fat; i++)
             CreateVictim(GetVictimName(VictimType.FAT));
 
+
+        ShareData.instance.Reset();
+        ShareData.instance.WomanCount = human_data.woman;
+        ShareData.instance.TallManCount = human_data.tallman;
+        ShareData.instance.FatCount = human_data.fat;
+
         if (_humanBoardlist)
             _humanBoardlist.HumanItemSetup();
     }
@@ -177,6 +183,23 @@ public class AIGenerator : MonoBehaviour
             var killer = CreateKiller();
             killer.GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(gameObject);
+    }
+
+    public void MoveEndHumans()
+    {
+        foreach (var human in _humans)
+        {
+            StartCoroutine(MoveStop(human));
+        }
+    }
+
+    private IEnumerator MoveStop(GameObject human)
+    {
+        while (true)
+        {
+            human.GetComponent<AIController>().GetMovement().CanMove = false;
+            yield return null;
+        }
     }
 
     private void OnDestroy()
