@@ -51,8 +51,7 @@ public class PlayerAnimation : MonoBehaviour
         float vertical = Input.GetAxis("Vertical") * -1.0f;
 
         if (IsTrapAnimation())
-            if (horizontal != 0.0f || vertical != 0.0f)
-                _animStatus = PlayerAnimationStatus.WALK;
+            _animStatus = PlayerAnimationStatus.WALK;
         //else
         //_animStatus = PlayerAnimationStatus.IDOL;
 

@@ -33,6 +33,9 @@ public class Select : MonoBehaviour
     [SerializeField]
     private Image _fade;
 
+    [SerializeField]
+    private Image _help;
+
 
     [SerializeField]
     string _horizontalAxis = "Horizontal";
@@ -71,6 +74,9 @@ public class Select : MonoBehaviour
 
         _cameraStartPos = _camera.transform.position;
         _camera.transform.position += new Vector3(0, 0, -20);
+
+        // ヘルプの初期化
+        _help.color = new Color(1, 1, 1, 0);
     }
 
     private void Start()
@@ -100,7 +106,6 @@ public class Select : MonoBehaviour
             color.a = Mathf.Clamp(color.a, 0, 1);
             _fade.color = color;
 
-
             if (MapSelect() == false)
                 continue;
 
@@ -122,16 +127,10 @@ public class Select : MonoBehaviour
 
         ArrowEffect();
 
+        // カメラが寄る演出が終わったら操作説明を出す
         if (_isSelectEnd == true)
-        {
             if (EasingInitiator.IsEaseEnd(gameObject))
-            {
-                GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
-                Destroy(this);
-                SoundManager.Instance.StopBGM();
-                SoundManager.Instance.PlayBGM("ingame");
-            }
-        }
+                StartCoroutine(OperationDraw());
 
         if (GetComponent<GameManager>().CurrentGameState != GameState.SELECT)
         {
@@ -139,6 +138,45 @@ public class Select : MonoBehaviour
             return;
         }
         _selectCanvas.SetActive(true);
+    }
+
+    // 操作説明をゲーム開始直後に表示する
+    private IEnumerator OperationDraw()
+    {
+        yield return null;
+
+        while (true)
+        {
+            yield return null;
+            var color = _help.color;
+            color.a += Time.deltaTime * 3;
+            color.a = Mathf.Clamp(color.a, 0, 1);
+            _help.color = color;
+
+            if (_gameManager.IsPushActionButton() == false &&
+                Input.GetKeyDown(KeyCode.Return) == false)
+                continue;
+
+            while (_help.color.a > 0.0f)
+            {
+                color.a -= Time.deltaTime * 2;
+                _help.color = color;
+                yield return null;
+            }
+            break;
+        }
+        yield return null;
+
+        GameStart();
+    }
+
+    // ゲームを開始する
+    private void GameStart()
+    {
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlayBGM("ingame");
+        GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
+        Destroy(this);
     }
 
     private bool MapSelect()
