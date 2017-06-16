@@ -73,6 +73,8 @@ public class AIChace : AITargetMove
         var door = next_node.GetComponent<Door>();
         if (door)
             return true;
+        if (_currentNode.GetComponent<Door>())
+            return true;
 
         _nextNode = next_node;
         PrevNodeUpdate();
@@ -152,7 +154,7 @@ public class AIChace : AITargetMove
             }
             else if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
-                item_controller.UseItem(ItemType.TYENSO,gameObject);
+                item_controller.UseItem(ItemType.TYENSO, gameObject);
                 SoundManager.Instance.PlaySE("tye-nso-", human.gameObject);
 
                 // 攻撃されたたときのアニメーションに切り替える

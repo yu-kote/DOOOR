@@ -106,8 +106,7 @@ public class GameManager : MonoBehaviour
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             ShareData.instance.Status = ResultStatus.GAMEOVER;
         }
-
-
+        
         GameClear();
         GameOver();
     }

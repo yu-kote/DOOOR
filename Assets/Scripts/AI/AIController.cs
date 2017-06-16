@@ -82,7 +82,7 @@ public class AIController : MonoBehaviour
             return;
         }
 
-        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange);
+        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange, transform.eulerAngles);
     }
 
     private void MoveSpeedChange()
