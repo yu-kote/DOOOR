@@ -40,6 +40,16 @@ public class PlayerAction : MonoBehaviour
     [SerializeField]
     private AISoundManager _aiSoundManager;
     [SerializeField]
+    private GameObject _voice;
+    private bool _isVoiceCharge = false;
+    private float _voiceRange = 5.0f;
+    private float _minVoiceRange = 5.0f;
+    private float _maxVoiceRange = 30.0f;
+    private float _chargeCount = 0.0f;
+    private float _chargeMaxTime = 2.0f;
+    private bool _isVoiceRecast = false;
+
+    [SerializeField]
     private MapBackgrounds _mapBackgrounds;
 
     private TrapSpawnManager _trapSpawnManager = null;
@@ -54,6 +64,7 @@ public class PlayerAction : MonoBehaviour
         // ボタン案内の初期角度を保持する
         _startEulerAngle = _buttonGuide.transform.eulerAngles;
 
+        _voice.transform.localScale = Vector3.zero;
     }
 
     private void FixedUpdate()
@@ -68,17 +79,9 @@ public class PlayerAction : MonoBehaviour
             != GameState.GAMEMAIN)
             return;
 
-        // 音だけどこでも鳴らせるので特殊処理
-        var value = _trapSelectUi.PushValue;
-        if (Input.GetButtonDown(_soundButton))
-        {
-            //if (_trapSelectUi.TrapRecast(value) == false)
-            //    return;
-            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
-            _aiSoundManager.MakeSound(gameObject, gameObject.transform.position, 20, 1);
-            SoundManager.Instance.PlaySE("otodasu", gameObject);
-        }
+        VoiceSoundUpdate();
 
+        var value = _trapSelectUi.PushValue;
         // 停電を発動させる
         if (value == TrapDirection.UP)
         {
@@ -142,7 +145,6 @@ public class PlayerAction : MonoBehaviour
 
                 ButtonGuideUpdate(other.gameObject);
             }
-
     }
 
     public bool IsDoorLock()
@@ -272,9 +274,7 @@ public class PlayerAction : MonoBehaviour
 
         // 色々試したけど時間がないのでマジナン
         var offset_pos = new Vector3(0, 10, -6);
-
         _doorLock.transform.localPosition = offset_pos;
-
         _doorLock.transform.eulerAngles = FieldUiAngle();
     }
 
@@ -299,6 +299,66 @@ public class PlayerAction : MonoBehaviour
     private Vector3 FieldUiAngle()
     {
         return _startEulerAngle + transform.eulerAngles;
+    }
+
+    public bool IsSoundChargeStart()
+    {
+        if (_isVoiceRecast == false)
+            if (_isVoiceCharge == false)
+                if (Input.GetButton(_soundButton))
+                {
+                    _isVoiceCharge = true;
+                    return true;
+                }
+        return false;
+    }
+
+    private bool IsSoundChargeEnd()
+    {
+        if (_isVoiceCharge)
+            if (Input.GetButtonUp(_soundButton))
+            {
+                _isVoiceCharge = false;
+                return true;
+            }
+        return false;
+    }
+
+    private void VoiceSoundUpdate()
+    {
+        // 音だけどこでも鳴らせるので特殊処理
+        if (IsSoundChargeStart())
+        {
+            _chargeCount = 0.0f;
+            _voiceRange = 5.0f;
+        }
+
+        if (_isVoiceCharge)
+        {
+            _chargeCount = Mathf.Clamp(_chargeCount += Time.deltaTime, 0.0f, _chargeMaxTime);
+
+            float value = EaseCubicOut(_chargeCount / _chargeMaxTime, _minVoiceRange, _maxVoiceRange);
+            _voiceRange = value;
+            _voice.transform.localScale = new Vector3(value / 10.0f, 0, value / 10.0f);
+        }
+        if (IsSoundChargeEnd())
+        {
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
+            SoundManager.Instance.PlaySE("otodasu", gameObject);
+            _aiSoundManager.MakeSound(gameObject, gameObject.transform.position,
+                                      _voiceRange * 0.9f, 1, transform.eulerAngles);
+
+            _isVoiceRecast = true;
+            StartCoroutine(CallBack(1.0f, () => _isVoiceRecast = false));
+
+            _voice.transform.localScale = Vector3.zero;
+        }
+    }
+
+    static float EaseCubicOut(float t, float b, float e)
+    {
+        t -= 1.0f;
+        return (e - b) * (t * t * t + 1) + b;
     }
 
     private void OnDestroy()

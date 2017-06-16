@@ -9,27 +9,30 @@ using UniRx.Triggers;
 public class AISound : MonoBehaviour
 {
     private GameObject _targetObject = null;
-    private GameObject _testSphere = null;
+    private GameObject _soundWave = null;
     private float _range;
     public float Range { get { return _range; } set { _range = value; } }
 
     private IDisposable _updateDisposable;
 
     // 一時的な音
-    public void MakeSound(Vector3 pos, float range, int effect_time)
+    public void MakeSound(Vector3 pos, float range, int effect_time, Vector3 angle)
     {
-        SoundSetup(pos, range);
-        Observable.Timer(TimeSpan.FromSeconds(effect_time)).Subscribe(_ =>
-        {
-            Destroy(this);
-        }).AddTo(gameObject);
+        SoundSetup(pos, range, angle);
+        StartCoroutine(Effect(effect_time));
+    }
+
+    private IEnumerator Effect(float time)
+    {
+        yield return new WaitForSeconds(time);
+        Destroy(this);
     }
 
     // 継続的にならす音
-    public void MakeSound(GameObject obj, float range)
+    public void MakeSound(GameObject obj, float range, Vector3 angle)
     {
         _targetObject = obj;
-        SoundSetup(obj.transform.position, range, obj);
+        SoundSetup(obj.transform.position, range, angle);
         _updateDisposable = this.UpdateAsObservable()
             .Subscribe(_ =>
             {
@@ -39,30 +42,34 @@ public class AISound : MonoBehaviour
                     return;
                 }
                 transform.position = _targetObject.transform.position;
-                transform.localScale = new Vector3(_range, _range, _range);
+                transform.localScale = new Vector3(range / 10.0f, range / 10.0f, range / 10.0f);
             });
     }
 
-    void SoundSetup(Vector3 pos, float range, GameObject obj = null)
+
+
+    void SoundSetup(Vector3 pos, float range, Vector3 angle)
     {
-        _testSphere = Resources.Load<GameObject>("Prefabs/Map/TestViewSphere");
-        _testSphere = Instantiate(_testSphere, gameObject.transform);
+        _soundWave = Resources.Load<GameObject>("Prefabs/Trap/Sound/SoundWave");
+        _soundWave = Instantiate(_soundWave, gameObject.transform);
 
         transform.localPosition = Vector3.zero;
-        transform.localEulerAngles = Vector3.zero;
+        transform.localEulerAngles = angle;
         transform.position = pos;
+        transform.localScale = Vector3.zero;
 
         _range = range;
-        transform.localScale = new Vector3(range, range, range);
+        var scale = new Vector3(range / 10.0f, range / 10.0f, range / 10.0f);
+        EasingInitiator.Add(gameObject, scale, 1, EaseType.ExpoOut, EaseValue.SCALE);
     }
 
     private void OnDestroy()
     {
         if (_updateDisposable != null)
             _updateDisposable.Dispose();
-        if (_testSphere)
-            Destroy(_testSphere);
-        if(transform.parent)
+        if (_soundWave)
+            Destroy(_soundWave);
+        if (transform.parent)
             Destroy(gameObject);
     }
 

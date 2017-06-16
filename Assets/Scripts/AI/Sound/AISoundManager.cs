@@ -12,7 +12,6 @@ public class AISoundManager : MonoBehaviour
     private Dictionary<GameObject, GameObject> _aiSounds = new Dictionary<GameObject, GameObject>();
     public Dictionary<GameObject, GameObject> AISounds { get { return _aiSounds; } set { _aiSounds = value; } }
 
-
     void Start()
     {
 
@@ -21,14 +20,15 @@ public class AISoundManager : MonoBehaviour
     /// <summary>
     /// 指定した秒数の間音を発生させる
     /// </summary>
-    public AISound MakeSound(GameObject obj, Vector3 pos, float range, int effect_time)
+    public AISound MakeSound(GameObject obj, Vector3 pos, float range,
+                             int effect_time, Vector3 angle)
     {
-        var sound = Instantiate(_aiSound, transform);
         if (_aiSounds.ContainsKey(obj))
             return null;
+        var sound = Instantiate(_aiSound, transform);
         var ai_sound = sound.GetComponent<AISound>();
         // 音の初期化
-        ai_sound.MakeSound(pos, range, effect_time);
+        ai_sound.MakeSound(pos, range, effect_time, angle);
 
         _aiSounds[obj] = sound;
         return ai_sound;
@@ -37,11 +37,11 @@ public class AISoundManager : MonoBehaviour
     /// <summary>
     /// 指定したGameObjectが消えるまで音を発生させ続ける
     /// </summary>
-    public AISound MakeSound(GameObject obj, float range)
+    public AISound MakeSound(GameObject obj, float range, Vector3 angle)
     {
         var sound = Instantiate(_aiSound, transform);
         var ai_sound = sound.GetComponent<AISound>();
-        ai_sound.MakeSound(obj, range);
+        ai_sound.MakeSound(obj, range, angle);
         _aiSounds[obj] = sound;
         return ai_sound;
     }
@@ -56,7 +56,7 @@ public class AISoundManager : MonoBehaviour
         if (CheckSound(obj))
             _aiSounds.Remove(obj);
     }
-    
+
     void Update()
     {
         foreach (var sound in _aiSounds)
