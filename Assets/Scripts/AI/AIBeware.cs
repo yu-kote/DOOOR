@@ -13,6 +13,7 @@ public class AIBeware : MonoBehaviour
     [SerializeField]
     private int _LongSearchLimit = 10;
 
+    [SerializeField]
     private int _searchLimit = 5;
     public int SearchLimit { get { return _searchLimit; } set { _searchLimit = value; } }
 
@@ -44,6 +45,7 @@ public class AIBeware : MonoBehaviour
             // ゲーム開始直後はロックする
             if (_isBeware == false)
                 continue;
+
             // 懐中電灯を持っている間は探索距離が延びる
             if (tag == "Victim")
                 if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
@@ -54,6 +56,9 @@ public class AIBeware : MonoBehaviour
             // 停電の時は探索距離が短くなる
             if (_mapBackground.IsLightOn == false)
                 _searchLimit = _blackoutSearchLimit;
+            else
+                if (tag == "Killer")
+                _searchLimit = _defaultSearchLimit;
 
             // 普通の移動をしている場合しか周囲を見ない
             var ai_controller = GetComponent<AIController>();
@@ -131,9 +136,10 @@ public class AIBeware : MonoBehaviour
             return null;
         }
 
-        if (current_node == null) return null;
-        var humans = current_node.gameObject.GetComponent<FootPrint>().HumansOnNode;
+        if (current_node == null)
+            return null;
 
+        var humans = current_node.gameObject.GetComponent<FootPrint>().HumansOnNode;
         if (!humans.Contains(gameObject) &&
             humans.Count > 0)
         {
@@ -144,7 +150,7 @@ public class AIBeware : MonoBehaviour
 
         // 角の場合は終了
         if (current_node.gameObject.GetComponent<Corner>())
-            if (current_node != GetComponent<AIController>().CurrentNode)
+            if (GetComponent<AIController>().CurrentNode.GetComponent<Corner>())
                 return null;
 
         var loadpath = current_node.gameObject.GetComponent<NodeGuide>();
@@ -172,7 +178,7 @@ public class AIBeware : MonoBehaviour
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())
             {
-                if (tag != "Killer")
+                //if (tag != "Killer")
                 {
                     var stairs_humans = node.gameObject.GetComponent<FootPrint>().HumansOnNode;
                     if (!stairs_humans.Contains(gameObject) &&

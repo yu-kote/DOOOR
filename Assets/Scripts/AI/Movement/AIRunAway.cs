@@ -9,7 +9,7 @@ public class AIRunAway : AIRouteSearch
     private float _endDistance = 20;
     public float EndDistance { get { return _endDistance; } set { _endDistance = value; } }
     [SerializeField]
-    private int _endNodeDistance = 9;
+    private int _endNodeDistance = 7;
 
     private int _endFlame;
 
@@ -79,8 +79,8 @@ public class AIRunAway : AIRouteSearch
         // 逃げ切り判定
         {
             // 逃げ切ったら終わり
-            if (distance > _endDistance)
-                return true;
+            //if (distance > _endDistance)
+            //    return true;
             if (SearchCount > _endNodeDistance)
                 return true;
             if (_endFlame-- < 0)
@@ -100,7 +100,7 @@ public class AIRunAway : AIRouteSearch
         // 壁かどうか
         if (next_node.GetComponent<Wall>() != null)
             return false;
-        
+
         // 階段がロックされていたら通れない
         if (IsStairsLock(next_node))
             return false;
@@ -129,9 +129,7 @@ public class AIRunAway : AIRouteSearch
     Node GoAway()
     {
         // 離れる方のノードに逃げるため、短い順にソートしてLastを選ぶ
-        AITargetMove.SortByNodeLength(
-            _targetNode,
-            _currentNode.LinkNodes);
+        SortByNodeLength(_targetNode, _currentNode.LinkNodes);
 
         var next_candidate_node = _currentNode.LinkNodes.Last();
 
