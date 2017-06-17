@@ -144,7 +144,7 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
         transform.Translate(_moveDirection * delta);
         _moveLength -= Vector3Abs(_moveDirection * delta);
-        
+
         if (MoveComplete())
         {
             transform.Translate(_moveLength);
@@ -224,6 +224,17 @@ public abstract class AIBasicsMovement : MonoBehaviour
                 if (stairs1.IsStairsLock())
                     return true;
         return false;
+    }
+
+    protected void CallBack(float time, Action action)
+    {
+        StartCoroutine(CallBackAction(time, action));
+    }
+
+    private IEnumerator CallBackAction(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     private void OnDisable()

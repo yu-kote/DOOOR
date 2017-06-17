@@ -174,9 +174,7 @@ public class AIGenerator : MonoBehaviour
     public void MoveStartHumans()
     {
         foreach (var human in _humans)
-        {
             human.GetComponent<AIBeginMove>().BeginMoveStart();
-        }
 
         Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
         {

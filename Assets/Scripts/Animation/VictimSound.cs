@@ -7,10 +7,17 @@ public class VictimSound : MonoBehaviour
     private VictimAnimation _victimAnimation;
     private VictimAnimationStatus _currentAnimStatus;
 
+    [SerializeField]
+    private float _soundRange = 5;
+    private AISoundManager _aiSoundManager;
+
     void Start()
     {
         _victimAnimation = GetComponent<VictimAnimation>();
         name = GetComponent<MyNumber>().Name;
+
+        var sm = GameObject.Find("Field").GetComponent<AISoundManager>();
+        _aiSoundManager = sm;
     }
 
     void Update()
@@ -68,7 +75,15 @@ public class VictimSound : MonoBehaviour
     void Shout()
     {
         if (name == "Woman")
+        {
+            // 美女だけ音を鳴らす
+            _aiSoundManager.MakeSound(gameObject,
+                          gameObject.transform.position + new Vector3(0, 3, 0),
+                          _soundRange * 0.9f, 1,
+                          transform.GetChild(0).eulerAngles);
+
             SoundManager.Instance.PlaySE("bijyohimei", gameObject);
+        }
         if (name == "TallMan")
             SoundManager.Instance.PlaySE("noppohimei", gameObject);
         if (name == "Fat")

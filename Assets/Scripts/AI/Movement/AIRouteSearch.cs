@@ -253,12 +253,19 @@ public abstract class AIRouteSearch : AIBasicsMovement
     /// </summary>
     protected void SearchMoveStart()
     {
-        if (gameObject == null) return;
-        gameObject.AddComponent<AISearchMove>();
-        Destroy(this);
+        if (gameObject == null)
+            return;
+        CanMove = false;
+        CallBack(0.1f, () =>
+        {
+            gameObject.AddComponent<AISearchMove>();
+            Destroy(this);
+        });
 
         var ai_controller = GetComponent<AIController>();
         if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
+            ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
+        if (ai_controller.MoveMode == AIController.MoveEmotion.REACT_SOUND)
             ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
     }
 

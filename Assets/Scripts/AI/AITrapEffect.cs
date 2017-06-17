@@ -42,8 +42,14 @@ public class AITrapEffect : MonoBehaviour
 
         float effect_time = 1.0f;
 
+        EasingInitiator.DestoryEase(gameObject);
         EasingInitiator.Add(gameObject, target_pos, effect_time, EaseType.BounceOut);
+
         _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER, effect_time);
+
+        var movement = _aiController.GetMovement();
+        if (movement)
+            movement.MoveSetup();
     }
 
     //ロープの罠にかかった時の処理

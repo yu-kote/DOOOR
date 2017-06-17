@@ -103,11 +103,11 @@ public class AIChace : AITargetMove
 
             if (IsDoorAround())
             {
-                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+                CallBack(2.0f, () =>
                 {
                     if (_isChaceEnd)
                         SearchMoveStart();
-                }).AddTo(gameObject);
+                });
                 return;
             }
             SearchMoveStart();
