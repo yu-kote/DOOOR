@@ -33,6 +33,9 @@ public class PlayerAction : MonoBehaviour
     [SerializeField]
     private float _statusLockTime = 2.0f;
 
+    [SerializeField]
+    private float _stairsLockTime = 17.0f;
+
     // ドアを固定したときに出るやつ
     GameObject _doorLock;
 
@@ -221,8 +224,8 @@ public class PlayerAction : MonoBehaviour
             var stairs1 = root_node.GetComponent<Stairs>();
             var stairs2 = link_node.GetComponent<Stairs>();
 
-            stairs1.LockStairsStatus(_statusLockTime);
-            var complate = stairs2.LockStairsStatus(_statusLockTime);
+            stairs1.LockStairsStatus(_stairsLockTime);
+            var complate = stairs2.LockStairsStatus(_stairsLockTime);
             if (complate == false)
                 return;
 
