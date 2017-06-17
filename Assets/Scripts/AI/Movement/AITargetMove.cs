@@ -7,7 +7,7 @@ using UniRx;
 
 public class AITargetMove : AIRouteSearch
 {
-    protected bool _targetMoveEnd = false;
+    private bool _targetMoveEnd = false;
 
     void Start()
     {
@@ -56,7 +56,6 @@ public class AITargetMove : AIRouteSearch
             _currentNode == _targetNode)
         {
             _targetMoveEnd = true;
-
             SearchMoveStart();
         }
     }

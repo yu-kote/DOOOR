@@ -214,6 +214,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     protected bool IsStairsLock(Node node)
     {
+        if (tag == "Killer")
+            return false;
+
         if (node == null)
             return true;
 

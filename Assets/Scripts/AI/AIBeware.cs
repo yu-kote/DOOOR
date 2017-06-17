@@ -37,6 +37,21 @@ public class AIBeware : MonoBehaviour
         StartCoroutine(Search());
     }
 
+    void SearchLimitUpdate()
+    {
+        _searchLimit = _defaultSearchLimit;
+
+        // 停電の時は探索距離が短くなる
+        if (_mapBackground.IsLightOn == false &&
+            tag != "Killer")
+            _searchLimit = _blackoutSearchLimit;
+
+        // 懐中電灯を持っている間は探索距離が延びる
+        if (tag == "Victim")
+            if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
+                _searchLimit = _LongSearchLimit;
+    }
+
     private IEnumerator Search()
     {
         while (true)
@@ -46,19 +61,7 @@ public class AIBeware : MonoBehaviour
             if (_isBeware == false)
                 continue;
 
-            // 懐中電灯を持っている間は探索距離が延びる
-            if (tag == "Victim")
-                if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
-                    _searchLimit = _defaultSearchLimit;
-                else
-                    _searchLimit = _LongSearchLimit;
-
-            // 停電の時は探索距離が短くなる
-            if (_mapBackground.IsLightOn == false)
-                _searchLimit = _blackoutSearchLimit;
-            else
-                if (tag == "Killer")
-                _searchLimit = _defaultSearchLimit;
+            SearchLimitUpdate();
 
             // 普通の移動をしている場合しか周囲を見ない
             var ai_controller = GetComponent<AIController>();

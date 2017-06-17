@@ -29,6 +29,24 @@ public class NodeController : MonoBehaviour
         }
     }
 
+    // AIのバグを強制的になくす
+    // 他のノードに残った自分の分身を消し去る関数
+    public void ReStepIn(GameObject human, Node current_node)
+    {
+        foreach (var y in _nodeManager.Nodes)
+        {
+            foreach (var node in y)
+            {
+                if (node == null)
+                    continue;
+                var footprint = node.GetComponent<FootPrint>();
+                if (footprint != null)
+                    footprint.StepOut(human);
+            }
+        }
+        current_node.GetComponent<FootPrint>().StepIn(human);
+    }
+
     // 足跡をリセットする（出口だけは記憶しておく）
     public void ReFootPrint(GameObject human, Node current_node)
     {

@@ -193,6 +193,10 @@ public class GameManager : MonoBehaviour
 
     private void HelpUpdate()
     {
+        if (_currentGameState != GameState.GAMEMAIN &&
+           _currentGameState != GameState.STOP)
+            return;
+
         if (_isStop)
             MovementAllStop();
 

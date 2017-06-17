@@ -62,6 +62,7 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
+        MovementExcess();
 
         //if (SceneManager.GetSceneByName("Title").name == null)
         //SoundUpdate();
@@ -120,17 +121,24 @@ public class AIController : MonoBehaviour
         return movement;
     }
 
-    private bool IsHurryUp()
+    public void MovementExcess()
     {
+        var movements = new List<AIBasicsMovement>();
         if (GetComponent<AISearchMove>())
-            return false;
+            movements.Add(GetComponent<AISearchMove>());
         if (GetComponent<AITargetMove>())
-            return false;
+            movements.Add(GetComponent<AITargetMove>());
         if (GetComponent<AIRunAway>())
-            return true;
+            movements.Add(GetComponent<AIRunAway>());
         if (GetComponent<AIChace>())
-            return true;
-        return false;
+            movements.Add(GetComponent<AIChace>());
+
+        if (movements.Count > 1)
+        {
+            Debug.Log("Movement Over" + tag);
+            foreach (var move in movements)
+                Debug.Log(move);
+        }
     }
 
     public void NodeUpdate()
