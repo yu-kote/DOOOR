@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4920ea3d1a40f7d4ca324b2023dfb887
+guid: 6ff098967b05aba40bf6b0b0c49d3520
 timeCreated: 1497794115
 licenseType: Free
 TrueTypeFontImporter:
@@ -12,7 +12,8 @@ TrueTypeFontImporter:
   fontName: MS Mincho
   fontNames:
   - MS Mincho
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 4920ea3d1a40f7d4ca324b2023dfb887, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
