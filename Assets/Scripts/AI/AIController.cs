@@ -19,7 +19,7 @@ public class AIController : MonoBehaviour
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
-    private AISoundManager _aiSoundManager;
+    //private AISoundManager _aiSoundManager;
 
     public enum MoveEmotion
     {
@@ -40,9 +40,9 @@ public class AIController : MonoBehaviour
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
 
-    [SerializeField]
-    private float _soundRange = 5;
-    private AISound _aiSound;
+    //[SerializeField]
+    //private float _soundRange = 5;
+    //private AISound _aiSound;
 
     void Start()
     {
@@ -50,7 +50,7 @@ public class AIController : MonoBehaviour
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
-        _aiSoundManager = field.GetComponent<AISoundManager>();
+        //_aiSoundManager = field.GetComponent<AISoundManager>();
         _aiGenerator = gameObject.transform.parent.gameObject.GetComponent<AIGenerator>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
@@ -62,28 +62,27 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
+        MovementExcess();
 
         //if (SceneManager.GetSceneByName("Title").name == null)
         //SoundUpdate();
     }
 
-    private void SoundUpdate()
-    {
-        var movement = GetMovement();
-        if (movement == null)
-            return;
-        // すでに音を鳴らしていたらはじく
-        if (_aiSoundManager.CheckSound(gameObject))
-            return;
-        // 移動できる状態なら音を鳴らす。移動できない場合は音を消す
-        if (movement.CanMove == false)
-        {
-            _aiSoundManager.RemoveSound(gameObject);
-            return;
-        }
-
-        _aiSound = _aiSoundManager.MakeSound(gameObject, _soundRange, transform.eulerAngles);
-    }
+    //private void SoundUpdate()
+    //{
+    //    var movement = GetMovement();
+    //    if (movement == null)
+    //        return;
+    //    // すでに音を鳴らしていたらはじく
+    //    if (_aiSoundManager.CheckSound(gameObject))
+    //        return;
+    //    // 移動できる状態なら音を鳴らす。移動できない場合は音を消す
+    //    if (movement.CanMove == false)
+    //    {
+    //        _aiSoundManager.RemoveSound(gameObject);
+    //        return;
+    //    }
+    //}
 
     private void MoveSpeedChange()
     {
@@ -101,7 +100,7 @@ public class AIController : MonoBehaviour
             //if (tag == "Killer")
             //GetMovement().Speed = _defaultSpeed;
         }
-        
+
         if (Input.GetKey(KeyCode.H))
         {
             GetMovement().Speed = 10.0f;
@@ -122,17 +121,26 @@ public class AIController : MonoBehaviour
         return movement;
     }
 
-    private bool IsHurryUp()
+    public void MovementExcess()
     {
+        var movements = new List<AIBasicsMovement>();
         if (GetComponent<AISearchMove>())
-            return false;
+            movements.Add(GetComponent<AISearchMove>());
         if (GetComponent<AITargetMove>())
-            return false;
+            movements.Add(GetComponent<AITargetMove>());
         if (GetComponent<AIRunAway>())
-            return true;
+            movements.Add(GetComponent<AIRunAway>());
         if (GetComponent<AIChace>())
-            return true;
-        return false;
+            movements.Add(GetComponent<AIChace>());
+
+        if (movements.Count > 1)
+        {
+            Debug.Log("Movement Over" + tag);
+            foreach (var move in movements)
+                Destroy(move);
+
+            StartCoroutine(Callback(0.2f, () => gameObject.AddComponent<AISearchMove>()));
+        }
     }
 
     public void NodeUpdate()
@@ -227,10 +235,22 @@ public class AIController : MonoBehaviour
             return;
         _stopTime = time;
         StartCoroutine(StopMove());
-        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
-        {
-            movement.CanMove = true;
-        }).AddTo(gameObject);
+        StartCoroutine(Callback(_stopTime, () => movement.CanMove = true));
+    }
+
+    public void StopMovement(float time, Action action)
+    {
+        var movement = GetMovement();
+        if (movement == null)
+            return;
+        movement.MoveSetup();
+
+        _stopTime = time;
+        StartCoroutine(StopMove());
+        StartCoroutine(Callback(_stopTime, action));
+
+        //Observable.Timer(TimeSpan.FromSeconds(_stopTime)).Subscribe(
+        //    _ => movement.CanMove = true);
     }
 
     private IEnumerator StopMove()
@@ -248,20 +268,10 @@ public class AIController : MonoBehaviour
         GetMovement().CanMove = true;
     }
 
-    public void StopMovement(float time, Action action)
+    private IEnumerator Callback(float time, Action action)
     {
-        var movement = GetMovement();
-        if (movement == null)
-            return;
-        movement.MoveSetup();
-
-        _stopTime = time;
-        StartCoroutine(StopMove());
-        Observable.Timer(TimeSpan.FromSeconds(time)).Subscribe(_ =>
-        {
-            movement.CanMove = true;
-            action();
-        }).AddTo(gameObject);
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     public void BeKilled()
@@ -271,7 +281,7 @@ public class AIController : MonoBehaviour
         GetComponent<VictimAnimation>().DeadAnimation();
 
         if (GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY))
-            CurrentNode.gameObject.AddComponent<LastKey>();
+            CurrentNode.gameObject.GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
     }
 
     private void OnDisable()

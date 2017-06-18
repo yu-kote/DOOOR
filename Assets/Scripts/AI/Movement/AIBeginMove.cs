@@ -24,13 +24,19 @@ public class AIBeginMove : MonoBehaviour
         _startMoveTime = 2.0f;
 
         GetComponent<AIController>().StopMovement(_startMoveTime);
-
         StartCoroutine(EasePosition());
+        CallBack(_startMoveTime, () => GetComponent<AIBeware>().IsBeware = true);
+    }
 
-        Observable.Timer(TimeSpan.FromSeconds(_startMoveTime)).Subscribe(_ =>
-        {
-            GetComponent<AIBeware>().IsBeware = true;
-        }).AddTo(gameObject);
+    protected void CallBack(float time, Action action)
+    {
+        StartCoroutine(CallBackAction(time, action));
+    }
+
+    private IEnumerator CallBackAction(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     private IEnumerator EasePosition()

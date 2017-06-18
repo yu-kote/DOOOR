@@ -37,6 +37,21 @@ public class AIBeware : MonoBehaviour
         StartCoroutine(Search());
     }
 
+    void SearchLimitUpdate()
+    {
+        _searchLimit = _defaultSearchLimit;
+
+        // 停電の時は探索距離が短くなる
+        if (_mapBackground.IsLightOn == false &&
+            tag != "Killer")
+            _searchLimit = _blackoutSearchLimit;
+
+        // 懐中電灯を持っている間は探索距離が延びる
+        if (tag == "Victim")
+            if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
+                _searchLimit = _LongSearchLimit;
+    }
+
     private IEnumerator Search()
     {
         while (true)
@@ -46,19 +61,7 @@ public class AIBeware : MonoBehaviour
             if (_isBeware == false)
                 continue;
 
-            // 懐中電灯を持っている間は探索距離が延びる
-            if (tag == "Victim")
-                if (GetComponent<AIItemController>().HaveItemCheck(ItemType.FLASHLIGHT))
-                    _searchLimit = _defaultSearchLimit;
-                else
-                    _searchLimit = _LongSearchLimit;
-
-            // 停電の時は探索距離が短くなる
-            if (_mapBackground.IsLightOn == false)
-                _searchLimit = _blackoutSearchLimit;
-            else
-                if (tag == "Killer")
-                _searchLimit = _defaultSearchLimit;
+            SearchLimitUpdate();
 
             // 普通の移動をしている場合しか周囲を見ない
             var ai_controller = GetComponent<AIController>();
@@ -148,9 +151,10 @@ public class AIBeware : MonoBehaviour
                 return human;
         }
 
-        // 角の場合は終了
+        // 角の場合は終了、角に乗っている場合はそのまま探索する
         if (current_node.gameObject.GetComponent<Corner>())
-            if (GetComponent<AIController>().CurrentNode.GetComponent<Corner>())
+            if (GetComponent<AIController>()
+                .CurrentNode.GetComponent<Corner>() == null)
                 return null;
 
         var loadpath = current_node.gameObject.GetComponent<NodeGuide>();
@@ -160,21 +164,17 @@ public class AIBeware : MonoBehaviour
             // 検索済みは飛ばし
             if (node.gameObject.GetComponent<NodeGuide>().SearchCheck(gameObject))
                 continue;
+
             // 壁は探索しない
             if (node.gameObject.GetComponent<Wall>())
                 continue;
+
             // 殺人鬼は扉の向こうを見れない
             if (tag == "Killer")
                 if (node.gameObject.GetComponent<Door>())
                     continue;
 
-            // 階段がロックされていたら通れない
-            var stairs = node.GetComponent<Stairs>();
-            if (stairs)
-                if (stairs.IsStairsLock())
-                    continue;
-
-            // ほかの階は探索しない
+            // 階段を見つけた場合、階段一つ進んだところだけ探索する
             if (current_node.gameObject.GetComponent<Stairs>() &&
                 node.gameObject.GetComponent<Stairs>())
             {

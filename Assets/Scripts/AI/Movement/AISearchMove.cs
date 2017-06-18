@@ -256,5 +256,6 @@ public class AISearchMove : AIBasicsMovement
         mover.SetTargetNode(target_node);
         mover.Speed = GetComponent<AIController>().DefaultSpeed;
         Destroy(this);
+        CanMove = false;
     }
 }

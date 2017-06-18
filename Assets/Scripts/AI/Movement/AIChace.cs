@@ -5,9 +5,10 @@ using System.Linq;
 using UniRx;
 using System;
 
-public class AIChace : AITargetMove
+public class AIChace : AIRouteSearch
 {
     private int _endNodeDistance = 30;
+    private bool _targetMoveEnd = false;
 
     private GameObject _targetHuman;
     public GameObject TargetHuman { get { return _targetHuman; } set { _targetHuman = value; } }
@@ -48,6 +49,8 @@ public class AIChace : AITargetMove
         if (_targetHuman == null)
             return true;
 
+        //_targetNode = _targetHuman.GetComponent<AIController>().PrevNode;
+        //if (_targetNode)
         _targetNode = _targetHuman.GetComponent<AIController>().CurrentNode;
 
         Node next_node = null;
@@ -103,11 +106,11 @@ public class AIChace : AITargetMove
 
             if (IsDoorAround())
             {
-                Observable.Timer(TimeSpan.FromSeconds(2)).Subscribe(_ =>
+                CallBack(2.0f, () =>
                 {
                     if (_isChaceEnd)
                         SearchMoveStart();
-                }).AddTo(gameObject);
+                });
                 return;
             }
             SearchMoveStart();

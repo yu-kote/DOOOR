@@ -6,9 +6,14 @@ using System.Linq;
 
 public class AIHearingKiller : AIHearing
 {
+    private NodeController _nodeController;
+
     void Start()
     {
         Setup();
+        var field = GameObject.Find("Field");
+        _nodeController = field.GetComponent<NodeController>();
+
     }
 
     void Update()
@@ -36,7 +41,10 @@ public class AIHearingKiller : AIHearing
             Destroy(GetComponent<AISearchMove>());
         if (GetComponent<AITargetMove>())
             Destroy(GetComponent<AITargetMove>());
+
+        // 記憶を消す
         _roadPathManager.RoadGuideReset(gameObject);
+        _nodeController.ReFootPrint(gameObject, _aiController.CurrentNode);
 
         var target_mover = gameObject.AddComponent<AITargetMove>();
         target_mover.SetTargetNode(_hearNode);

@@ -19,7 +19,7 @@ public class PitFall : MonoBehaviour
         get { return _isUsed; }
         set { _isUsed = value; }
     }
-    
+
     void Start()
     {
         if (_footPrint == null)
@@ -67,6 +67,7 @@ public class PitFall : MonoBehaviour
                 _footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
                 fallNum++;
                 _footPrint.gameObject.GetComponent<TrapStatus>().IsSpawn = false;
+                break;
             }
         }
 

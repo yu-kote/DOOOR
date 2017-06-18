@@ -82,7 +82,7 @@ public class VictimAnimation : MonoBehaviour
             (move_mode == AIController.MoveEmotion.HURRY_UP || move_mode == AIController.MoveEmotion.REACT_SOUND))
             _animStatus = VictimAnimationStatus.RUN;
 
-
+        Rest();
         // 探索を開始していなければは待機状態
         if (GetComponent<AIBeginMove>())
             if (GetComponent<AIBeginMove>().IsSearchStart == false)
@@ -129,9 +129,18 @@ public class VictimAnimation : MonoBehaviour
                 _animStatus = VictimAnimationStatus.IDOL;
             return;
         }
+
         _animStatus = VictimAnimationStatus.CRISIS;
+        Rest();
 
         ApproachRotate();
+    }
+
+    private void Rest()
+    {
+        if (_aiController.GetMovement().MoveComplete() &&
+            _aiController.CurrentNode.GetComponent<Kyukeispace>())
+            _animStatus = VictimAnimationStatus.IDOL;
     }
 
     private void ApproachRotate()

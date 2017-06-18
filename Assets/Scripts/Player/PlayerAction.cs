@@ -267,14 +267,6 @@ public class PlayerAction : MonoBehaviour
     // ドアをロックしている時に呼ぶ関数
     private void DoorLockUpdate(GameObject door_node)
     {
-        //var distance = _camera.transform.position - door_node.transform.position;
-        //var facade_dir = distance.normalized * 10;
-        //var offset_value = facade_dir.x;
-        //if (Mathf.Abs(facade_dir.x) < Mathf.Abs(facade_dir.z))
-        //    offset_value = facade_dir.z;
-        //if (offset_value > 0)
-        //    offset_value *= -1;
-
         // 色々試したけど時間がないのでマジナン
         var offset_pos = new Vector3(0, 10, -6);
         _doorLock.transform.localPosition = offset_pos;

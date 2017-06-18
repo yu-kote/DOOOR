@@ -118,11 +118,12 @@ public abstract class AIRouteSearch : AIBasicsMovement
                 if (node.gameObject.GetComponent<Wall>() != null)
                     continue;
 
-                // 階段がロックされていたら通れない
+                // 探索者は階段がロックされていたら通れない
                 var stairs = node.GetComponent<Stairs>();
-                if (stairs)
-                    if (stairs.IsStairsLock())
-                        continue;
+                if (tag != "Killer")
+                    if (stairs)
+                        if (stairs.IsStairsLock())
+                            continue;
 
                 var ai = GetComponent<AIController>();
                 // 殺人鬼の時は扉の向こうに行けなくする
@@ -253,12 +254,21 @@ public abstract class AIRouteSearch : AIBasicsMovement
     /// </summary>
     protected void SearchMoveStart()
     {
-        if (gameObject == null) return;
-        gameObject.AddComponent<AISearchMove>();
-        Destroy(this);
+        if (gameObject == null)
+            return;
+        CanMove = false;
+        CallBack(0.1f, () =>
+        {
+            gameObject.AddComponent<AISearchMove>();
+            Destroy(this);
+        });
+
+        _nodeController.ReStepIn(gameObject, GetComponent<AIController>().CurrentNode);
 
         var ai_controller = GetComponent<AIController>();
         if (ai_controller.MoveMode == AIController.MoveEmotion.HURRY_UP)
+            ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
+        if (ai_controller.MoveMode == AIController.MoveEmotion.REACT_SOUND)
             ai_controller.MoveMode = AIController.MoveEmotion.DEFAULT;
     }
 
