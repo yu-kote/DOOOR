@@ -265,6 +265,13 @@ public class Select : MonoBehaviour
         _nodeManager.Start();
     }
 
+    public int GetItemMaxNum()
+    {
+        if (_selectStageNum == 1 || _selectStageNum == 2)
+            return 4;
+        return 5;
+    }
+
     private void PlayerPositionOffset()
     {
         _player.transform.position
