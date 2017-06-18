@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9c6498adfa13bc04e9fea53d560b9ed0
+guid: e51aa835fc684214bb036e34386540b1
 timeCreated: 1497794115
 licenseType: Free
 TrueTypeFontImporter:
@@ -12,7 +12,8 @@ TrueTypeFontImporter:
   fontName: Pirate
   fontNames:
   - Pirate
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 9c6498adfa13bc04e9fea53d560b9ed0, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

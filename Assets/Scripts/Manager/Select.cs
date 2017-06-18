@@ -185,11 +185,7 @@ public class Select : MonoBehaviour
         if (_selectStageNum == 1)
         {
             GameObject.Find("HumanManager")
-<<<<<<< HEAD
                 .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
-=======
-                .GetComponent<AIGenerator>().KillerPopNodeCell(6, 2);
->>>>>>> 697d434c3ba7f50b5f4810f41d0fb3c7fb02fe4f
             GetComponent<GameTutorial>().IsEnable = true;
         }
         else
