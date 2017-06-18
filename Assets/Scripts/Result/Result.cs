@@ -69,7 +69,7 @@ public class Result : MonoBehaviour
                 GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                     .SceneChange("Title", () => SoundManager.Instance.StopBGM());
             }
-            if (Input.GetButtonDown(_actionButton))
+            if (Input.GetKeyDown(KeyCode.Return))
             {
                 GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                     .SceneChange("Title", () => SoundManager.Instance.StopBGM());
