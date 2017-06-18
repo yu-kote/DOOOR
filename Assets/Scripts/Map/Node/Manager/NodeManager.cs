@@ -10,6 +10,9 @@ public class NodeManager : MonoBehaviour
     [SerializeField]
     private GameObject _node;
 
+    [SerializeField]
+    private Select _select;
+
     // 高さの、横
     private List<List<GameObject>> _nodes = new List<List<GameObject>>();
     public List<List<GameObject>> Nodes { get { return _nodes; } set { _nodes = value; } }
@@ -141,7 +144,7 @@ public class NodeManager : MonoBehaviour
                             int randNum;
                             do
                             {
-                                randNum = UnityEngine.Random.Range(2, 5);
+                                randNum = UnityEngine.Random.Range(2, _select.GetItemMaxNum());
                                 randNum = 1 << randNum;
                             } while (randNum == (int)ItemType.LASTKEY);
 
@@ -152,7 +155,7 @@ public class NodeManager : MonoBehaviour
                         break;
 
                     case MapID.CANBREAKEWALL:
-                        
+
                         break;
 
                     case MapID.DEGUTI:
