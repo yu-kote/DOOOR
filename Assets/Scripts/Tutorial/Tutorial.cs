@@ -196,6 +196,15 @@ public class Tutorial : MonoBehaviour
             //}
             yield return new WaitForSeconds(_nextTextMoveTime);
         }
+
+        while (true)
+        {
+            if (Input.GetButtonDown(_fastForwardButton))
+            {
+                ChangeGamemain();
+            }
+            yield return null;
+        }
     }
 
     private IEnumerator DisplayGradually(Graphic image, float speed = 1,
