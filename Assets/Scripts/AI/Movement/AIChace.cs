@@ -147,23 +147,27 @@ public class AIChace : AIRouteSearch
             if (item_controller.HaveItemCheck(ItemType.GUN))
             {
                 item_controller.UseItem(ItemType.GUN, gameObject);
-                SoundManager.Instance.PlaySE("handogan", human.gameObject);
+                SoundManager.Instance.PlaySE("handogan", gameObject);
 
                 // 攻撃されたたときのアニメーションに切り替える
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.HIT;
                 GetComponent<AIController>()
                     .StopMovement(1.5f, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                GetComponent<AIController>()
+                    .StopMovement(4.0f, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
                 break;
             }
             else if (item_controller.HaveItemCheck(ItemType.TYENSO))
             {
                 item_controller.UseItem(ItemType.TYENSO, gameObject);
-                SoundManager.Instance.PlaySE("tye-nso-", human.gameObject);
+                SoundManager.Instance.PlaySE("tye-nso-", gameObject);
 
                 // 攻撃されたたときのアニメーションに切り替える
                 GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.HIT;
                 GetComponent<AIController>()
                     .StopMovement(1.5f, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
+                GetComponent<AIController>()
+                    .StopMovement(4.0f, () => GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL);
                 break;
             }
             _targetHuman = null;
