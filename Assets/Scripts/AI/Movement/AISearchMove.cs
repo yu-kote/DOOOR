@@ -250,12 +250,17 @@ public class AISearchMove : AIBasicsMovement
     {
         GetComponent<AIController>().MoveMode = AIController.MoveEmotion.DEFAULT;
         _roadPathManager.RoadGuideReset(gameObject);
-
-        var mover = gameObject.AddComponent<AITargetMove>();
-        // どこを目指すかを教える
-        mover.SetTargetNode(target_node);
-        mover.Speed = GetComponent<AIController>().DefaultSpeed;
-        Destroy(this);
         CanMove = false;
+
+        CallBack(0.3f, () =>
+        {
+            if (GetComponent<AITargetMove>())
+                return;
+            var mover = gameObject.AddComponent<AITargetMove>();
+            // どこを目指すかを教える
+            mover.SetTargetNode(target_node);
+            mover.Speed = GetComponent<AIController>().DefaultSpeed;
+            Destroy(this);
+        });
     }
 }

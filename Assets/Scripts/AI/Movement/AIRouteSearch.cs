@@ -257,8 +257,10 @@ public abstract class AIRouteSearch : AIBasicsMovement
         if (gameObject == null)
             return;
         CanMove = false;
-        CallBack(0.1f, () =>
+        CallBack(0.3f, () =>
         {
+            if (GetComponent<AISearchMove>())
+                return;
             gameObject.AddComponent<AISearchMove>();
             Destroy(this);
         });

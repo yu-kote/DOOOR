@@ -61,7 +61,10 @@ public class NodeManager : MonoBehaviour
 
                 // 角
                 if (IsCorner(x))
+                {
                     node.gameObject.AddComponent<Corner>();
+                    _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                }
 
                 switch ((MapID)mapID)
                 {
@@ -149,9 +152,7 @@ public class NodeManager : MonoBehaviour
                         break;
 
                     case MapID.CANBREAKEWALL:
-
-                        node.gameObject.AddComponent<DummyWall>();
-                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+                        
                         break;
 
                     case MapID.DEGUTI:

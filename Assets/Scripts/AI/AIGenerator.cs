@@ -31,6 +31,8 @@ public class AIGenerator : MonoBehaviour
     private List<GameObject> _humans = new List<GameObject>();
     public List<GameObject> Humans { get { return _humans; } set { _humans = value; } }
 
+    private bool _isStop;
+
     private int _generateCount = 0;
 
     void Start()
@@ -43,6 +45,11 @@ public class AIGenerator : MonoBehaviour
         _field = GameObject.Find("Field");
         _startNode = _field.GetComponent<NodeManager>().StartNode;
         _killerStartNode = _field.GetComponent<NodeManager>().Nodes[0][6].GetComponent<Node>();
+    }
+
+    public void KillerPopNodeCell(int x, int y)
+    {
+        _killerStartNode = _field.GetComponent<NodeManager>().Nodes[y][x].GetComponent<Node>();
     }
 
     private IEnumerator Setup()
@@ -176,7 +183,7 @@ public class AIGenerator : MonoBehaviour
         foreach (var human in _humans)
             human.GetComponent<AIBeginMove>().BeginMoveStart();
 
-        Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
         {
             var killer = CreateKiller();
             killer.GetComponent<AIBeginMove>().BeginMoveStart();
@@ -187,17 +194,23 @@ public class AIGenerator : MonoBehaviour
     public void MoveEndHumans()
     {
         foreach (var human in _humans)
-            StartCoroutine(MoveStop(human));
+            StartCoroutine(MoveStop(human, false));
     }
 
     // 全ての人間の動きを動かすかどうか決める
     public void HumanMoveControll(bool can_move)
     {
-        foreach (var human in _humans)
-            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
+        if (can_move == false)
+        {
+            _isStop = true;
+            foreach (var human in _humans)
+                StartCoroutine(MoveStop(human));
+        }
+        if (can_move)
+            _isStop = false;
     }
 
-    private IEnumerator MoveStop(GameObject human, bool can_move = false)
+    private IEnumerator MoveStop(GameObject human, bool can_move)
     {
         while (true)
         {
@@ -205,6 +218,24 @@ public class AIGenerator : MonoBehaviour
             yield return null;
         }
     }
+
+    private IEnumerator MoveStop(GameObject human)
+    {
+        while (true)
+        {
+            human.GetComponent<AIController>().GetMovement().CanMove = false;
+
+            yield return null;
+            if (_isStop == false)
+            {
+                yield return null;
+                break;
+            }
+        }
+        human.GetComponent<AIController>().GetMovement().CanMove = true;
+        _isStop = true;
+    }
+
 
     private void OnDestroy()
     {
