@@ -7,7 +7,14 @@ using System.Linq;
 
 public class Tutorial : MonoBehaviour
 {
+
+    [SerializeField]
+    private string _skipButton = "Start";
+    [SerializeField]
+    private string _fastForwardButton = "Action";
+
     private GameObject _tutorialCanvas;
+
     [SerializeField]
     private GameObject _textCanvas;
 
@@ -17,14 +24,17 @@ public class Tutorial : MonoBehaviour
     private int _storyMax;
 
     [SerializeField]
-    private string _skipButton = "Action";
-    [SerializeField]
     private float _nextStoryMoveTime = 2.0f;
     [SerializeField]
     private float _nextTextMoveTime = 1.0f;
 
     [SerializeField]
     private int[] _sceneChangeNums;
+
+    [SerializeField]
+    private Font _font;
+    [SerializeField]
+    private Font _startFont;
 
     SceneChanger _sceneChanger;
 
@@ -52,12 +62,17 @@ public class Tutorial : MonoBehaviour
         // 文字の初期化
         for (int i = 0; i < _textCanvas.transform.childCount; i++)
         {
-            var text = _textCanvas.transform.GetChild(i).gameObject;
-            text.SetActive(false);
-            for (int k = 0; k < text.transform.childCount; k++)
+            var texts = _textCanvas.transform.GetChild(i).gameObject;
+            texts.SetActive(false);
+            for (int k = 0; k < texts.transform.childCount; k++)
             {
-                var c_text = text.transform.GetChild(k).gameObject;
+                var c_text = texts.transform.GetChild(k).gameObject;
                 c_text.SetActive(false);
+                var text = c_text.transform.GetChild(0).GetComponent<Text>();
+                text.font = _font;
+                if (i == _textCanvas.transform.childCount - 1)
+                    if (k == texts.transform.childCount - 1)
+                        text.font = _startFont;
             }
         }
     }
@@ -80,7 +95,14 @@ public class Tutorial : MonoBehaviour
             }
             _storyNum++;
 
-            yield return new WaitForSeconds(_nextStoryMoveTime);
+            var next_story_time = 0.0f;
+            while (next_story_time < _nextStoryMoveTime)
+            {
+                if (Input.GetButtonDown(_fastForwardButton))
+                    break;
+                next_story_time += Time.deltaTime;
+                yield return null;
+            }
 
             // ここは文字が発生しないので、とばす
             if (_storyNum == 18 || _storyNum == 19 || _storyNum == 21 || _storyNum == 22)
@@ -99,12 +121,12 @@ public class Tutorial : MonoBehaviour
 
                         StartCoroutine(DisplayGradually(
                             t.GetComponent<Image>(),
-                            3, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
+                            2, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
 
                         var image_text = t.transform.GetChild(0).gameObject;
 
                         StartCoroutine(DisplayGradually(
-                            image_text.GetComponent<Text>(), 3, 0, -1));
+                            image_text.GetComponent<Text>(), 2, 0, -1));
                     }
                     continue;
                 }
@@ -139,12 +161,12 @@ public class Tutorial : MonoBehaviour
 
                     StartCoroutine(DisplayGradually(
                         t.GetComponent<Image>(),
-                        3, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
+                        2, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
 
                     var image_text = t.transform.GetChild(0).gameObject;
 
                     StartCoroutine(DisplayGradually(
-                        image_text.GetComponent<Text>(), 3, 0, -1));
+                        image_text.GetComponent<Text>(), 2, 0, -1));
                 }
                 continue;
             }
@@ -163,6 +185,15 @@ public class Tutorial : MonoBehaviour
 
             // 場面が変わる判定
             story_count++;
+
+            //next_story_time = 0.0f;
+            //while (next_story_time < _nextTextMoveTime)
+            //{
+            //    if (Input.GetButtonDown(_fastForwardButton))
+            //        break;
+            //    next_story_time += Time.deltaTime;
+            //    yield return null;
+            //}
             yield return new WaitForSeconds(_nextTextMoveTime);
         }
     }

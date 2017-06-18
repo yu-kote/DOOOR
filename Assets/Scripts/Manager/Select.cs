@@ -129,6 +129,9 @@ public class Select : MonoBehaviour
 
         ArrowEffect();
 
+        // テキスト更新
+        StageNumTextupdate();
+
         // カメラが寄る演出が終わったら操作説明を出す
         if (_isSelectEnd == true)
             if (EasingInitiator.IsEaseEnd(gameObject))
@@ -182,7 +185,11 @@ public class Select : MonoBehaviour
         if (_selectStageNum == 1)
         {
             GameObject.Find("HumanManager")
+<<<<<<< HEAD
+                .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
+=======
                 .GetComponent<AIGenerator>().KillerPopNodeCell(6, 2);
+>>>>>>> 697d434c3ba7f50b5f4810f41d0fb3c7fb02fe4f
             GetComponent<GameTutorial>().IsEnable = true;
         }
         else
@@ -229,9 +236,6 @@ public class Select : MonoBehaviour
 
         // 0はタイトルステージなので、1 ~ max 
         _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, _stageMax);
-
-        // テキスト更新
-        StageNumTextupdate();
 
         if (_currentSelectStageNum == _selectStageNum)
             return false;
@@ -289,7 +293,10 @@ public class Select : MonoBehaviour
 
     private void StageNumTextupdate()
     {
-        _stageNum.text = "Stage " + _selectStageNum;
+        if (_selectStageNum == 1)
+            _stageNum.text = "Tutorial Stage";
+        else
+            _stageNum.text = "Stage " + (_selectStageNum - 1);
     }
 
     private void StartButtonChange()
