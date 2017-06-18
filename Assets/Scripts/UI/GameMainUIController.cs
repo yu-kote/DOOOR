@@ -9,8 +9,7 @@ public class GameMainUIController : MonoBehaviour
 
     Dictionary<string, Vector3> _uiStartPositions = new Dictionary<string, Vector3>();
     Dictionary<string, Vector3> _uiEndPositions = new Dictionary<string, Vector3>();
-
-
+    
     float _easeTime;
 
     void Start()
@@ -88,7 +87,7 @@ public class GameMainUIController : MonoBehaviour
 
     // UIを所定の位置までイージングさせる
 
-    void EaseUi(GameObject ui, Vector3 target_pos)
+    public void EaseUi(GameObject ui, Vector3 target_pos)
     {
         EasingInitiator.Add(ui, target_pos,
                     _easeTime, EaseType.CircOut);

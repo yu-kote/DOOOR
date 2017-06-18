@@ -91,6 +91,11 @@ public class AITrapEffect : MonoBehaviour
     private void DoorControl()
     {
         if (tag != "Victim") return;
+
+        var movement = _aiController.GetMovement();
+        if (movement == null)
+            return;
+
         if (_aiController.GetMovement().CanMove == false)
             return;
 

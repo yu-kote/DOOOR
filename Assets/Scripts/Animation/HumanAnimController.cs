@@ -69,6 +69,8 @@ public class HumanAnimController : MonoBehaviour
         if (_currentVictimAnimStatus == VictimAnimationStatus.OPEN_DOOR)
             return;
 
+        if (_aiController.GetMovement() == null)
+            return;
         var direction = _aiController.GetMovement().MoveDirection;
         if (direction == Vector3.zero)
             return;

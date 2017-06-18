@@ -92,6 +92,7 @@ public class VictimAnimation : MonoBehaviour
     // 追い詰められモーション
     void AnimCrisis()
     {
+        if (_aiController.GetMovement() == null) return;
         // 移動停止の関数が呼ばれていたら更新しない
         if (_aiController.GetMovement().CanMove == false)
             return;

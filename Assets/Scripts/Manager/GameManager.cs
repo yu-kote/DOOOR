@@ -190,6 +190,16 @@ public class GameManager : MonoBehaviour
     //---------------------------------------------------------------------------------------------
     // ヘルプの処理
     //---------------------------------------------------------------------------------------------
+    private bool HelpStartButton()
+    {
+        if (Input.GetButtonDown(_gameStopButton))
+            return true;
+        if (_isStop)
+            return false;
+        if (Input.GetButtonDown(_selectEndButton))
+            return true;
+        return false;
+    }
 
     private void HelpUpdate()
     {
@@ -207,37 +217,37 @@ public class GameManager : MonoBehaviour
         {
             _isStop = !_isStop;
             if (_isStop)
-                StartCoroutine(HelpViewStart());
+                StartCoroutine(ImageFadeIn(_help));
             else
-                StartCoroutine(HelpViewEnd());
+                StartCoroutine(ImageFadeOut(_help));
         }
     }
 
-    private IEnumerator HelpViewStart()
+    public IEnumerator ImageFadeIn(Image image, float speed = 3, float max_alpha = 1)
     {
         _canHelpUpdate = false;
-        _help.color = new Color(1, 1, 1, 0);
-        var color = _help.color;
-        while (color.a < 1)
+        image.color = new Color(1, 1, 1, 0);
+        var color = image.color;
+        while (color.a < max_alpha)
         {
-            yield return null;
-            color.a += Time.deltaTime * 3;
+            color.a += Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
-            _help.color = color;
+            image.color = color;
+            yield return null;
         }
         _canHelpUpdate = true;
     }
 
-    private IEnumerator HelpViewEnd()
+    public IEnumerator ImageFadeOut(Image image, float speed = 3, float min_alpha = 0)
     {
         _canHelpUpdate = false;
-        var color = _help.color;
-        while (color.a > 0)
+        var color = image.color;
+        while (color.a > min_alpha)
         {
-            yield return null;
-            color.a -= Time.deltaTime * 3;
+            color.a -= Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
-            _help.color = color;
+            image.color = color;
+            yield return null;
         }
         _canHelpUpdate = true;
         MovementAllStart();

@@ -151,7 +151,7 @@ public class Select : MonoBehaviour
         {
             yield return null;
             var color = _help.color;
-            color.a += Time.deltaTime * 3;
+            color.a += Time.deltaTime * 2;
             color.a = Mathf.Clamp(color.a, 0, 1);
             _help.color = color;
 
@@ -161,7 +161,7 @@ public class Select : MonoBehaviour
 
             while (_help.color.a > 0.0f)
             {
-                color.a -= Time.deltaTime * 2;
+                color.a -= Time.deltaTime * 3;
                 _help.color = color;
                 yield return null;
             }
@@ -178,6 +178,18 @@ public class Select : MonoBehaviour
         SoundManager.Instance.StopBGM();
         SoundManager.Instance.PlayBGM("ingame");
         GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
+
+        if (_selectStageNum == 1)
+        {
+            GameObject.Find("HumanManager")
+                .GetComponent<AIGenerator>().KillerPopNodeCell(6, 2);
+            GetComponent<GameTutorial>().IsEnable = true;
+        }
+        else
+        {
+            GetComponent<GameTutorial>().IsEnable = false;
+        }
+
         Destroy(this);
     }
 
@@ -227,7 +239,6 @@ public class Select : MonoBehaviour
 
         // 選択音
         SoundManager.Instance.PlaySE("sentakuon");
-
 
         return true;
     }

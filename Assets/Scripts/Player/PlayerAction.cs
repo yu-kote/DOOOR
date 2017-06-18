@@ -336,6 +336,7 @@ public class PlayerAction : MonoBehaviour
             _voiceRange = value;
             _voice.transform.localScale = new Vector3(value / 10.0f, 0, value / 10.0f);
         }
+
         if (IsSoundChargeEnd())
         {
             GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
