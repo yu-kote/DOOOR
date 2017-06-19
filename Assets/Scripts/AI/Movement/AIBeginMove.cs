@@ -50,12 +50,12 @@ public class AIBeginMove : MonoBehaviour
                             _startMoveTime, EaseType.Linear);
 
         var deguti = current_node.GetComponent<Deguti>();
-        if (deguti == null)
-            yield break;
-
-        deguti.StartOpening();
-        yield return new WaitForSeconds(_startMoveTime);
-        deguti.StartClosing();
+        if (deguti)
+        {
+            deguti.StartOpening();
+            yield return new WaitForSeconds(_startMoveTime);
+            deguti.StartClosing();
+        }
         Destroy(this);
     }
 }

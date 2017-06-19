@@ -115,7 +115,7 @@ public class AIGenerator : MonoBehaviour
 
     public GameObject GetKiller()
     {
-        return _humans.First(human => human.tag == "Killer");
+        return _humans.FirstOrDefault(human => human.tag == "Killer");
     }
 
     GameObject CreateVictim(string name)
@@ -183,11 +183,14 @@ public class AIGenerator : MonoBehaviour
         foreach (var human in _humans)
             human.GetComponent<AIBeginMove>().BeginMoveStart();
 
-        Observable.Timer(TimeSpan.FromSeconds(3.5f)).Subscribe(_ =>
-        {
-            var killer = CreateKiller();
-            killer.GetComponent<AIBeginMove>().BeginMoveStart();
-        }).AddTo(gameObject);
+        var killer = CreateKiller();
+        killer.GetComponent<AIBeginMove>().BeginMoveStart();
+    }
+
+    public IEnumerator Callback(float time, Action action)
+    {
+        yield return new WaitForSeconds(time);
+        action();
     }
 
     // 全ての人間の動きを止め続ける

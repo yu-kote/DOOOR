@@ -40,7 +40,6 @@ public class Select : MonoBehaviour
     [SerializeField]
     private Image _help;
 
-
     [SerializeField]
     string _horizontalAxis = "Horizontal";
     bool _isAxisDown;
@@ -52,12 +51,12 @@ public class Select : MonoBehaviour
     private MapBackgrounds _mapBackgrounds;
     private AIGenerator _aiGenerator;
     private GameManager _gameManager;
+    private Reloader _reloader;
 
     int _selectStageNum;
     int _currentSelectStageNum;
 
     bool _isSelectEnd;
-    bool _isSelectChange = false;
     int _selectDirection;
 
     void Awake()
@@ -74,6 +73,7 @@ public class Select : MonoBehaviour
         _aiGenerator = human_manager.GetComponent<AIGenerator>();
 
         _gameManager = GetComponent<GameManager>();
+        _reloader = GetComponent<Reloader>();
 
         _isSelectEnd = false;
         _isAxisDown = false;
@@ -83,6 +83,7 @@ public class Select : MonoBehaviour
 
         // ヘルプの初期化
         _help.color = new Color(1, 1, 1, 0);
+        _gameManager.SetImageChildColor(_help, _help.color);
         _help.gameObject.SetActive(true);
 
         // 左右の矢印の初期化
@@ -99,7 +100,8 @@ public class Select : MonoBehaviour
     private IEnumerator Setup()
     {
         yield return null;
-        StageSetup();
+        _reloader.StageSetup(_selectStageNum);
+        CameraSetup();
         StartCoroutine(StageSelectStart());
     }
 
@@ -127,8 +129,18 @@ public class Select : MonoBehaviour
                 _fade.color = color;
                 yield return null;
             }
-            StageSetup();
+            _reloader.StageSetup(_selectStageNum);
+            CameraSetup();
         }
+    }
+
+    void CameraSetup()
+    {
+        // カメラの位置をフィールドの中心に合わせる
+        var mover = _camera.GetComponent<CameraMover>();
+        var camera_pos = _nodeManager.GetNodesCenterPoint();
+        _camera.transform.position = new Vector3(camera_pos.x, camera_pos.y, _camera.transform.position.z);
+        _camera.transform.eulerAngles = mover.StartAngle;
     }
 
     void Update()
@@ -199,9 +211,7 @@ public class Select : MonoBehaviour
             GetComponent<GameTutorial>().IsEnable = true;
         }
         else
-        {
             GetComponent<GameTutorial>().IsEnable = false;
-        }
 
         Destroy(this);
     }
@@ -220,7 +230,6 @@ public class Select : MonoBehaviour
         }
 
         float horizotal = Input.GetAxis("Horizontal");
-
         if (horizotal > 0.5f)
         {
             if (_selectDirection == -1 || _selectDirection == 0)
@@ -239,11 +248,7 @@ public class Select : MonoBehaviour
         }
 
         if (horizotal < 0.1f && horizotal > -0.1f)
-        {
             _selectDirection = 0;
-        }
-
-
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
             _selectStageNum++;
@@ -279,41 +284,11 @@ public class Select : MonoBehaviour
         return true;
     }
 
-    private void StageSetup()
-    {
-        // マップを読み直す
-        ChangeMap();
-
-        // 人間を表示する
-        _aiGenerator.InstanceHumans(_selectStageNum);
-
-        // プレイヤーを扉の位置に移動させる
-        PlayerPositionOffset();
-
-        // カメラの位置をフィールドの中心に合わせる
-        var camera_pos = _nodeManager.GetNodesCenterPoint();
-        _camera.transform.position = new Vector3(camera_pos.x, camera_pos.y, _camera.transform.position.z);
-    }
-
-    public void ChangeMap()
-    {
-        _mapLoader.LoadMap(_selectStageNum);
-        _nodeManager.Start();
-    }
-
     public int GetItemMaxNum()
     {
         if (_selectStageNum == 1 || _selectStageNum == 2)
             return 4;
         return 5;
-    }
-
-    private void PlayerPositionOffset()
-    {
-        _player.transform.position
-            = new Vector3(_aiGenerator.StartNode.transform.position.x,
-                          _aiGenerator.StartNode.transform.position.y + 10,
-                          _player.transform.position.z);
     }
 
     public void SelectEndStaging()
@@ -344,7 +319,6 @@ public class Select : MonoBehaviour
         _startButton.sprite = push;
     }
 
-
     float _effectTime = 0.0f;
     private void ArrowEffect()
     {
@@ -367,5 +341,4 @@ public class Select : MonoBehaviour
         _leftArrow.transform.localPosition =
             _leftArrowStartPos + new Vector3(-x, 0, 0);
     }
-
 }

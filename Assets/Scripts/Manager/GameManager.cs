@@ -26,10 +26,16 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private string _gameStopButton;
     [SerializeField]
+    private string _restartButton = "Sound";
+
+    [SerializeField]
     private Image _help;
 
     private AIGenerator _aiGenerator;
     private GameMainUIController _uiController;
+    private Reloader _reloader;
+    [SerializeField]
+    private TrapSelectUI _trapSelectUI;
 
     private GameState _currentGameState;
     public GameState CurrentGameState { get { return _currentGameState; } set { _currentGameState = value; } }
@@ -43,13 +49,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //var field = GameObject.Find("Field");
         var human_manager = GameObject.Find("HumanManager");
         _aiGenerator = human_manager.GetComponent<AIGenerator>();
         _currentGameState = GameState.SELECT;
 
         var canvas = GameObject.Find("UICanvas");
         _uiController = canvas.GetComponent<GameMainUIController>();
+        
+        _reloader = GetComponent<Reloader>();
 
         StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
         StateChangeCallBack(() => _uiController.UiStart(), GameState.GAMEMAIN);
@@ -194,10 +201,15 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetButtonDown(_gameStopButton))
             return true;
-        if (_isStop)
+        if (_isStop == false)
             return false;
         if (Input.GetButtonDown(_selectEndButton))
             return true;
+        if (Input.GetButtonDown(_restartButton))
+        {
+            _reloader.StageResetStart();
+            return true;
+        }
         return false;
     }
 
@@ -213,7 +225,7 @@ public class GameManager : MonoBehaviour
         if (_canHelpUpdate == false)
             return;
 
-        if (Input.GetButtonDown(_gameStopButton))
+        if (HelpStartButton())
         {
             _isStop = !_isStop;
             if (_isStop)
@@ -233,6 +245,7 @@ public class GameManager : MonoBehaviour
             color.a += Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
             image.color = color;
+            SetImageChildColor(image, color);
             yield return null;
         }
         _canHelpUpdate = true;
@@ -247,10 +260,31 @@ public class GameManager : MonoBehaviour
             color.a -= Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
             image.color = color;
+            SetImageChildColor(image, color);
             yield return null;
         }
         _canHelpUpdate = true;
         MovementAllStart();
+    }
+
+    public void SetImageChildColor(Graphic image, Color color)
+    {
+        var t = image.transform;
+        for (int i = 0; i < t.childCount; i++)
+        {
+            var child_image = t.GetChild(i).GetComponent<Image>();
+            if (child_image)
+            {
+                child_image.color = color;
+                SetImageChildColor(child_image, color);
+            }
+            var child_text = t.GetChild(i).GetComponent<Text>();
+            if (child_text)
+            {
+                child_text.color = color;
+                SetImageChildColor(child_text, color);
+            }
+        }
     }
 
     public void MovementAllStop()

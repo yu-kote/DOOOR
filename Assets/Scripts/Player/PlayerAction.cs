@@ -55,7 +55,8 @@ public class PlayerAction : MonoBehaviour
     [SerializeField]
     private MapBackgrounds _mapBackgrounds;
 
-    private TrapSpawnManager _trapSpawnManager = null;
+    private TrapSpawnManager _trapSpawnManager;
+    private GameManager _gameManager;
 
     void Start()
     {
@@ -67,7 +68,8 @@ public class PlayerAction : MonoBehaviour
         // ボタン案内の初期角度を保持する
         _startEulerAngle = _buttonGuide.transform.eulerAngles;
 
-        _voice.transform.localScale = Vector3.zero;
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        VoiceSetup();
     }
 
     private void FixedUpdate()
@@ -78,9 +80,12 @@ public class PlayerAction : MonoBehaviour
 
     void Update()
     {
-        if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
-            != GameState.GAMEMAIN)
+        if (_gameManager.CurrentGameState != GameState.GAMEMAIN)
+        {
+            VoiceSetup();
+            _isVoiceCharge = false;
             return;
+        }
 
         VoiceSoundUpdate();
 
@@ -319,36 +324,46 @@ public class PlayerAction : MonoBehaviour
         return false;
     }
 
+    // 音だけどこでも鳴らせるので特殊処理
     private void VoiceSoundUpdate()
     {
-        // 音だけどこでも鳴らせるので特殊処理
         if (IsSoundChargeStart())
-        {
-            _chargeCount = 0.0f;
-            _voiceRange = 5.0f;
-        }
+            VoiceSetup();
 
         if (_isVoiceCharge)
-        {
-            _chargeCount = Mathf.Clamp(_chargeCount += Time.deltaTime, 0.0f, _chargeMaxTime);
-
-            float value = EaseCubicOut(_chargeCount / _chargeMaxTime, _minVoiceRange, _maxVoiceRange);
-            _voiceRange = value;
-            _voice.transform.localScale = new Vector3(value / 10.0f, 0, value / 10.0f);
-        }
+            VoiceUpdate();
 
         if (IsSoundChargeEnd())
-        {
-            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
-            SoundManager.Instance.PlaySE("otodasu", gameObject);
-            _aiSoundManager.MakeSound(gameObject, gameObject.transform.position,
-                                      _voiceRange * 0.9f, 1, transform.eulerAngles);
+            VoicePop();
+    }
 
-            _isVoiceRecast = true;
-            StartCoroutine(CallBack(1.0f, () => _isVoiceRecast = false));
+    void VoiceSetup()
+    {
+        _chargeCount = 0.0f;
+        _voiceRange = 5.0f;
+        _voice.transform.localScale = Vector3.zero;
+    }
 
-            _voice.transform.localScale = Vector3.zero;
-        }
+    void VoiceUpdate()
+    {
+        _chargeCount = Mathf.Clamp(_chargeCount += Time.deltaTime, 0.0f, _chargeMaxTime);
+
+        float value = EaseCubicOut(_chargeCount / _chargeMaxTime, _minVoiceRange, _maxVoiceRange);
+        _voiceRange = value;
+        _voice.transform.localScale = new Vector3(value / 10.0f, 0, value / 10.0f);
+    }
+
+    void VoicePop()
+    {
+        GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
+        SoundManager.Instance.PlaySE("otodasu", gameObject);
+        _aiSoundManager.MakeSound(gameObject, gameObject.transform.position,
+                                  _voiceRange * 0.9f, 1, transform.eulerAngles);
+
+        _isVoiceRecast = true;
+        StartCoroutine(CallBack(1.0f, () => _isVoiceRecast = false));
+
+        _voice.transform.localScale = Vector3.zero;
     }
 
     static float EaseCubicOut(float t, float b, float e)

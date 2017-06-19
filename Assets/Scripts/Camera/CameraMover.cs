@@ -9,9 +9,16 @@ public class CameraMover : MonoBehaviour
     [SerializeField]
     private Vector2 _movedrange = new Vector2(7.5f, 7.5f);
 
+    private Vector3 _startPos;
+    public Vector3 StartPos { get { return _startPos; } set { _startPos = value; } }
+    private Vector3 _startAngle;
+    public Vector3 StartAngle { get { return _startAngle; } set { _startAngle = value; } }
+
+
     void Awake()
     {
-
+        _startAngle = transform.eulerAngles;
+        _startPos = transform.position;
     }
 
     void Start()
