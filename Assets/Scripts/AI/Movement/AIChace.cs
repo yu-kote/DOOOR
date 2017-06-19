@@ -130,9 +130,11 @@ public class AIChace : AIRouteSearch
         {
             if (human == null) continue;
             if (human.tag != "Victim") continue;
-            if (_currentNode.GetComponent<Stairs>() &&
-                human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
-                continue;
+
+            if (_currentNode.GetComponent<Stairs>())
+                if (human.GetComponent<AIController>().GetMovement())
+                    if (human.GetComponent<AIController>().GetMovement().MoveComplete() == false)
+                        continue;
             // 対象が階段上にいる場合は殺せなくなる
             var target_node = human.GetComponent<AIController>().CurrentNode;
             if (target_node)

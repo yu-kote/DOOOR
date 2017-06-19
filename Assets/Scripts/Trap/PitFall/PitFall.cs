@@ -61,8 +61,8 @@ public class PitFall : MonoBehaviour
         {
             if (_footPrint.HumansOnNode[i].tag == "Killer")
                 continue;
-
-            if (_footPrint.HumansOnNode[i].GetComponent<AIController>().GetMovement().MoveComplete())
+            var movement = _footPrint.HumansOnNode[i].GetComponent<AIController>().GetMovement();
+            if (movement.MoveComplete())
             {
                 _footPrint.HumansOnNode[i].GetComponent<AITrapEffect>().ToMove(underNode.GetComponent<Node>());
                 fallNum++;

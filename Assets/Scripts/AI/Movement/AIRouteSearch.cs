@@ -34,12 +34,15 @@ public abstract class AIRouteSearch : AIBasicsMovement
             return;
 
         if (GetComponent<AITargetMove>())
-            ai_controller.GetMovement().MoveSetup();
+            if (ai_controller.GetMovement())
+                ai_controller.GetMovement().MoveSetup();
 
         NextNodeSearch();
         var tag = gameObject.tag;
 
         var movement = ai_controller.GetMovement();
+        if (movement == null)
+            return;
 
         if (ai_controller.PrevNode == null || ai_controller.CurrentNode == null)
             return;
