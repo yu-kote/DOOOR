@@ -48,11 +48,19 @@ public class TrapSelectUI : MonoBehaviour
     private TrapDirection _pushValue;
     public TrapDirection PushValue { get { return _pushValue; } }
 
-    void Start()
+    bool _isRecastStop;
+
+    public void Start()
     {
         _trapDirection = TrapDirection.NONE;
         _buttonSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/TrapUI/itemcross");
 
+        RecastBarSetup();
+    }
+
+    public void RecastBarSetup()
+    {
+        _isRecastStop = false;
         // リキャストとリキャストバーの初期化
         for (int i = 0; i < _trapUseStatus.Count(); i++)
         {
@@ -84,8 +92,12 @@ public class TrapSelectUI : MonoBehaviour
     {
         if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
             != GameState.GAMEMAIN)
+        {
+            _isRecastStop = true;
             return;
+        }
 
+        _isRecastStop = false;
         _trapDirection = GetTrapDirection();
         _pushValue = _trapDirection;
         ButtonSpriteChange();
@@ -100,8 +112,6 @@ public class TrapSelectUI : MonoBehaviour
             return false;
 
         _trapUseStatus[num].CanUse = false;
-        //Callback(_trapUseStatus[num].RecastTime,
-        //         () => _trapUseStatus[num].CanUse = true);
 
         StartCoroutine(CallBack(_trapUseStatus[num].RecastTime,
                        () =>
@@ -136,7 +146,14 @@ public class TrapSelectUI : MonoBehaviour
     // 指定秒数後に関数を呼ぶ
     private IEnumerator CallBack(float time, Action action)
     {
-        yield return new WaitForSeconds(time);
+        var count = 0.0f;
+        while (count < time)
+        {
+            yield return null;
+            if (_isRecastStop)
+                continue;
+            count += Time.deltaTime;
+        }
         action();
     }
 

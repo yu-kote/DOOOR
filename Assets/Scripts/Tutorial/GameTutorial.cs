@@ -35,10 +35,16 @@ public class GameTutorial : MonoBehaviour
 
     void Start()
     {
+        Setup();
+    }
+
+    public void Setup()
+    {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         UiSetup();
         _tutorial.gameObject.SetActive(false);
+        _elapsedTime = 0.0f;
     }
 
     void UiSetup()
@@ -168,15 +174,21 @@ public class GameTutorial : MonoBehaviour
         _numText.text = "チュートリアル " + (num + 1);
 
         if (num == 0)
-            _tutorialText.text = "Ⓑボタンを長押し した後に離すと音が出るぞ！\n　　殺人鬼 を音で誘導してみよう！";
+            _tutorialText.text = "Ⓑボタンを長押しした後に離すと音が出るぞ！\n　　殺人鬼を音で誘導してみよう！";
         if (num == 1)
-            _tutorialText.text = "探索者 は 殺人鬼 を見つけると部屋に逃げ込むぞ！";
+            _tutorialText.text = "侵入者 は 殺人鬼 を見つけると部屋に逃げ込むぞ！";
         if (num == 2)
             _tutorialText.text = "殺人鬼 はドアを開けることが出来ない！";
         if (num == 3)
-            _tutorialText.text = "その時はドアに触れて、主人公 の力の一つ\n　　’ドアを施錠する’ という能力を使おう！";
+            _tutorialText.text = "その時はドアに触れて、主人公 の力の一つ\n　　ドアを施錠する という能力を使おう！";
         if (num == 4)
-            _tutorialText.text = "Ⓐボタン長押し でドアを施錠することで\n　　殺人鬼と ’はさみうち’できるぞ！";
+            _tutorialText.text = "Ⓐボタン長押しでドアを施錠することで\n　　殺人鬼と はさみうち できるぞ！";
     }
 
+
+    private void OnDestroy()
+    {
+        _uiStartPositions.Clear();
+        _uiEndPositions.Clear();
+    }
 }

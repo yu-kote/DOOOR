@@ -13,10 +13,10 @@ public class Test3DSound : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
-            ReportBoard.Instance.Pop("テストaa" + count++);
-        if (Input.GetKeyDown(KeyCode.O))
-            ReportBoard.Instance.Pop("テストaa" + count++, true);
+        //if (Input.GetKeyDown(KeyCode.I))
+        //    ReportBoard.Instance.Pop("テストaa" + count++);
+        //if (Input.GetKeyDown(KeyCode.O))
+        //    ReportBoard.Instance.Pop("テストaa" + count++, true);
 
     }
 }

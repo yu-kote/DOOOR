@@ -61,7 +61,6 @@ public class MapBackgrounds : MonoBehaviour
         _doubleBackground.transform.localScale
             = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0.01f);
 
-
         Create();
         OnLightSelect();
         LightAllControll();
