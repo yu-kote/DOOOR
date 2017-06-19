@@ -53,6 +53,8 @@ public class Select : MonoBehaviour
     int _currentSelectStageNum;
 
     bool _isSelectEnd;
+    bool _isSelectChange = false;
+    int _selectDirection;
 
     void Awake()
     {
@@ -208,6 +210,32 @@ public class Select : MonoBehaviour
             SelectEndStaging();
             StartButtonChange();
         }
+
+        float horizotal = Input.GetAxis("Horizontal");
+
+        if (horizotal > 0.5f)
+        {
+            if (_selectDirection == -1 || _selectDirection == 0)
+            {
+                _selectDirection = 1;
+                _selectStageNum++;
+            }
+        }
+        else if (horizotal < -0.5f)
+        {
+            if (_selectDirection == 1 || _selectDirection == 0)
+            {
+                _selectDirection = -1;
+                _selectStageNum--;
+            }
+        }
+
+        if (horizotal < 0.1f && horizotal > -0.1f)
+        {
+            _selectDirection = 0;
+        }
+
+
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
             _selectStageNum++;
