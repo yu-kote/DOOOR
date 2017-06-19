@@ -139,9 +139,10 @@ public class VictimAnimation : MonoBehaviour
 
     private void Rest()
     {
-        if (_aiController.GetMovement().MoveComplete() &&
-            _aiController.CurrentNode.GetComponent<Kyukeispace>())
-            _animStatus = VictimAnimationStatus.IDOL;
+        if (_aiController.GetMovement())
+            if (_aiController.GetMovement().MoveComplete() &&
+                _aiController.CurrentNode.GetComponent<Kyukeispace>())
+                _animStatus = VictimAnimationStatus.IDOL;
     }
 
     private void ApproachRotate()

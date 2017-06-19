@@ -103,7 +103,12 @@ public class AIRunAway : AIRouteSearch
 
         // 階段がロックされていたら通れない
         if (IsStairsLock(next_node))
-            return false;
+        {
+            next_node = _currentNode.LinkNodes.Where(node => _approachNode != node &&
+                                                next_node != node).FirstOrDefault();
+            if (next_node == null)
+                return false;
+        }
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))

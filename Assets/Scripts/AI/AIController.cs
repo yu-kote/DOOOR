@@ -19,7 +19,6 @@ public class AIController : MonoBehaviour
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
-    //private AISoundManager _aiSoundManager;
 
     public enum MoveEmotion
     {
@@ -39,18 +38,13 @@ public class AIController : MonoBehaviour
     [SerializeField]
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
-
-    //[SerializeField]
-    //private float _soundRange = 5;
-    //private AISound _aiSound;
-
+    
     void Start()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
-        //_aiSoundManager = field.GetComponent<AISoundManager>();
         _aiGenerator = gameObject.transform.parent.gameObject.GetComponent<AIGenerator>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
@@ -63,26 +57,7 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
         MovementExcess();
-
-        //if (SceneManager.GetSceneByName("Title").name == null)
-        //SoundUpdate();
     }
-
-    //private void SoundUpdate()
-    //{
-    //    var movement = GetMovement();
-    //    if (movement == null)
-    //        return;
-    //    // すでに音を鳴らしていたらはじく
-    //    if (_aiSoundManager.CheckSound(gameObject))
-    //        return;
-    //    // 移動できる状態なら音を鳴らす。移動できない場合は音を消す
-    //    if (movement.CanMove == false)
-    //    {
-    //        _aiSoundManager.RemoveSound(gameObject);
-    //        return;
-    //    }
-    //}
 
     private void MoveSpeedChange()
     {
@@ -264,8 +239,11 @@ public class AIController : MonoBehaviour
                 movement.CanMove = false;
             yield return null;
         }
-        GetMovement().MoveSetup();
-        GetMovement().CanMove = true;
+        if (GetMovement())
+        {
+            GetMovement().MoveSetup();
+            GetMovement().CanMove = true;
+        }
     }
 
     private IEnumerator Callback(float time, Action action)

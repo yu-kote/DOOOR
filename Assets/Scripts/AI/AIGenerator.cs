@@ -214,7 +214,8 @@ public class AIGenerator : MonoBehaviour
     {
         while (true)
         {
-            human.GetComponent<AIController>().GetMovement().CanMove = can_move;
+            if (human.GetComponent<AIController>().GetMovement())
+                human.GetComponent<AIController>().GetMovement().CanMove = can_move;
             yield return null;
         }
     }
@@ -223,7 +224,8 @@ public class AIGenerator : MonoBehaviour
     {
         while (true)
         {
-            human.GetComponent<AIController>().GetMovement().CanMove = false;
+            if (human.GetComponent<AIController>().GetMovement())
+                human.GetComponent<AIController>().GetMovement().CanMove = false;
 
             yield return null;
             if (_isStop == false)
@@ -232,7 +234,8 @@ public class AIGenerator : MonoBehaviour
                 break;
             }
         }
-        human.GetComponent<AIController>().GetMovement().CanMove = true;
+        if (human.GetComponent<AIController>().GetMovement())
+            human.GetComponent<AIController>().GetMovement().CanMove = true;
         _isStop = true;
     }
 
