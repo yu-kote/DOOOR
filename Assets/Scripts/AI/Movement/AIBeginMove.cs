@@ -56,6 +56,8 @@ public class AIBeginMove : MonoBehaviour
             yield return new WaitForSeconds(_startMoveTime);
             deguti.StartClosing();
         }
+        else
+            yield return new WaitForSeconds(_startMoveTime);
         Destroy(this);
     }
 }

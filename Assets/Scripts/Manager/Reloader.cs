@@ -54,7 +54,7 @@ public class Reloader : MonoBehaviour
         _aiGenerator.InstanceHumans(select_stage_num);
 
         // プレイヤーを扉の位置に移動させる
-        PlayerPositionOffset();
+        PlayerSetup();
     }
 
     public void CameraSetup()
@@ -73,7 +73,7 @@ public class Reloader : MonoBehaviour
         _nodeManager.Start();
     }
 
-    private void PlayerPositionOffset()
+    private void PlayerSetup()
     {
         _player.transform.eulerAngles = Vector3.zero;
         _player.transform.position
@@ -136,12 +136,17 @@ public class Reloader : MonoBehaviour
             CameraSetup();
             GameStart();
 
+            _camera.GetComponent<Rotater>().Setup();
+            _player.GetComponent<Rotater>().Setup();
+
             while (_fade.color.a > 0.0f)
             {
                 color.a -= Time.deltaTime * 2;
                 _fade.color = color;
                 yield return null;
             }
+
+
 
             _isReset = false;
             break;

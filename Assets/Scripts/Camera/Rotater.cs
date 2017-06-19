@@ -21,27 +21,17 @@ public class Rotater : MonoBehaviour
     private Vector3 _beforePos = Vector3.zero;
     private Vector3 _beforeRotate = Vector3.zero;
     private bool _isRotating = false;
-    public bool IsRotating
-    {
-        get { return _isRotating || _isRotateStop; }
-        set { _isRotating = value; }
-    }
+    public bool IsRotating { get { return _isRotating || _isRotateStop; } set { _isRotating = value; } }
 
     // 今どの面にいるのか
     private int _currentSide;
-    public int CurrentSide
-    {
-        get { return _currentSide; }
-        set { _currentSide = value; }
-    }
+    public int CurrentSide { get { return _currentSide; } set { _currentSide = value; } }
 
     // 回転を止める
     private bool _isRotateStop;
-    public bool IsRotateStop
-    {
-        get { return _isRotateStop; }
-        set { _isRotateStop = value; }
-    }
+    public bool IsRotateStop { get { return _isRotateStop; } set { _isRotateStop = value; } }
+
+    private float _canRotateTime;
 
     public void StopRotating(float time)
     {
@@ -60,12 +50,26 @@ public class Rotater : MonoBehaviour
         // マップの中心点を獲得
     }
 
+    public void Setup()
+    {
+        _beforePos = Vector3.zero;
+        _beforeRotate = Vector3.zero;
+        _currentSide = 0;
+        _isRotating = false;
+        _canRotateTime = 0.5f;
+    }
+
     void Update()
     {
         var interest_point = GameObject.Find("Field").GetComponent<NodeManager>().GetNodesCenterPoint();
 
         if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
             != GameState.GAMEMAIN)
+        {
+            return;
+        }
+        _canRotateTime -= Time.deltaTime;
+        if (_canRotateTime > 0.0f)
             return;
 
         Rotating();

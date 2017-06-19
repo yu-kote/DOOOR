@@ -43,7 +43,7 @@ public class AIBeware : MonoBehaviour
 
         // 停電の時は探索距離が短くなる
         if (_mapBackground.IsLightOn == false &&
-            tag != "Killer")
+            tag == "Victim")
             _searchLimit = _blackoutSearchLimit;
 
         // 懐中電灯を持っている間は探索距離が延びる
