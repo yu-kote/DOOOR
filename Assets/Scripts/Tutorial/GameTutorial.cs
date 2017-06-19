@@ -101,7 +101,7 @@ public class GameTutorial : MonoBehaviour
     private IEnumerator ImageFadeInAction()
     {
         _tutorial.gameObject.SetActive(true);
-        yield return _gameManager.ImageFadeIn(_tutorial, 1, 0.75f);
+        yield return _gameManager.ImageFadeIn(_tutorial, 1, 0.75f, false);
         yield return EaseStart();
 
         while (Input.GetKeyDown(KeyCode.Return) == false &&
@@ -110,7 +110,7 @@ public class GameTutorial : MonoBehaviour
 
         yield return EaseFadeAway();
 
-        yield return _gameManager.ImageFadeOut(_tutorial, 2);
+        yield return _gameManager.ImageFadeOut(_tutorial, 2, 0, false);
 
         _gameManager.MovementAllStart();
     }
@@ -174,15 +174,16 @@ public class GameTutorial : MonoBehaviour
         _numText.text = "チュートリアル " + (num + 1);
 
         if (num == 0)
-            _tutorialText.text = "Ⓑボタンを長押しした後に離すと音が出るぞ！\n　　殺人鬼を音で誘導してみよう！";
+            _tutorialText.text = "殺人鬼を侵入者の元へ導け。彼は一人では追いつけない。";
         if (num == 1)
-            _tutorialText.text = "侵入者 は 殺人鬼 を見つけると部屋に逃げ込むぞ！";
+            _tutorialText.text = "君はⒷボタンでその場から音が出せる。押す長さで音の大きさを変えられる。\n" +
+                                 "殺人鬼は音の場所に向かい、侵入者は音から逃げる。";
         if (num == 2)
-            _tutorialText.text = "殺人鬼 はドアを開けることが出来ない！";
+            _tutorialText.text = "侵入者は部屋へ逃げ込む。殺人鬼はドアを開けられない。";
         if (num == 3)
-            _tutorialText.text = "その時はドアに触れて、主人公 の力の一つ\n　　ドアを施錠する という能力を使おう！";
-        if (num == 4)
-            _tutorialText.text = "Ⓐボタン長押しでドアを施錠することで\n　　殺人鬼と はさみうち できるぞ！";
+            _tutorialText.text = "君はAボタンを押している間、ドアをロックできる。";
+        //if (num == 4)
+        //    _tutorialText.text = "Ⓐボタン長押しでドアを施錠することで\n　　殺人鬼と はさみうち できるぞ！";
     }
 
 

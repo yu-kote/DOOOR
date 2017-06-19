@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
 
         var canvas = GameObject.Find("UICanvas");
         _uiController = canvas.GetComponent<GameMainUIController>();
-        
+
         _reloader = GetComponent<Reloader>();
 
         StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator ImageFadeIn(Image image, float speed = 3, float max_alpha = 1)
+    public IEnumerator ImageFadeIn(Image image, float speed = 3, float max_alpha = 1, bool is_child_trans = true)
     {
         _canHelpUpdate = false;
         image.color = new Color(1, 1, 1, 0);
@@ -245,13 +245,14 @@ public class GameManager : MonoBehaviour
             color.a += Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
             image.color = color;
-            SetImageChildColor(image, color);
+            if (is_child_trans)
+                SetImageChildColor(image, color);
             yield return null;
         }
         _canHelpUpdate = true;
     }
 
-    public IEnumerator ImageFadeOut(Image image, float speed = 3, float min_alpha = 0)
+    public IEnumerator ImageFadeOut(Image image, float speed = 3, float min_alpha = 0, bool is_child_trans = true)
     {
         _canHelpUpdate = false;
         var color = image.color;
@@ -260,7 +261,8 @@ public class GameManager : MonoBehaviour
             color.a -= Time.deltaTime * speed;
             color.a = Mathf.Clamp(color.a, 0, 1);
             image.color = color;
-            SetImageChildColor(image, color);
+            if (is_child_trans)
+                SetImageChildColor(image, color);
             yield return null;
         }
         _canHelpUpdate = true;
