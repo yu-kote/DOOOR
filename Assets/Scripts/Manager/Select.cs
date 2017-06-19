@@ -25,6 +25,10 @@ public class Select : MonoBehaviour
     [SerializeField]
     private GameObject _leftArrow;
 
+    Vector3 _rightArrowStartPos;
+    Vector3 _leftArrowStartPos;
+
+
     [SerializeField]
     private int _stageMin;
     [SerializeField]
@@ -80,6 +84,10 @@ public class Select : MonoBehaviour
         // ヘルプの初期化
         _help.color = new Color(1, 1, 1, 0);
         _help.gameObject.SetActive(true);
+
+        // 左右の矢印の初期化
+        _rightArrowStartPos = _rightArrow.transform.localPosition;
+        _leftArrowStartPos = _leftArrow.transform.localPosition;
     }
 
     private void Start()
@@ -337,6 +345,7 @@ public class Select : MonoBehaviour
     }
 
 
+    float _effectTime = 0.0f;
     private void ArrowEffect()
     {
         if (_selectStageNum <= _stageMin)
@@ -348,6 +357,15 @@ public class Select : MonoBehaviour
             _rightArrow.SetActive(false);
         else if (_selectStageNum < _stageMax)
             _rightArrow.SetActive(true);
+
+        _effectTime += 10 * Time.deltaTime;
+        float x = Mathf.Sin(1.0f + 0.4f * _effectTime) * 10.0f;
+
+        _rightArrow.transform.localPosition =
+            _rightArrowStartPos + new Vector3(x, 0, 0);
+
+        _leftArrow.transform.localPosition =
+            _leftArrowStartPos + new Vector3(-x, 0, 0);
     }
 
 }

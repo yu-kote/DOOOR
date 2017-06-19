@@ -13,7 +13,6 @@ public class MapBackgrounds : MonoBehaviour
     private GameObject _singleBackground0;
     [SerializeField]
     private GameObject _singleBackground1;
-
     private bool _switchBackground = false;
 
     [SerializeField]
@@ -24,9 +23,16 @@ public class MapBackgrounds : MonoBehaviour
     [SerializeField]
     private GameObject _light;
 
+    [SerializeField]
+    private GameObject _innerWall;
+    [SerializeField]
+    private GameObject _innerWallCorner;
+
+
     private List<GameObject> _backgrounds = new List<GameObject>();
     private List<GameObject> _ceilings = new List<GameObject>();
     private List<GameObject> _lights = new List<GameObject>();
+    private List<GameObject> _innerWalls = new List<GameObject>();
 
     private Dictionary<string, Material> _backgroundMaterials = new Dictionary<string, Material>();
     public Dictionary<string, Material> BackgroundMaterials { get { return _backgroundMaterials; } set { _backgroundMaterials = value; } }
@@ -55,6 +61,7 @@ public class MapBackgrounds : MonoBehaviour
         _doubleBackground.transform.localScale
             = new Vector3(_nodeManager.Interval * 2, _nodeManager.HeightInterval, 0.01f);
 
+
         Create();
         OnLightSelect();
         LightAllControll();
@@ -67,6 +74,7 @@ public class MapBackgrounds : MonoBehaviour
             for (int x = 0; x < _nodeManager.Nodes[y].Count; x++)
             {
                 CreateCeiling(_nodeManager.Nodes[y][x]);
+                CreateInnerWall(_nodeManager.Nodes[y][x]);
                 if (_nodeManager.Nodes[y][x].GetComponent<Corner>())
                     continue;
                 CreateBackground(_nodeManager.Nodes[y][x]);
@@ -99,6 +107,7 @@ public class MapBackgrounds : MonoBehaviour
         // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
         bg.transform.localPosition = Vector3.zero;
         bg.transform.localEulerAngles = Vector3.zero;
+
         // マテリアルの関係で上下を反転させる必要があるため、反転させる
         bg.transform.localEulerAngles = new Vector3(0, 0, 180);
 
@@ -111,6 +120,49 @@ public class MapBackgrounds : MonoBehaviour
         bg.transform.position += offset_pos;
 
         _backgrounds.Add(bg);
+    }
+
+    void CreateInnerWall(GameObject node)
+    {
+        if (node.GetComponent<Corner>())
+        {
+            CreateInnerWallCorner(node);
+            return;
+        }
+
+        var inner_wall = Instantiate(_innerWall, node.transform);
+
+        // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+        inner_wall.transform.localPosition = Vector3.zero;
+        inner_wall.transform.localEulerAngles = Vector3.zero;
+        inner_wall.transform.localEulerAngles += new Vector3(90, 0, 0);
+
+        var offset_pos = new Vector3(0, 9.5f, -5);
+
+        inner_wall.transform.localPosition = offset_pos;
+
+        _innerWalls.Add(inner_wall);
+    }
+
+    void CreateInnerWallCorner(GameObject node)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            var inner_wall_corner = Instantiate(_innerWallCorner, node.transform);
+
+            // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+            inner_wall_corner.transform.localPosition = Vector3.zero;
+            inner_wall_corner.transform.localEulerAngles = Vector3.zero;
+            inner_wall_corner.transform.localEulerAngles += new Vector3(90, 90 * i, 0);
+
+            var offset_pos = new Vector3(0, 9.5f, -5);
+            var offset_pos2 = new Vector3(-5, 0, 5);
+            if (i >= 1)
+                offset_pos += offset_pos2;
+            inner_wall_corner.transform.localPosition = offset_pos;
+
+            _innerWalls.Add(inner_wall_corner);
+        }
     }
 
     int _lightCount = 0;
@@ -174,6 +226,18 @@ public class MapBackgrounds : MonoBehaviour
             offset_pos += new Vector3(value, 0, 0);
     }
 
+    public void OffsetSurfaceInnerWall(int x, ref Vector3 offset_pos, float value)
+    {
+        if (_nodeManager.WhichSurfaceNum(x) == 0)
+            offset_pos += new Vector3(0, 0, value);
+        if (_nodeManager.WhichSurfaceNum(x) == 1)
+            offset_pos += new Vector3(0, 0, -value);
+        if (_nodeManager.WhichSurfaceNum(x) == 2)
+            offset_pos += new Vector3(0, 0, value);
+        if (_nodeManager.WhichSurfaceNum(x) == 3)
+            offset_pos += new Vector3(0, 0, -value);
+    }
+
     void LoadMaterials()
     {
         var materials = Resources.LoadAll<Material>("Prefabs/BG/Materials");
@@ -211,6 +275,10 @@ public class MapBackgrounds : MonoBehaviour
     private void OnDestroy()
     {
         foreach (var item in _backgrounds)
+            Destroy(item);
+        foreach (var item in _ceilings)
+            Destroy(item);
+        foreach (var item in _innerWalls)
             Destroy(item);
         _backgrounds.Clear();
         _backgroundMaterials.Clear();
