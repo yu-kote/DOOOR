@@ -176,10 +176,10 @@ public class GameTutorial : MonoBehaviour
         if (num == 0)
             _tutorialText.text = "殺人鬼を侵入者の元へ導け。彼は一人では追いつけない。";
         if (num == 1)
-            _tutorialText.text = "君はⒷボタンでその場から音が出せる。押す長さで音の大きさを変えられる。\n" +
+            _tutorialText.text = "君はⒷボタンでその場から音が出せる。\n押す長さで音の大きさを変えられる。\n" +
                                  "殺人鬼は音の場所に向かい、侵入者は音から逃げる。";
         if (num == 2)
-            _tutorialText.text = "侵入者は部屋へ逃げ込む。殺人鬼はドアを開けられない。";
+            _tutorialText.text = "侵入者は部屋へ逃げ込む。\n殺人鬼はドアを開けられない。";
         if (num == 3)
             _tutorialText.text = "君はAボタンを押している間、ドアをロックできる。";
         //if (num == 4)
