@@ -13,8 +13,8 @@ public enum MapID
     RIGHTDOOR,
     START,
     KYUKEISPACE,
-    CANBREAKEWALL,
-    DEGUTI
+    DEGUTI,
+    DEADSPACE,
 }
 
 public class MapLoader : MonoBehaviour

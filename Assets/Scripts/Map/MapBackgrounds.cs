@@ -28,11 +28,22 @@ public class MapBackgrounds : MonoBehaviour
     [SerializeField]
     private GameObject _innerWallCorner;
 
+    [SerializeField]
+    private GameObject _outWall;
+    private bool _switchOutWall = false;
+
+    [SerializeField]
+    private GameObject _roof;
+    private bool _switchRoof = false;
+    private float _offsetRoofHeight = 19.5f;
+
 
     private List<GameObject> _backgrounds = new List<GameObject>();
     private List<GameObject> _ceilings = new List<GameObject>();
     private List<GameObject> _lights = new List<GameObject>();
     private List<GameObject> _innerWalls = new List<GameObject>();
+    private List<GameObject> _outWalls = new List<GameObject>();
+    private List<GameObject> _roofs = new List<GameObject>();
 
     private Dictionary<string, Material> _backgroundMaterials = new Dictionary<string, Material>();
     public Dictionary<string, Material> BackgroundMaterials { get { return _backgroundMaterials; } set { _backgroundMaterials = value; } }
@@ -40,8 +51,10 @@ public class MapBackgrounds : MonoBehaviour
     private bool _isLightOn;
     public bool IsLightOn { get { return _isLightOn; } set { _isLightOn = value; } }
 
+    private float _offsetWallHeight = 9.82f;
 
-    public void Start()
+
+    public void Awake()
     {
         LoadMaterials();
         MaterialInit();
@@ -74,6 +87,8 @@ public class MapBackgrounds : MonoBehaviour
             {
                 CreateCeiling(_nodeManager.Nodes[y][x]);
                 CreateInnerWall(_nodeManager.Nodes[y][x]);
+                CreateOutWall(_nodeManager.Nodes[y][x]);
+                CreateRoof(_nodeManager.Nodes[y][x]);
                 if (_nodeManager.Nodes[y][x].GetComponent<Corner>())
                     continue;
                 CreateBackground(_nodeManager.Nodes[y][x]);
@@ -136,7 +151,7 @@ public class MapBackgrounds : MonoBehaviour
         inner_wall.transform.localEulerAngles = Vector3.zero;
         inner_wall.transform.localEulerAngles += new Vector3(90, 0, 0);
 
-        var offset_pos = new Vector3(0, 9.5f, -5);
+        var offset_pos = new Vector3(0, _offsetWallHeight, -5);
 
         inner_wall.transform.localPosition = offset_pos;
 
@@ -154,7 +169,7 @@ public class MapBackgrounds : MonoBehaviour
             inner_wall_corner.transform.localEulerAngles = Vector3.zero;
             inner_wall_corner.transform.localEulerAngles += new Vector3(90, 90 * i, 0);
 
-            var offset_pos = new Vector3(0, 9.5f, -5);
+            var offset_pos = new Vector3(0, _offsetWallHeight, -5);
             var offset_pos2 = new Vector3(-5, 0, 5);
             if (i >= 1)
                 offset_pos += offset_pos2;
@@ -164,8 +179,135 @@ public class MapBackgrounds : MonoBehaviour
         }
     }
 
-    int _lightCount = 0;
+    void CreateOutWall(GameObject node)
+    {
+        if (node.GetComponent<DeadSpace>() == null)
+            return;
 
+        if (node.GetComponent<Corner>())
+        {
+            CreateOutWallCorner(node);
+            return;
+        }
+
+        if (_switchOutWall && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+            _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["2FOutWallCenterLeft"];
+        else if (!_switchOutWall && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+            _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["2FOutWallCenterRight"];
+        else if (_switchOutWall && node.GetComponent<Node>().CellY == _nodeManager.TopFloor - 1)
+            _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["1FOutWallCenterLeft"];
+        else if (!_switchOutWall && node.GetComponent<Node>().CellY == _nodeManager.TopFloor - 1)
+            _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["1FOutWallCenterRight"];
+
+
+        _switchOutWall = !_switchOutWall;
+
+        var out_wall = Instantiate(_outWall, node.transform);
+
+        // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+        out_wall.transform.localPosition = Vector3.zero;
+        out_wall.transform.localEulerAngles = Vector3.zero;
+        out_wall.transform.localEulerAngles += new Vector3(90, 180, 0);
+
+        var offset_pos = new Vector3(0, _offsetWallHeight, -5);
+
+        out_wall.transform.localPosition = offset_pos;
+
+        _outWalls.Add(out_wall);
+    }
+
+    void CreateOutWallCorner(GameObject node)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (i == 0 && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+                _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["2FOutWallLeft"];
+            else if (i == 1 && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+                _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["2FOutWallRight"];
+            else if (i == 0 && node.GetComponent<Node>().CellY == _nodeManager.TopFloor - 1)
+                _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["1FOutWallLeft"];
+            else if (i == 1 && node.GetComponent<Node>().CellY == _nodeManager.TopFloor - 1)
+                _outWall.GetComponent<MeshRenderer>().material = _backgroundMaterials["1FOutWallRight"];
+
+            var out_wall_corner = Instantiate(_outWall, node.transform);
+
+            // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+            out_wall_corner.transform.localPosition = Vector3.zero;
+            out_wall_corner.transform.localEulerAngles = Vector3.zero;
+            out_wall_corner.transform.localEulerAngles += new Vector3(90, 90 * i + 180, 0);
+
+            var offset_pos = new Vector3(0, _offsetWallHeight, -5);
+            var offset_pos2 = new Vector3(-5, 0, 5);
+            if (i >= 1)
+                offset_pos += offset_pos2;
+            out_wall_corner.transform.localPosition = offset_pos;
+
+            _outWalls.Add(out_wall_corner);
+        }
+    }
+
+    void CreateRoof(GameObject node)
+    {
+        if (node.GetComponent<Node>().CellY != 0)
+            return;
+
+        if (node.GetComponent<Corner>())
+        {
+            CreateRoofCorner(node);
+            return;
+        }
+
+        if (_switchRoof && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+            _roof.transform.GetChild(0).GetComponent<MeshRenderer>().material = _backgroundMaterials["roof0"];
+        else if (!_switchRoof && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+            _roof.transform.GetChild(0).GetComponent<MeshRenderer>().material = _backgroundMaterials["roof1"];
+
+
+        _switchRoof = !_switchRoof;
+
+        var roof = Instantiate(_roof, node.transform);
+
+        // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+        roof.transform.localPosition = Vector3.zero;
+        roof.transform.localEulerAngles = Vector3.zero;
+        roof.transform.localEulerAngles += new Vector3(30.5f, 0, 0);
+
+        var offset_pos = new Vector3(0, _offsetRoofHeight, -5);
+
+        roof.transform.localPosition = offset_pos;
+
+        _roofs.Add(roof);
+    }
+
+    void CreateRoofCorner(GameObject node)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if (i == 0 && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+                _roof.transform.GetChild(0).GetComponent<MeshRenderer>().material = _backgroundMaterials["RoofCorner0"];
+            else if (i == 1 && node.GetComponent<Node>().CellY != _nodeManager.TopFloor - 1)
+                _roof.transform.GetChild(0).GetComponent<MeshRenderer>().material = _backgroundMaterials["RoofCorner1"];
+
+            var roof_corner = Instantiate(_roof, node.transform);
+
+            // 親子関係ですでに回転と位置は出してあるのでローカルの値を初期化
+            roof_corner.transform.localPosition = Vector3.zero;
+            roof_corner.transform.localEulerAngles = Vector3.zero;
+            if (i == 1)
+                roof_corner.transform.localEulerAngles += new Vector3(0, 90, 0);
+            roof_corner.transform.localEulerAngles += new Vector3(30.5f, 0, 0);
+
+            var offset_pos = new Vector3(0, _offsetRoofHeight, -5);
+            var offset_pos2 = new Vector3(-5, 0, 5);
+            if (i >= 1)
+                offset_pos += offset_pos2;
+            roof_corner.transform.localPosition = offset_pos;
+
+            _roofs.Add(roof_corner);
+        }
+    }
+
+    int _lightCount = 0;
     private void CreateCeiling(GameObject node)
     {
         if (SceneManager.GetSceneByName("Title").name != null)
@@ -213,6 +355,8 @@ public class MapBackgrounds : MonoBehaviour
         _lights.Add(light_bulb);
     }
 
+
+
     public void OffsetSurface(int x, ref Vector3 offset_pos, float value)
     {
         if (_nodeManager.WhichSurfaceNum(x) == 0)
@@ -223,18 +367,6 @@ public class MapBackgrounds : MonoBehaviour
             offset_pos += new Vector3(0, 0, -value);
         if (_nodeManager.WhichSurfaceNum(x) == 3)
             offset_pos += new Vector3(value, 0, 0);
-    }
-
-    public void OffsetSurfaceInnerWall(int x, ref Vector3 offset_pos, float value)
-    {
-        if (_nodeManager.WhichSurfaceNum(x) == 0)
-            offset_pos += new Vector3(0, 0, value);
-        if (_nodeManager.WhichSurfaceNum(x) == 1)
-            offset_pos += new Vector3(0, 0, -value);
-        if (_nodeManager.WhichSurfaceNum(x) == 2)
-            offset_pos += new Vector3(0, 0, value);
-        if (_nodeManager.WhichSurfaceNum(x) == 3)
-            offset_pos += new Vector3(0, 0, -value);
     }
 
     void LoadMaterials()
@@ -279,8 +411,19 @@ public class MapBackgrounds : MonoBehaviour
             Destroy(item);
         foreach (var item in _innerWalls)
             Destroy(item);
+        foreach (var item in _outWalls)
+            Destroy(item);
+        foreach (var item in _roofs)
+            Destroy(item);
         _backgrounds.Clear();
-        _backgroundMaterials.Clear();
         _lights.Clear();
+        _innerWalls.Clear();
+        _outWalls.Clear();
+        _roofs.Clear();
+    }
+
+    private void OnDisable()
+    {
+        _backgroundMaterials.Clear();
     }
 }
