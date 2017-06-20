@@ -154,8 +154,6 @@ public class AIGenerator : MonoBehaviour
 
     private IEnumerator CreateHumans(int stage_num)
     {
-        yield return null;
-
         var text = Resources.Load<TextAsset>
             ("PlannerData/MapData/Stage" + stage_num + "/Human");
 
@@ -176,6 +174,8 @@ public class AIGenerator : MonoBehaviour
 
         if (_humanBoardlist)
             _humanBoardlist.HumanItemSetup();
+
+        yield return null;
     }
 
     public void MoveStartHumans()

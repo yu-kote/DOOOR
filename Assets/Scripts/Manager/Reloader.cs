@@ -55,6 +55,8 @@ public class Reloader : MonoBehaviour
 
         // プレイヤーを扉の位置に移動させる
         PlayerSetup();
+
+        _nodeManager.CreateItem();
     }
 
     public void CameraSetup()

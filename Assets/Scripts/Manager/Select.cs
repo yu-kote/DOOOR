@@ -284,13 +284,6 @@ public class Select : MonoBehaviour
         return true;
     }
 
-    public int GetItemMaxNum()
-    {
-        if (_selectStageNum == 1 || _selectStageNum == 2)
-            return 4;
-        return 5;
-    }
-
     public void SelectEndStaging()
     {
         float staging_time = 3.0f;
