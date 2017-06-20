@@ -9,6 +9,8 @@ public class AITargetMove : AIRouteSearch
 {
     private bool _targetMoveEnd = false;
 
+    List<GameObject> _targetSymbols = new List<GameObject>();
+
     void Start()
     {
         RouteSearchSetup();
@@ -46,6 +48,7 @@ public class AITargetMove : AIRouteSearch
             SearchMoveStart();
             return;
         }
+        TargetNodeMarkPop();
     }
 
     void Update()
@@ -65,8 +68,38 @@ public class AITargetMove : AIRouteSearch
         _nextNode = _currentNode.GetComponent<NodeGuide>().NextNode(gameObject);
     }
 
+    // 音を聞いて向かっている時にどこに向かっているかの印をつける
+    private void TargetNodeMarkPop()
+    {
+        if (GetComponent<MyNumber>().Name != "Killer")
+            return;
+
+        if (_targetSymbols.Count > 0)
+            return;
+
+        if (GetComponent<AIController>().MoveMode != AIController.MoveEmotion.REACT_SOUND)
+            return;
+
+        var target_symbol = Resources.Load<GameObject>("Prefabs/UI/TargetNode");
+
+        target_symbol = Instantiate(target_symbol);
+        target_symbol.transform.localPosition = _targetNode.transform.position;
+        target_symbol.transform.localEulerAngles = Vector3.zero;
+        target_symbol.transform.eulerAngles = Vector3.zero;
+
+        target_symbol.transform.localPosition += new Vector3(0, 2, 0);
+
+        var angle = GameObject.Find("Player").transform.eulerAngles;
+        target_symbol.transform.localEulerAngles = new Vector3(90, 180, 0) + angle;
+
+        _targetSymbols.Add(target_symbol);
+    }
+
     private void OnDestroy()
     {
+        foreach (var item in _targetSymbols)
+            Destroy(item);
+        _targetSymbols.Clear();
         SymbolDestroy();
     }
 }
