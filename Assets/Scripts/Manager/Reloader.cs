@@ -148,8 +148,6 @@ public class Reloader : MonoBehaviour
                 yield return null;
             }
 
-
-
             _isReset = false;
             break;
         }
