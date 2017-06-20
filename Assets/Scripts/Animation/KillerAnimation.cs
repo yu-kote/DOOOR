@@ -22,15 +22,22 @@ public class KillerAnimation : MonoBehaviour
     public KillerAnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
 
     private AIController _aiController;
+    private GameManager _gameManager;
 
     void Start()
     {
         _animStatus = KillerAnimationStatus.IDOL;
         _aiController = GetComponent<AIController>();
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     void Update()
     {
+        if (_gameManager.CurrentGameState == GameState.GAMECLEAR)
+        {
+            _animStatus = KillerAnimationStatus.HAPPY;
+            return;
+        }
         AnimStatusUpdate();
     }
 
