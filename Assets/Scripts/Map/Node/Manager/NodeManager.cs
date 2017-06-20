@@ -140,19 +140,6 @@ public class NodeManager : MonoBehaviour
                             _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
                         else if (mapLoader.manhaPos.x == x && mapLoader.manhaPos.y == y)
                             _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
-                        else
-                        {
-                            int randNum;
-                            do
-                            {
-                                randNum = UnityEngine.Random.Range(2, 5);
-                                if (_select)
-                                    randNum = UnityEngine.Random.Range(2, _select.GetItemMaxNum());
-                                randNum = 1 << randNum;
-                            } while (randNum == (int)ItemType.LASTKEY);
-
-                            _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((uint)randNum);
-                        }
 
 
                         break;
@@ -174,6 +161,38 @@ public class NodeManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    // 探索者の種類を見てアイテムを決める
+    public void CreateItem()
+    {
+        var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
+        var humans = ai_generator.Humans;
+
+        var item_type_list = new List<ItemType>();
+        item_type_list.Add(ItemType.FLASHLIGHT);
+        if (humans.FirstOrDefault(human => human.GetComponent<MyNumber>().Name == "TallMan"))
+            item_type_list.Add(ItemType.GUN);
+        if (humans.FirstOrDefault(human => human.GetComponent<MyNumber>().Name == "Fat"))
+            item_type_list.Add(ItemType.TYENSO);
+
+        for (int y = 0; y < _nodes.Count; y++)
+        {
+            for (int x = 0; x < _nodes[y].Count; x++)
+            {
+                var node = _nodes[y][x].GetComponent<Node>();
+
+                if (node.GetComponent<Kyukeispace>() == null)
+                    continue;
+                if (node.GetComponent<ItemStatus>().GetItem() == ItemType.LASTKEY)
+                    continue;
+
+                var randNum = UnityEngine.Random.Range(0, item_type_list.Count());
+
+                _nodes[y][x].GetComponent<ItemStatus>().AddPutItem((uint)item_type_list[randNum]);
+            }
+        }
+        item_type_list.Clear();
     }
 
     public void NodesInitialize(int topFloor, int loadNum)
