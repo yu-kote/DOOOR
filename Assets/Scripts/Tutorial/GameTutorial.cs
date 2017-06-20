@@ -94,7 +94,9 @@ public class GameTutorial : MonoBehaviour
         TutorialTextChange(num);
 
         StartCoroutine(ImageFadeInAction());
+
         _gameManager.MovementAllStop();
+        _gameManager.CurrentGameState = GameState.STAGING;
     }
 
     // チュートリアルが出てくる演出を全部やる
@@ -112,6 +114,7 @@ public class GameTutorial : MonoBehaviour
 
         yield return _gameManager.ImageFadeOut(_tutorial, 2, 0, false);
 
+        _gameManager.CurrentGameState = GameState.GAMEMAIN;
         _gameManager.MovementAllStart();
     }
 

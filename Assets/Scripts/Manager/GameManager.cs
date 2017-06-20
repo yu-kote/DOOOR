@@ -8,12 +8,12 @@ using UnityEngine.UI;
 
 public enum GameState
 {
-    SELECT,
-    TUTORIAL,
-    GAMEMAIN,
-    STOP,
-    GAMECLEAR,
-    GAMEOVER,
+    SELECT,         // セレクト中
+    GAMEMAIN,       // ゲーム進行中
+    STOP,           // ヘルプ画面や、チュートリアル中など
+    STAGING,        // 演出中
+    GAMECLEAR,      // クリア
+    GAMEOVER,       // ゲームオーバー
 }
 
 public class GameManager : MonoBehaviour
@@ -220,7 +220,10 @@ public class GameManager : MonoBehaviour
             return;
 
         if (_isStop)
+        {
+            _currentGameState = GameState.STOP;
             MovementAllStop();
+        }
 
         if (_canHelpUpdate == false)
             return;
@@ -266,6 +269,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         _canHelpUpdate = true;
+        _currentGameState = GameState.GAMEMAIN;
         MovementAllStart();
     }
 
@@ -291,13 +295,11 @@ public class GameManager : MonoBehaviour
 
     public void MovementAllStop()
     {
-        _currentGameState = GameState.STOP;
         _aiGenerator.HumanMoveControll(false);
     }
 
     public void MovementAllStart()
     {
-        _currentGameState = GameState.GAMEMAIN;
         _aiGenerator.HumanMoveControll(true);
     }
 }
