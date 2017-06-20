@@ -59,15 +59,19 @@ public class Rotater : MonoBehaviour
         _canRotateTime = 0.5f;
     }
 
+    public void SaveState()
+    {
+
+    }
+
     void Update()
     {
         var interest_point = GameObject.Find("Field").GetComponent<NodeManager>().GetNodesCenterPoint();
 
         if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
             != GameState.GAMEMAIN)
-        {
             return;
-        }
+
         _canRotateTime -= Time.deltaTime;
         if (_canRotateTime > 0.0f)
             return;

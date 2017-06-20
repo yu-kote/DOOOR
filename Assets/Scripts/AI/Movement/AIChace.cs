@@ -174,10 +174,12 @@ public class AIChace : AIRouteSearch
             }
             _targetHuman = null;
 
+            Staging(human);
+
             human.GetComponent<AIController>().StopMovement(2);
             GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
             GetComponent<AIController>()
-                .StopMovement(0.1f, () =>
+                .StopMovement(2.0f, () =>
                 {
                     GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
 
@@ -188,6 +190,20 @@ public class AIChace : AIRouteSearch
                 });
             break;
         }
+    }
+
+    void Staging(GameObject human)
+    {
+        var app_pos = human.transform.position - transform.position;
+        app_pos = transform.position + app_pos / 2;
+
+        var node_manager = GameObject.Find("Field").GetComponent<NodeManager>();
+        var side = node_manager.WhichSurfaceNum(_currentNode.CellX);
+        if (_currentNode.GetComponent<Corner>())
+            if (_prevNode)
+                side = node_manager.WhichSurfaceNum(_prevNode.CellX);
+
+        GameObject.Find("MainCamera").GetComponent<KillApproach>().StartApproach(app_pos, side);
     }
 
     // 周囲にドアがあるかどうか

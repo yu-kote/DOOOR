@@ -63,14 +63,16 @@ public class GameManager : MonoBehaviour
 
         // 人間の動きを止める
         StateChangeCallBack(() => _aiGenerator.MoveEndHumans(), GameState.GAMEOVER);
+        StateChangeCallBack(() => _aiGenerator.MoveEndHumans(), GameState.GAMECLEAR);
+
 
         // UIを隠す
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMEOVER);
         StateChangeCallBack(() => _uiController.UiFadeAway(), GameState.GAMECLEAR);
 
         // リザルトに移行する
-        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(3.0f)), GameState.GAMEOVER);
-        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(3.0f)), GameState.GAMECLEAR);
+        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(6.0f)), GameState.GAMEOVER);
+        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(6.0f)), GameState.GAMECLEAR);
     }
 
     void Update()
