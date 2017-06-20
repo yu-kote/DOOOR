@@ -47,8 +47,46 @@ public class NodeManager : MonoBehaviour
         NodesInitialize(mapDatas.Count, mapDatas[0].Length);
         NodesLink();
         CreateMap(mapLoader);
+        CreateDeadSpace();
         GetComponent<MapBackgrounds>().CreateMapBackgrond();
 
+    }
+
+    public void NodesInitialize(int topFloor, int loadNum)
+    {
+        _topFloor = topFloor;
+        _loadNum = loadNum;
+
+        // nodeのインスタンス
+        for (int y = 0; y < _topFloor; y++)
+        {
+            List<GameObject> floor = new List<GameObject>();
+            for (int x = 0; x < _loadNum; x++)
+            {
+                floor.Add(Instantiate(_node, transform));
+            }
+            _nodes.Add(floor);
+        }
+
+        var pos = new Vector3();
+
+        // プレハブが直接いじられてしまうので、別枠でfor文を回す
+        for (int y = _topFloor - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < _loadNum; x++)
+            {
+                var node = _nodes[y][x].GetComponent<Node>();
+                node.CellX = x;
+                node.CellY = y;
+
+                var direction = SurfaceDirection(WhichSurfaceNum(x));
+
+                node.transform.position = pos;
+                node.transform.Rotate(SurfaceRotation(WhichSurfaceNum(x)));
+                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
+            }
+            pos += new Vector3(0, _heightInterval, 0);
+        }
     }
 
     private void CreateMap(MapLoader mapLoader)
@@ -150,6 +188,7 @@ public class NodeManager : MonoBehaviour
                         _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
 
                         _startNode = node;
+                        _searchNodes.Add(node);
                         break;
 
                     case MapID.DEADSPACE:
@@ -195,41 +234,56 @@ public class NodeManager : MonoBehaviour
         item_type_list.Clear();
     }
 
-    public void NodesInitialize(int topFloor, int loadNum)
+    List<Node> _searchNodes = new List<Node>();
+
+    public void CreateDeadSpace()
     {
-        _topFloor = topFloor;
-        _loadNum = loadNum;
-
-        // nodeのインスタンス
-        for (int y = 0; y < _topFloor; y++)
+        var limit = 1000;
+        for (int i = 0; i < limit; i++)
         {
-            List<GameObject> floor = new List<GameObject>();
-            for (int x = 0; x < _loadNum; x++)
-            {
-                floor.Add(Instantiate(_node, transform));
-            }
-            _nodes.Add(floor);
+            SearchDeadSpace();
         }
+        _searchNodes.Clear();
 
-        var pos = new Vector3();
-
-        // プレハブが直接いじられてしまうので、別枠でfor文を回す
-        for (int y = _topFloor - 1; y >= 0; y--)
+        for (int y = 0; y < _nodes.Count; y++)
         {
-            for (int x = 0; x < _loadNum; x++)
+            for (int x = 0; x < _nodes[y].Count; x++)
             {
-                var node = _nodes[y][x].GetComponent<Node>();
-                node.CellX = x;
-                node.CellY = y;
-
-                var direction = SurfaceDirection(WhichSurfaceNum(x));
-
-                node.transform.position = pos;
-                node.transform.Rotate(SurfaceRotation(WhichSurfaceNum(x)));
-                pos += new Vector3(_interval * direction.x, 0, _interval * direction.z);
+                var node = _nodes[y][x];
+                if (node.GetComponent<NodeGuide>().SearchCheck(gameObject))
+                    continue;
+                if (node.GetComponent<DeadSpace>())
+                    continue;
+                if (node.GetComponent<Wall>())
+                    continue;
+                node.AddComponent<DeadSpace>();
             }
-            pos += new Vector3(0, _heightInterval, 0);
         }
+        GetComponent<RoadPathManager>().SearchReset(gameObject);
+    }
+
+    public void SearchDeadSpace()
+    {
+        List<Node> temp_search_nodes = new List<Node>();
+        foreach (var search_node in _searchNodes)
+        {
+            foreach (var node in search_node.LinkNodes)
+            {
+                if (node.gameObject.GetComponent<NodeGuide>()
+                    .SearchCheck(gameObject))
+                    continue;
+                if (node.gameObject.GetComponent<Wall>())
+                    continue;
+
+                temp_search_nodes.Add(node);
+
+                var guide = node.gameObject.GetComponent<NodeGuide>();
+                guide.AddSearch(gameObject);
+            }
+            if (temp_search_nodes.Contains(search_node))
+                temp_search_nodes.Remove(search_node);
+        }
+        _searchNodes = temp_search_nodes;
     }
 
     public int WhichSurfaceNum(int x)
