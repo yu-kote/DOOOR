@@ -18,6 +18,7 @@ public class NodeManager : MonoBehaviour
     public List<List<GameObject>> Nodes { get { return _nodes; } set { _nodes = value; } }
 
     private int _topFloor = 3;
+    public int TopFloor { get { return _topFloor; } }
     private int _loadNum = 60;
     private int _surfaceNum = 4;
     private int _interval = 3;
@@ -156,16 +157,19 @@ public class NodeManager : MonoBehaviour
 
                         break;
 
-                    case MapID.CANBREAKEWALL:
-
-                        break;
-
                     case MapID.DEGUTI:
 
                         node.gameObject.AddComponent<Deguti>();
                         _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
 
                         _startNode = node;
+                        break;
+
+                    case MapID.DEADSPACE:
+
+                        node.gameObject.AddComponent<DeadSpace>();
+                        _nodes[y][x].GetComponent<TrapStatus>().CanSetTrapStatus = 0;
+
                         break;
                 }
             }
