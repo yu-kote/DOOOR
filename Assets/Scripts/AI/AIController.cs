@@ -110,11 +110,11 @@ public class AIController : MonoBehaviour
 
         if (movements.Count > 1)
         {
-            Debug.Log("Movement Over" + tag);
-            foreach (var move in movements)
-                Destroy(move);
+            //Debug.Log("Movement Over" + tag);
+            //foreach (var move in movements)
+            //    Destroy(move);
 
-            StartCoroutine(Callback(0.2f, () => gameObject.AddComponent<AISearchMove>()));
+            //StartCoroutine(Callback(0.2f, () => gameObject.AddComponent<AISearchMove>()));
         }
     }
 
