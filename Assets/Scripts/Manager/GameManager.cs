@@ -185,6 +185,8 @@ public class GameManager : MonoBehaviour
         _isGameEnd = true;
         _currentGameState = GameState.GAMECLEAR;
         ShareData.Instance.Status = ResultStatus.GAMECLEAR;
+        if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
+            ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
     }
 
     void GameOver()

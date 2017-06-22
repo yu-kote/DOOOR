@@ -51,8 +51,8 @@ public class Select : MonoBehaviour
     private string _leftRotateButton = "L1";
     [SerializeField]
     private string _rightRotateButton = "R1";
-    
-    
+
+
     private NodeManager _nodeManager;
     private GameManager _gameManager;
     private Reloader _reloader;
@@ -76,7 +76,7 @@ public class Select : MonoBehaviour
 
         _isSelectEnd = false;
         _isAxisDown = false;
-        
+
         _camera.transform.position += new Vector3(0, 0, -20);
 
         _trapCrossOperation.SetActive(true);
@@ -292,7 +292,8 @@ public class Select : MonoBehaviour
             _selectStageNum--;
 
         // 0はタイトルステージなので、1 ~ max 
-        _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, _stageMax);
+        _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, 
+                                      ShareData.Instance.CanSelectStageMax);
 
         if (_currentSelectStageNum == _selectStageNum)
             return false;
@@ -320,10 +321,7 @@ public class Select : MonoBehaviour
 
     private void StageNumTextupdate()
     {
-        if (_selectStageNum == 1)
-            _stageNum.text = "Tutorial Stage";
-        else
-            _stageNum.text = "Stage " + (_selectStageNum - 1);
+        _stageNum.text = "Stage " + _selectStageNum;
     }
 
     private void StartButtonChange()
@@ -340,9 +338,9 @@ public class Select : MonoBehaviour
         else if (_selectStageNum > _stageMin)
             _leftArrow.SetActive(true);
 
-        if (_selectStageNum >= _stageMax)
+        if (_selectStageNum >= ShareData.Instance.CanSelectStageMax)
             _rightArrow.SetActive(false);
-        else if (_selectStageNum < _stageMax)
+        else if (_selectStageNum < ShareData.Instance.CanSelectStageMax)
             _rightArrow.SetActive(true);
 
         _effectTime += 10 * Time.deltaTime;
