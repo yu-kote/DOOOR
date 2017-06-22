@@ -168,7 +168,7 @@ public class GameTutorial : MonoBehaviour
 
     private void TutorialImageChange(int num)
     {
-        var image = Resources.Load<Sprite>("Texture/Tutorial/tutorial" + num);
+        var image = Resources.Load<Sprite>("Texture/GameMainUI/Tutorial/tutorial" + num);
         _tutorialImage.sprite = image;
     }
 

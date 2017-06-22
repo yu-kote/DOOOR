@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 13b1cb12aaab5ca43b6027f4351c3c43
+timeCreated: 1498107160
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: mikachan
+  fontNames:
+  - mikachan
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
