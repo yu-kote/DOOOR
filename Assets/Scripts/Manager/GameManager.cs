@@ -228,6 +228,11 @@ public class GameManager : MonoBehaviour
         return Input.GetButtonDown(_selectEndButton);
     }
 
+    public bool IsPushHelpButton()
+    {
+        return Input.GetButtonDown(_gameStopButton);
+    }
+
     //---------------------------------------------------------------------------------------------
     // ヘルプの処理
     //---------------------------------------------------------------------------------------------
