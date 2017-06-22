@@ -6,7 +6,6 @@ using System.Linq;
 public abstract class AIRouteSearch : AIBasicsMovement
 {
     protected RoadPathManager _roadPathManager;
-    private NodeManager _nodeManager;
 
     /// <summary>
     /// ルート検索の指標となるノード
@@ -76,7 +75,6 @@ public abstract class AIRouteSearch : AIBasicsMovement
         _roadPathManager = field.GetComponent<RoadPathManager>();
         _testSymbol = Resources.Load<GameObject>("Prefabs/Map/Node/Symbol");
         _nodeController = field.GetComponent<NodeController>();
-        _nodeManager = field.GetComponent<NodeManager>();
     }
 
     // ターゲットを探し出してそこまでのルートをノードに刻む

@@ -55,7 +55,6 @@ public class ReportBoard : MonoBehaviour
 
     private IEnumerator PopStack()
     {
-        var first = _boards.FirstOrDefault();
         while (_boards.FirstOrDefault() != null)
         {
             while (true)

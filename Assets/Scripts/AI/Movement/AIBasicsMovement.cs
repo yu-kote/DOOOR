@@ -83,8 +83,9 @@ public abstract class AIBasicsMovement : MonoBehaviour
         if (IsDoorLock(_nextNode))
             return;
         // 階段がロックされているかどうか
-        if (IsStairsLock(_nextNode))
-            return;
+        if (tag != "Killer")
+            if (IsStairsLock(_nextNode))
+                return;
 
         if (_nextNode == null)
             return;
@@ -214,9 +215,6 @@ public abstract class AIBasicsMovement : MonoBehaviour
 
     protected bool IsStairsLock(Node node)
     {
-        if (tag == "Killer")
-            return false;
-
         if (node == null)
             return true;
 

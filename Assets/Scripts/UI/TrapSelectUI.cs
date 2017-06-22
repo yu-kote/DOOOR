@@ -161,7 +161,7 @@ public class TrapSelectUI : MonoBehaviour
     private TrapDirection EnableCheck(TrapDirection dir)
     {
         int num = (int)dir - 1;
-        if (num < 0 || num > _trapUseStatus.Count())
+        if (num < 0 || num > _trapUseStatus.Count() - 1)
             return TrapDirection.NONE;
         if (_trapUseStatus[num].Enable)
             return dir;

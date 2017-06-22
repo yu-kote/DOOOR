@@ -24,9 +24,9 @@ public class Result : MonoBehaviour
         _gameClear.SetActive(false);
         _gameOver.SetActive(false);
 
-        if (ShareData.instance.Status == ResultStatus.GAMECLEAR)
+        if (ShareData.Instance.Status == ResultStatus.GAMECLEAR)
             GameClear();
-        if (ShareData.instance.Status == ResultStatus.GAMEOVER)
+        if (ShareData.Instance.Status == ResultStatus.GAMEOVER)
             GameOver();
 
         _imageText.color = new Color(1, 1, 1, 0);
@@ -41,13 +41,13 @@ public class Result : MonoBehaviour
 
         var image = _gameClear.GetComponent<Image>();
 
-        if (ShareData.instance.WomanCount >= 1 &&
-            ShareData.instance.TallManCount >= 1)
+        if (ShareData.Instance.WomanCount >= 1 &&
+            ShareData.Instance.TallManCount >= 1)
             image.sprite = Resources.Load<Sprite>("Texture/Result/clear01");
 
-        if (ShareData.instance.WomanCount >= 1 &&
-            ShareData.instance.TallManCount >= 1 &&
-            ShareData.instance.FatCount >= 1)
+        if (ShareData.Instance.WomanCount >= 1 &&
+            ShareData.Instance.TallManCount >= 1 &&
+            ShareData.Instance.FatCount >= 1)
             image.sprite = Resources.Load<Sprite>("Texture/Result/clear02");
         SoundManager.Instance.PlayBGM("gameclear");
     }

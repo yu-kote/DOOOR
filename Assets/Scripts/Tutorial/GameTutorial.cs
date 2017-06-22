@@ -15,12 +15,17 @@ public class GameTutorial : MonoBehaviour
     [SerializeField]
     Text _numText;
     [SerializeField]
-    Text _tutorialText;
+    GameObject _textParent;
 
-    [SerializeField]
-    private float[] _tutorialPopTimings;
-    private float _elapsedTime;
-    private int _tutorialNum = 0;
+    GameObject _text;
+
+    string[] _tutorialTexts;
+
+    private int _stageNum;
+    private int _tutorialNum;
+    private int _currentTutorialNum;
+    private int _tutorialNumMax;
+
 
     private bool _isEnable;
     public bool IsEnable { get { return _isEnable; } set { _isEnable = value; } }
@@ -43,8 +48,12 @@ public class GameTutorial : MonoBehaviour
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         UiSetup();
+
+        _tutorialNum = 0;
+        _currentTutorialNum = 0;
+        _tutorialNumMax = 0;
+
         _tutorial.gameObject.SetActive(false);
-        _elapsedTime = 0.0f;
     }
 
     void UiSetup()
@@ -61,56 +70,48 @@ public class GameTutorial : MonoBehaviour
         }
     }
 
-    void Update()
+    public void TutorialStart(int stage_num)
     {
-        if (_isEnable == false)
-            return;
+        _stageNum = stage_num;
 
-        TutorialUpdate();
-
-        _state = _gameManager.CurrentGameState;
-        // ゲーム中しか動かないようにする
-        if (_state != GameState.GAMEMAIN)
-            return;
-
-        // ゲーム内時間を数える
-        TutorialTimeUpdate();
-    }
-
-    private void TutorialUpdate()
-    {
-        // チュートリアルが終わっているかどうか
-        if (IsTutorialEnd())
-            return;
-
-        // 番号が更新されていなかったらはじく
-        int num = TutorialPopNum();
-        if (_tutorialNum == num)
-            return;
-        _tutorialNum = num;
-        num -= 1;
-
-        TutorialImageChange(num);
-        TutorialTextChange(num);
-
+        _tutorialNumMax = GetTutorialNum(stage_num);
         StartCoroutine(ImageFadeInAction());
-
-        _gameManager.MovementAllStop();
-        _gameManager.CurrentGameState = GameState.STAGING;
     }
 
     // チュートリアルが出てくる演出を全部やる
     private IEnumerator ImageFadeInAction()
     {
+        _gameManager.MovementAllStop();
+        _gameManager.CurrentGameState = GameState.STAGING;
+
         _tutorial.gameObject.SetActive(true);
+
         yield return _gameManager.ImageFadeIn(_tutorial, 1, 0.75f, false);
-        yield return EaseStart();
+        while (_tutorialNumMax > _tutorialNum)
+        {
+            TutorialImageChange(_stageNum, _tutorialNum);
 
-        while (Input.GetKeyDown(KeyCode.Return) == false &&
-               _gameManager.IsPushActionButton() == false)
-            yield return null;
+            // 湧かせる
+            var path = "Prefabs/Tutorial/TutorialText" + _stageNum + "-" + _tutorialNum;
+            var text = Resources.Load<GameObject>(path);
+            text = Instantiate(text, _textParent.transform);
+            text.transform.localPosition = Vector3.zero;
+            text.transform.localScale = Vector3.one;
 
-        yield return EaseFadeAway();
+            _numText.text = GetTutorialTitle(_stageNum, _tutorialNum);
+            yield return EaseStart();
+
+            while (Input.GetKeyDown(KeyCode.Return) == false &&
+                   _gameManager.IsPushActionButton() == false)
+                yield return null;
+
+            yield return EaseFadeAway();
+
+            _tutorialNum++;
+            Destroy(text);
+
+            yield return new WaitForSeconds(0.5f);
+        }
 
         yield return _gameManager.ImageFadeOut(_tutorial, 2, 0, false);
 
@@ -144,51 +145,40 @@ public class GameTutorial : MonoBehaviour
                     _easeTime, EaseType.CircOut);
     }
 
-    private void TutorialTimeUpdate()
+    private void TutorialImageChange(int stage_num, int num)
     {
-        if (_state != GameState.GAMEMAIN)
-            return;
-        _elapsedTime += Time.deltaTime;
-    }
-
-    private bool IsTutorialEnd()
-    {
-        return _tutorialPopTimings.Last() < _elapsedTime;
-    }
-
-    private int TutorialPopNum()
-    {
-        for (int i = 0; i < _tutorialPopTimings.Count(); i++)
-        {
-            if (_elapsedTime < _tutorialPopTimings[i])
-                return i;
-        }
-        return 0;
-    }
-
-    private void TutorialImageChange(int num)
-    {
-        var image = Resources.Load<Sprite>("Texture/GameMainUI/Tutorial/tutorial" + num);
+        var image = Resources.Load<Sprite>("Texture/GameMainUI/Tutorial/tutorial" + stage_num + "-" + num);
         _tutorialImage.sprite = image;
     }
 
-    private void TutorialTextChange(int num)
+    private int GetTutorialNum(int stage_num)
     {
-        _numText.text = "チュートリアル " + (num + 1);
-
-        if (num == 0)
-            _tutorialText.text = "殺人鬼を侵入者の元へ導け。彼は一人では追いつけない。";
-        if (num == 1)
-            _tutorialText.text = "君はⒷボタンでその場から音が出せる。\n押す長さで音の大きさを変えられる。\n" +
-                                 "殺人鬼は音の場所に向かい、侵入者は音から逃げる。";
-        if (num == 2)
-            _tutorialText.text = "侵入者は部屋へ逃げ込む。\n殺人鬼はドアを開けられない。";
-        if (num == 3)
-            _tutorialText.text = "君はAボタンを押している間、ドアをロックできる。";
-        //if (num == 4)
-        //    _tutorialText.text = "Ⓐボタン長押しでドアを施錠することで\n　　殺人鬼と はさみうち できるぞ！";
+        if (stage_num == 1)
+            return 4;
+        if (stage_num == 2 || stage_num == 3)
+            return 2;
+        if (stage_num == 4 || stage_num == 5)
+            return 1;
+        return 0;
     }
 
+    private string GetTutorialTitle(int stage_num, int num)
+    {
+        if (stage_num == 1)
+            return "";
+        if (stage_num == 2)
+            return "< 能力解放「落とし穴」>";
+        if (stage_num == 3)
+            if (num == 0)
+                return "< 能力解放「ロープ」>";
+            else if (num == 1)
+                return "< 能力解放「階段封じ」>";
+        if (stage_num == 4)
+            return "< 能力解放「停電」>";
+        if (stage_num == 5)
+            return "< 侵入者の反撃「武器」 >";
+        return "";
+    }
 
     private void OnDestroy()
     {

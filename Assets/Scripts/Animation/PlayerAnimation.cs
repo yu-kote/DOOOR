@@ -46,10 +46,7 @@ public class PlayerAnimation : MonoBehaviour
         if (GameObject.Find("GameManager").GetComponent<GameManager>().CurrentGameState
             != GameState.GAMEMAIN)
             return;
-
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical") * -1.0f;
-
+        
         if (IsTrapAnimation())
             _animStatus = PlayerAnimationStatus.WALK;
         //else
