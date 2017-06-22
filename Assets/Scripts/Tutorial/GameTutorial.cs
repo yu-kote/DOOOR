@@ -9,6 +9,8 @@ using UnityEngine.UI;
 public class GameTutorial : MonoBehaviour
 {
     [SerializeField]
+    AIGenerator _aiGenerator;
+    [SerializeField]
     Image _tutorial;
     [SerializeField]
     Image _tutorialImage;
@@ -23,15 +25,9 @@ public class GameTutorial : MonoBehaviour
 
     private int _stageNum;
     private int _tutorialNum;
-    private int _currentTutorialNum;
     private int _tutorialNumMax;
 
-
-    private bool _isEnable;
-    public bool IsEnable { get { return _isEnable; } set { _isEnable = value; } }
-
     private GameManager _gameManager;
-    private GameState _state;
 
     Dictionary<string, Vector3> _uiStartPositions = new Dictionary<string, Vector3>();
     Dictionary<string, Vector3> _uiEndPositions = new Dictionary<string, Vector3>();
@@ -41,16 +37,14 @@ public class GameTutorial : MonoBehaviour
     void Start()
     {
         Setup();
+        UiSetup();
     }
 
     public void Setup()
     {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-        UiSetup();
-
         _tutorialNum = 0;
-        _currentTutorialNum = 0;
         _tutorialNumMax = 0;
 
         _tutorial.gameObject.SetActive(false);
@@ -58,6 +52,8 @@ public class GameTutorial : MonoBehaviour
 
     void UiSetup()
     {
+        _uiStartPositions.Clear();
+        _uiEndPositions.Clear();
         for (int i = 0; i < _tutorial.transform.childCount; i++)
         {
             var ui = _tutorial.transform.GetChild(i).gameObject;
@@ -72,9 +68,12 @@ public class GameTutorial : MonoBehaviour
 
     public void TutorialStart(int stage_num)
     {
+        Setup();
         _stageNum = stage_num;
-
-        _tutorialNumMax = GetTutorialNum(stage_num);
+        var num = GetTutorialNum(stage_num);
+        if (num == 0)
+            return;
+        _tutorialNumMax = num;
         StartCoroutine(ImageFadeInAction());
     }
 
@@ -103,7 +102,11 @@ public class GameTutorial : MonoBehaviour
 
             while (Input.GetKeyDown(KeyCode.Return) == false &&
                    _gameManager.IsPushActionButton() == false)
+            {
+                _gameManager.MovementAllStop();
+                _gameManager.CurrentGameState = GameState.STAGING;
                 yield return null;
+            }
 
             yield return EaseFadeAway();
 
