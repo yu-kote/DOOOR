@@ -44,7 +44,6 @@ public class GameManager : MonoBehaviour
 
     private GameState _currentGameState;
     public GameState CurrentGameState { get { return _currentGameState; } set { _currentGameState = value; } }
-    private GameState _prevGameState;
 
     private bool _isGameEnd;
     public bool IsGameEnd { get { return _isGameEnd; } set { _isGameEnd = value; } }
@@ -107,7 +106,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        GameStateUpdate();
         GameEndUpdate();
         HelpUpdate();
 
@@ -170,14 +168,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
-    }
-
-    void GameStateUpdate()
-    {
-        if (_currentGameState == _prevGameState)
-            return;
-        _prevGameState = _currentGameState;
-
     }
 
     void GameClear()

@@ -35,6 +35,8 @@ public class KillerAnimation : MonoBehaviour
     {
         if (_gameManager.CurrentGameState == GameState.GAMECLEAR)
         {
+            if (_animStatus == KillerAnimationStatus.ATTACK)
+                return;
             _animStatus = KillerAnimationStatus.HAPPY;
             return;
         }
@@ -65,8 +67,12 @@ public class KillerAnimation : MonoBehaviour
     {
         _animStatus = KillerAnimationStatus.ATTACK;
         GetComponent<AIController>()
-        .StopMovement(2f, () => GetComponent<KillerAnimation>().AnimStatus
-                                             = KillerAnimationStatus.IDOL);
+        .StopMovement(2f, () =>
+        {
+            _animStatus = KillerAnimationStatus.IDOL;
+            if (_gameManager.CurrentGameState == GameState.GAMECLEAR)
+                _animStatus = KillerAnimationStatus.HAPPY;
+        });
     }
 
 }
