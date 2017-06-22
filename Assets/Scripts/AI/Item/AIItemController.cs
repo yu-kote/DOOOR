@@ -31,8 +31,24 @@ public class AIItemController : MonoBehaviour
     /// </summary>
     void AcquireItem(ItemType item)
     {
+        string item_name = "";
         if (item == ItemType.LASTKEY)
+            item_name = "出口の鍵";
+        if (item == ItemType.FLASHLIGHT)
+            item_name = "懐中電灯";
+        if (item == ItemType.GUN)
+            item_name = "ハンドガン";
+        if (item == ItemType.TYENSO)
+            item_name = "チェーンソー";
+
+        ReportBoard.Instance.Pop("侵入者が" + item_name + "を入手しました。");
+
+        if (item == ItemType.LASTKEY)
+        {
+            ReportBoard.Instance.Pop("侵入者が出口に向かい始めています。阻止してください。");
             SoundManager.Instance.PlaySE("kaginyuusyu");
+        }
+
 
         _haveItems.Add(item);
 

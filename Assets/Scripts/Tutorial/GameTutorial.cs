@@ -18,6 +18,8 @@ public class GameTutorial : MonoBehaviour
     Text _numText;
     [SerializeField]
     GameObject _textParent;
+    [SerializeField]
+    GameObject _skipText;
 
     GameObject _text;
 
@@ -80,8 +82,7 @@ public class GameTutorial : MonoBehaviour
     // チュートリアルが出てくる演出を全部やる
     private IEnumerator ImageFadeInAction()
     {
-        _gameManager.MovementAllStop();
-        _gameManager.CurrentGameState = GameState.STAGING;
+        GameStop();
 
         _tutorial.gameObject.SetActive(true);
 
@@ -108,6 +109,15 @@ public class GameTutorial : MonoBehaviour
             {
                 _gameManager.MovementAllStop();
                 _gameManager.CurrentGameState = GameState.STAGING;
+
+                if (_gameManager.IsPushHelpButton())
+                {
+                    Destroy(text);
+                    yield return EaseFadeAway();
+                    yield return _gameManager.ImageFadeOut(_tutorial, 2, 0, false);
+                    GameStart();
+                    yield break;
+                }
                 yield return null;
             }
 
@@ -121,6 +131,19 @@ public class GameTutorial : MonoBehaviour
 
         yield return _gameManager.ImageFadeOut(_tutorial, 2, 0, false);
 
+        GameStart();
+    }
+
+    private void GameStop()
+    {
+        _gameManager.MovementAllStop();
+        _gameManager.CurrentGameState = GameState.STAGING;
+        _skipText.SetActive(true);
+    }
+
+    private void GameStart()
+    {
+        _skipText.SetActive(false);
         _gameManager.CurrentGameState = GameState.GAMEMAIN;
         _gameManager.MovementAllStart();
     }

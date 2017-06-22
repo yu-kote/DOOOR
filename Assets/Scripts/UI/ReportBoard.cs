@@ -33,6 +33,7 @@ public class ReportBoard : MonoBehaviour
     private List<GameObject> _boards = new List<GameObject>();
 
     float _popTime = 0.7f;
+    float _endTime = 4.0f;
 
     public void Pop(string text, bool is_important = false)
     {
@@ -65,8 +66,8 @@ public class ReportBoard : MonoBehaviour
             }
             if (_boards.FirstOrDefault() == null)
                 yield break;
-            EasingInitiator.Add(_boards.FirstOrDefault(), new Vector3(0, 400, 0), _popTime, EaseType.CubicIn);
-            EasingInitiator.Wait(_boards.FirstOrDefault(), 2);
+            EasingInitiator.Add(_boards.FirstOrDefault(), new Vector3(0, 450, 0), _popTime, EaseType.CubicIn);
+            EasingInitiator.Wait(_boards.FirstOrDefault(), _endTime);
             EasingInitiator.Add(_boards.FirstOrDefault(), _boards.FirstOrDefault().transform.localPosition, _popTime, EaseType.CubicOut);
         }
     }
