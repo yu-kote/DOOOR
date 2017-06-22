@@ -51,13 +51,9 @@ public class Select : MonoBehaviour
     private string _leftRotateButton = "L1";
     [SerializeField]
     private string _rightRotateButton = "R1";
-
-    private Vector3 _cameraStartPos;
-
-    private MapLoader _mapLoader;
+    
+    
     private NodeManager _nodeManager;
-    private MapBackgrounds _mapBackgrounds;
-    private AIGenerator _aiGenerator;
     private GameManager _gameManager;
     private Reloader _reloader;
 
@@ -74,19 +70,13 @@ public class Select : MonoBehaviour
 
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
-        _mapLoader = field.GetComponent<MapLoader>();
-        _mapBackgrounds = field.GetComponent<MapBackgrounds>();
-
-        var human_manager = GameObject.Find("HumanManager");
-        _aiGenerator = human_manager.GetComponent<AIGenerator>();
 
         _gameManager = GetComponent<GameManager>();
         _reloader = GetComponent<Reloader>();
 
         _isSelectEnd = false;
         _isAxisDown = false;
-
-        _cameraStartPos = _camera.transform.position;
+        
         _camera.transform.position += new Vector3(0, 0, -20);
 
         _trapCrossOperation.SetActive(true);
@@ -228,9 +218,9 @@ public class Select : MonoBehaviour
         else if (_selectStageNum == 2)
             _trapSelectUi.SetEnableTrap(false, true, false, false);
         else if (_selectStageNum == 3)
-            _trapSelectUi.SetEnableTrap(false, false, true, true);
+            _trapSelectUi.SetEnableTrap(false, true, true, true);
         else if (_selectStageNum == 4)
-            _trapSelectUi.SetEnableTrap(true, false, false, false);
+            _trapSelectUi.SetEnableTrap(true, true, true, true);
         else
         {
             _trapSelectUi.SetEnableTrap();

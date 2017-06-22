@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     private AIGenerator _aiGenerator;
     private GameMainUIController _uiController;
     private Reloader _reloader;
+    private GameTutorial _tutorial;
 
     [SerializeField]
     private MenuBarManager _menuBarManager;
@@ -51,6 +52,12 @@ public class GameManager : MonoBehaviour
     private bool _isStop = false;
     private bool _canHelpUpdate = true;
 
+    private void Awake()
+    {
+        _menuBarManager.gameObject.SetActive(true);
+    }
+
+
     void Start()
     {
         var human_manager = GameObject.Find("HumanManager");
@@ -63,18 +70,26 @@ public class GameManager : MonoBehaviour
         // リスタートするやつ取得
         _reloader = GetComponent<Reloader>();
 
+        // チュートリアル取得
+        _tutorial = GetComponent<GameTutorial>();
+
         // メニューのバー初期化
-        _menuBarManager.gameObject.SetActive(false);
         _menuBarManager.SetBarAction(0, () => { });
-        _menuBarManager.SetBarAction(1, () => _reloader.StageResetStart());
+        _menuBarManager.SetBarAction(1, () =>
+        {
+            _tutorial.TutorialStart(ShareData.Instance.SelectStage);
+            _reloader.StageResetStart();
+        });
         _menuBarManager.SetBarAction(2, () =>
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
             .SceneChange("GameMain", () => SoundManager.Instance.StopBGM());
         });
+        _menuBarManager.gameObject.SetActive(false);
 
         StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
         StateChangeCallBack(() => _uiController.UiStart(), GameState.GAMEMAIN);
+        StateChangeCallBack(() => _tutorial.TutorialStart(ShareData.Instance.SelectStage), GameState.GAMEMAIN);
 
         // 人間の動きを止める
         StateChangeCallBack(() => _aiGenerator.MoveEndHumans(), GameState.GAMEOVER);

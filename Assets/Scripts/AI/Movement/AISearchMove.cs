@@ -127,6 +127,8 @@ public class AISearchMove : AIBasicsMovement
                 return false;
             }).Where(node =>
             {
+                if (tag == "Killer")
+                    return true;
                 // 階段がロックされていたら入れない
                 if (IsStairsLock(node))
                     return false;

@@ -25,14 +25,12 @@ public class Stairs : AttributeBase
 
     void Start()
     {
-        _nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
         if (_isInstanceAttribute)
         {
             CreateAttribute("Stairs" + _directionTag);
 
             var offset = 1f;
             _attribute.transform.localPosition += new Vector3(0, 0, -offset);
-
         }
     }
 

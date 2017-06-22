@@ -17,7 +17,7 @@ public class MenuBarManager : MonoBehaviour
     [SerializeField]
     private GameObject[] _bar;
 
-    private Action[] _barActions;
+    private Action[] _barActions = null;
 
     private bool _isBarAction;
     private int _selectDirection;
@@ -25,7 +25,7 @@ public class MenuBarManager : MonoBehaviour
     private int _selectNum;
     private int _currentselectnum;
 
-    void Start()
+    private void Awake()
     {
         _barActions = new Action[_bar.Count()];
         _selectNum = 0;
@@ -33,11 +33,18 @@ public class MenuBarManager : MonoBehaviour
         _isBarAction = false;
     }
 
+    void Start()
+    {
+
+    }
+
     /// <summary>
     /// 選んだ時に実行される関数を登録する
     /// </summary>
     public void SetBarAction(int num, Action action)
     {
+        if (_barActions.Count() < 0)
+            return;
         if (num < 0 || num > _barActions.Count() - 1)
             return;
         _barActions[num] = action;
