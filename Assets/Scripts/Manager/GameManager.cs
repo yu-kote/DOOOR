@@ -110,6 +110,11 @@ public class GameManager : MonoBehaviour
         GameStateUpdate();
         GameEndUpdate();
         HelpUpdate();
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            ShareData.Instance.CanSelectStageMax = 10;
+        }
     }
 
     // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
