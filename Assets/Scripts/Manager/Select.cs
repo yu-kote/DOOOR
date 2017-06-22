@@ -14,6 +14,10 @@ public class Select : MonoBehaviour
     private GameObject _camera;
     [SerializeField]
     private GameObject _player;
+    [SerializeField]
+    private GameObject _trapCrossOperation;
+    [SerializeField]
+    private TrapSelectUI _trapSelectUi;
 
     [SerializeField]
     private Text _stageNum;
@@ -81,6 +85,8 @@ public class Select : MonoBehaviour
         _cameraStartPos = _camera.transform.position;
         _camera.transform.position += new Vector3(0, 0, -20);
 
+        _trapCrossOperation.SetActive(true);
+
         // ヘルプの初期化
         _help.color = new Color(1, 1, 1, 0);
         _gameManager.SetImageChildColor(_help, _help.color);
@@ -94,6 +100,7 @@ public class Select : MonoBehaviour
     private void Start()
     {
         SoundManager.Instance.PlayBGM("title");
+
         StartCoroutine(Setup());
     }
 
@@ -145,6 +152,11 @@ public class Select : MonoBehaviour
 
     void Update()
     {
+        if (_gameManager.CurrentGameState != GameState.SELECT)
+        {
+            _selectCanvas.SetActive(false);
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.T))
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Title", () => SoundManager.Instance.StopBGM());
@@ -159,11 +171,6 @@ public class Select : MonoBehaviour
             if (EasingInitiator.IsEaseEnd(gameObject))
                 StartCoroutine(OperationDraw());
 
-        if (GetComponent<GameManager>().CurrentGameState != GameState.SELECT)
-        {
-            _selectCanvas.SetActive(false);
-            return;
-        }
         _selectCanvas.SetActive(true);
     }
 
@@ -202,16 +209,27 @@ public class Select : MonoBehaviour
     {
         SoundManager.Instance.StopBGM();
         SoundManager.Instance.PlayBGM("ingame");
-        GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
+        _gameManager.CurrentGameState = GameState.GAMEMAIN;
 
         if (_selectStageNum == 1)
         {
             GameObject.Find("HumanManager")
                 .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
             GetComponent<GameTutorial>().IsEnable = true;
+            _trapCrossOperation.SetActive(false);
+            _trapSelectUi.SetEnableTrap(false, false, false, false);
         }
+        else if (_selectStageNum == 2)
+            _trapSelectUi.SetEnableTrap(false, true, false, false);
+        else if (_selectStageNum == 3)
+            _trapSelectUi.SetEnableTrap(false, false, true, true);
+        else if (_selectStageNum == 4)
+            _trapSelectUi.SetEnableTrap(true, false, false, false);
         else
+        {
+            _trapSelectUi.SetEnableTrap();
             GetComponent<GameTutorial>().IsEnable = false;
+        }
 
         Destroy(this);
     }

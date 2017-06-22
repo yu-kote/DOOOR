@@ -35,6 +35,7 @@ public class TrapSelectUI : MonoBehaviour
     private float[] _recastTime;
     public class TrapUseStatus
     {
+        public bool Enable = true;
         public float RecastTime = 0.0f;
         public float CurrentTime = 0.0f;
         public bool CanUse = true;
@@ -50,7 +51,7 @@ public class TrapSelectUI : MonoBehaviour
 
     bool _isRecastStop;
 
-    public void Start()
+    private void Start()
     {
         _trapDirection = TrapDirection.NONE;
         _buttonSprites = Resources.LoadAll<Sprite>("Texture/GameMainUI/TrapUI/itemcross");
@@ -65,6 +66,7 @@ public class TrapSelectUI : MonoBehaviour
         for (int i = 0; i < _trapUseStatus.Count(); i++)
         {
             _trapUseStatus[i] = new TrapUseStatus();
+            _trapUseStatus[i].Enable = true;
             _trapUseStatus[i].RecastTime = _recastTime[i];
             _trapUseStatus[i].CurrentTime = 0.0f;
             _trapUseStatus[i].PushButtonEffect =
@@ -85,6 +87,7 @@ public class TrapSelectUI : MonoBehaviour
             // 初期値はバーを出さないようにする
             var start_bar_right = Mathf.Abs(_trapUseStatus[i].MinX) + Mathf.Abs(_trapUseStatus[i].MaxX);
             rect.offsetMax = new Vector2(-start_bar_right + _trapUseStatus[i].MaxX, rect.offsetMax.y);
+
         }
     }
 
@@ -99,7 +102,7 @@ public class TrapSelectUI : MonoBehaviour
 
         _isRecastStop = false;
         _trapDirection = GetTrapDirection();
-        _pushValue = _trapDirection;
+        _pushValue = EnableCheck(_trapDirection);
         ButtonSpriteChange();
         RecastBarUpdate();
     }
@@ -135,6 +138,36 @@ public class TrapSelectUI : MonoBehaviour
         return _trapUseStatus[num].RecastTime;
     }
 
+    /// <summary>
+    /// 使用可能トラップを選ぶ
+    /// </summary>
+    public void SetEnableTrap(bool up = true, bool down = true,
+                              bool right = true, bool left = true)
+    {
+        _trapUseStatus[0].Enable = up;
+        _trapUseStatus[1].Enable = down;
+        _trapUseStatus[2].Enable = right;
+        _trapUseStatus[3].Enable = left;
+        TrapImageSetup();
+    }
+
+    private void TrapImageSetup()
+    {
+        for (int i = 0; i < _trapUseStatus.Count(); i++)
+            _traps[i].gameObject.SetActive(_trapUseStatus[i].Enable);
+    }
+
+    // 使用不可能か調べる
+    private TrapDirection EnableCheck(TrapDirection dir)
+    {
+        int num = (int)dir - 1;
+        if (num < 0 || num > _trapUseStatus.Count())
+            return TrapDirection.NONE;
+        if (_trapUseStatus[num].Enable)
+            return dir;
+        return TrapDirection.NONE;
+    }
+
     // 指定秒数後に関数を呼ぶ
     private void Callback(float time, Action action)
     {
@@ -143,6 +176,7 @@ public class TrapSelectUI : MonoBehaviour
             action();
         }).AddTo(gameObject);
     }
+
     // 指定秒数後に関数を呼ぶ
     private IEnumerator CallBack(float time, Action action)
     {
@@ -181,8 +215,10 @@ public class TrapSelectUI : MonoBehaviour
                     _buttonSprites, (sprite) => sprite.name.Equals(
                         "itemcross_" + (int)_trapDirection));
 
+        PushButtonEffect(_trapDirection);
 
         int num = (int)_trapDirection - 1;
+
         if (num == -1)
         {
             num = (int)_currentDirection - 1;
@@ -192,7 +228,6 @@ public class TrapSelectUI : MonoBehaviour
             _traps[num].color = new Color(100, 100, 100);
 
         _currentDirection = _trapDirection;
-        PushButtonEffect(_currentDirection);
     }
 
     // ボタンを押したときのエフェクト？を出す
@@ -210,6 +245,8 @@ public class TrapSelectUI : MonoBehaviour
     {
         for (int i = 0; i < _trapUseStatus.Count(); i++)
         {
+            if (_trapUseStatus[i].Enable == false)
+                continue;
             if (_trapUseStatus[i].CanUse)
                 continue;
 
