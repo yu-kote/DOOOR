@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 
 public class Result : MonoBehaviour
@@ -19,6 +20,8 @@ public class Result : MonoBehaviour
     private MenuBarManager _menuBarManager;
 
     private Image _imageText;
+    private List<string> _humans = new List<string>();
+    private List<GameObject> _boards = new List<GameObject>();
 
     private void Awake()
     {
@@ -44,7 +47,7 @@ public class Result : MonoBehaviour
                     GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                     .SceneChange("Title", () => SoundManager.Instance.StopBGM()));
 
-        StartCoroutine(ChangeTitle(3.0f));
+        StartCoroutine(ChangeTitle(2.0f));
     }
 
     void GameClear()
@@ -53,16 +56,10 @@ public class Result : MonoBehaviour
         _imageText = _gameClear.transform.GetChild(0).GetComponent<Image>();
 
         var image = _gameClear.GetComponent<Image>();
-
-        if (ShareData.Instance.WomanCount >= 1 &&
-            ShareData.Instance.TallManCount >= 1)
-            image.sprite = Resources.Load<Sprite>("Texture/Result/clear01");
-
-        if (ShareData.Instance.WomanCount >= 1 &&
-            ShareData.Instance.TallManCount >= 1 &&
-            ShareData.Instance.FatCount >= 1)
-            image.sprite = Resources.Load<Sprite>("Texture/Result/clear02");
+        image.sprite = Resources.Load<Sprite>("Texture/Result/clear03");
         SoundManager.Instance.PlayBGM("gameclear");
+
+        HumanBoardInstance();
     }
 
     void GameOver()
@@ -72,22 +69,69 @@ public class Result : MonoBehaviour
         SoundManager.Instance.PlayBGM("gameover");
     }
 
+    void HumanBoardInstance()
+    {
+        if (ShareData.Instance.WomanCount >= 1)
+            _humans.Add("Woman");
+        if (ShareData.Instance.TallManCount >= 1)
+            _humans.Add("TallMan");
+        if (ShareData.Instance.FatCount >= 1)
+            _humans.Add("Fat");
+
+        var woman_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/woman_bustup");
+        var tallman_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/noppo_bustup");
+        var fat_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/matyo_bustup");
+        var board = Resources.Load<GameObject>("Prefabs/Result/HumanBoard");
+
+        for (int i = 0; i < _humans.Count; i++)
+        {
+            if (_humans[i] == "Woman")
+            {
+                var item = Instantiate(board, transform);
+                item.transform.GetChild(0).GetComponent<Image>().sprite = woman_sprite;
+                _boards.Add(item);
+            }
+            if (_humans[i] == "TallMan")
+            {
+                var item = Instantiate(board, transform);
+                item.transform.GetChild(0).GetComponent<Image>().sprite = tallman_sprite;
+                _boards.Add(item);
+            }
+            if (_humans[i] == "Fat")
+            {
+                var item = Instantiate(board, transform);
+                item.transform.GetChild(0).GetComponent<Image>().sprite = fat_sprite;
+                _boards.Add(item);
+            }
+        }
+
+        foreach (var item in _boards)
+        {
+            var t = item.transform;
+            t.localPosition = Vector3.zero;
+            t.localScale = Vector3.one;
+        }
+
+        if (_boards.Count == 2)
+        {
+            _boards[0].transform.localPosition = new Vector3(130, 0, 0);
+            _boards[1].transform.localPosition = new Vector3(-130, 0, 0);
+        }
+        if (_boards.Count == 3)
+        {
+            _boards[0].transform.localPosition = new Vector3(-200, 0, 0);
+            _boards[1].transform.localPosition = new Vector3(0, 0, 0);
+            _boards[2].transform.localPosition = new Vector3(200, 0, 0);
+
+        }
+
+    }
+
     private IEnumerator ChangeTitle(float time)
     {
         yield return new WaitForSeconds(time);
         while (true)
         {
-            if (Input.GetButtonDown(_actionButton))
-            {
-                GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
-                    .SceneChange("Title", () => SoundManager.Instance.StopBGM());
-            }
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
-                    .SceneChange("Title", () => SoundManager.Instance.StopBGM());
-            }
-
             var color = _imageText.color;
             color.a += Time.deltaTime;
             _imageText.color = color;
@@ -99,5 +143,13 @@ public class Result : MonoBehaviour
     void Update()
     {
 
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var item in _boards)
+            Destroy(item);
+        _boards.Clear();
+        _humans.Clear();
     }
 }
