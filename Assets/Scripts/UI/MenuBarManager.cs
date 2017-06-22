@@ -94,13 +94,13 @@ public class MenuBarManager : MonoBehaviour
             if (_selectNum == i)
             {
                 _bar[i].transform.FindChild("Button").gameObject.SetActive(true);
-                EasingInitiator.Add(_bar[i], after_scale, 0.1f,
+                EasingInitiator.Add(_bar[i], after_scale, 0.2f,
                                     EaseType.QuartOut, EaseValue.SCALE);
             }
             else
             {
                 _bar[i].transform.FindChild("Button").gameObject.SetActive(false);
-                EasingInitiator.Add(_bar[i], before_scale, 0.1f,
+                EasingInitiator.Add(_bar[i], before_scale, 0.2f,
                                     EaseType.QuartOut, EaseValue.SCALE);
             }
         }

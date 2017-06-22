@@ -133,15 +133,15 @@ public static class EasingInitiator
 
     public static void DestoryEase(GameObject target)
     {
-        //_easePosition.Where(ease => ease.Key == target)
-        //                     .ToList().ForEach(t => t.Value.Clear());
-        //_easeRotation.Where(ease => ease.Key == target)
-        //             .ToList().ForEach(t => t.Value.Clear());
-        //_easeScale.Where(ease => ease.Key == target)
-        //             .ToList().ForEach(t => t.Value.Clear());
-        _easePosition.Remove(target);
-        _easeRotation.Remove(target);
-        _easeScale.Remove(target);
+        _easePosition.Where(ease => ease.Key == target)
+                             .ToList().ForEach(t => t.Value.Clear());
+        _easeRotation.Where(ease => ease.Key == target)
+                     .ToList().ForEach(t => t.Value.Clear());
+        _easeScale.Where(ease => ease.Key == target)
+                     .ToList().ForEach(t => t.Value.Clear());
+        //_easePosition.Remove(target);
+        //_easeRotation.Remove(target);
+        //_easeScale.Remove(target);
     }
 
     private static void RemoveEase(Dictionary<GameObject, RunEase> ease)

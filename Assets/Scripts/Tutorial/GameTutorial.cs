@@ -88,6 +88,7 @@ public class GameTutorial : MonoBehaviour
         yield return _gameManager.ImageFadeIn(_tutorial, 1, 0.75f, false);
         while (_tutorialNumMax > _tutorialNum)
         {
+            _gameManager.CurrentGameState = GameState.STAGING;
             TutorialImageChange(_stageNum, _tutorialNum);
 
             // 湧かせる
@@ -97,7 +98,9 @@ public class GameTutorial : MonoBehaviour
             text.transform.localPosition = Vector3.zero;
             text.transform.localScale = Vector3.one;
 
+            // タイトルを入れる
             _numText.text = GetTutorialTitle(_stageNum, _tutorialNum);
+
             yield return EaseStart();
 
             while (Input.GetKeyDown(KeyCode.Return) == false &&
@@ -128,7 +131,7 @@ public class GameTutorial : MonoBehaviour
         {
             var ui = _tutorial.transform.GetChild(i).gameObject;
             EaseUi(ui, _uiStartPositions[ui.name]);
-            yield return new WaitForSeconds(_easeTime);
+            yield return new WaitForSeconds(_easeTime / 2);
         }
     }
 

@@ -15,12 +15,18 @@ public class Result : MonoBehaviour
     [SerializeField]
     private GameObject _gameOver;
 
+    [SerializeField]
+    private MenuBarManager _menuBarManager;
+
     private Image _imageText;
 
+    private void Awake()
+    {
+        _menuBarManager.gameObject.SetActive(true);
+    }
 
     void Start()
     {
-
         _gameClear.SetActive(false);
         _gameOver.SetActive(false);
 
@@ -30,6 +36,13 @@ public class Result : MonoBehaviour
             GameOver();
 
         _imageText.color = new Color(1, 1, 1, 0);
+
+        _menuBarManager.SetBarAction(0, () =>
+                    GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                    .SceneChange("GameMain", () => SoundManager.Instance.StopBGM()));
+        _menuBarManager.SetBarAction(1, () =>
+                    GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                    .SceneChange("Title", () => SoundManager.Instance.StopBGM()));
 
         StartCoroutine(ChangeTitle(3.0f));
     }
