@@ -91,13 +91,8 @@ public class Reloader : MonoBehaviour
             GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
 
             if (_selectStageNum == 1)
-            {
                 GameObject.Find("HumanManager")
                     .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
-                GetComponent<GameTutorial>().IsEnable = true;
-            }
-            else
-                GetComponent<GameTutorial>().IsEnable = false;
 
             _aiGenerator.MoveStartHumans();
         }));

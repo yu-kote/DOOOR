@@ -211,7 +211,6 @@ public class Select : MonoBehaviour
         {
             GameObject.Find("HumanManager")
                 .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
-            GetComponent<GameTutorial>().IsEnable = true;
             _trapCrossOperation.SetActive(false);
             _trapSelectUi.SetEnableTrap(false, false, false, false);
         }
@@ -224,7 +223,6 @@ public class Select : MonoBehaviour
         else
         {
             _trapSelectUi.SetEnableTrap();
-            GetComponent<GameTutorial>().IsEnable = false;
         }
 
         ShareData.Instance.SelectStage = _selectStageNum;
