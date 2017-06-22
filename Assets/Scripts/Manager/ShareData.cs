@@ -10,10 +10,8 @@ public enum ResultStatus
 
 public class ShareData
 {
-    public readonly static ShareData instance = new ShareData();
-
+    public readonly static ShareData Instance = new ShareData();
     public ResultStatus Status;
-
 
     public int WomanCount = 0;
     public int TallManCount = 0;
@@ -25,4 +23,6 @@ public class ShareData
         TallManCount = 0;
         FatCount = 0;
     }
+
+    public int SelectStage = 1;
 }

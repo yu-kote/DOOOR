@@ -47,6 +47,10 @@ public class Select : MonoBehaviour
     [SerializeField]
     string _horizontalAxis = "Horizontal";
     bool _isAxisDown;
+    [SerializeField]
+    private string _leftRotateButton = "L1";
+    [SerializeField]
+    private string _rightRotateButton = "R1";
 
     private Vector3 _cameraStartPos;
 
@@ -65,7 +69,7 @@ public class Select : MonoBehaviour
 
     void Awake()
     {
-        _selectStageNum = 1;
+        _selectStageNum = ShareData.Instance.SelectStage;
         _currentSelectStageNum = _selectStageNum;
 
         var field = GameObject.Find("Field");
@@ -157,6 +161,7 @@ public class Select : MonoBehaviour
             _selectCanvas.SetActive(false);
             return;
         }
+
         if (Input.GetKeyDown(KeyCode.T))
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Title", () => SoundManager.Instance.StopBGM());
@@ -169,7 +174,8 @@ public class Select : MonoBehaviour
         // カメラが寄る演出が終わったら操作説明を出す
         if (_isSelectEnd == true)
             if (EasingInitiator.IsEaseEnd(gameObject))
-                StartCoroutine(OperationDraw());
+                GameStart();
+        //StartCoroutine(OperationDraw());
 
         _selectCanvas.SetActive(true);
     }
@@ -231,7 +237,7 @@ public class Select : MonoBehaviour
             GetComponent<GameTutorial>().IsEnable = false;
         }
 
-        Destroy(this);
+        ShareData.Instance.SelectStage = _selectStageNum;
     }
 
     private bool MapSelect()
@@ -247,6 +253,7 @@ public class Select : MonoBehaviour
             StartButtonChange();
         }
 
+        // スティック
         float horizotal = Input.GetAxis("Horizontal");
         if (horizotal > 0.5f)
         {
@@ -264,15 +271,16 @@ public class Select : MonoBehaviour
                 _selectStageNum--;
             }
         }
-
         if (horizotal < 0.1f && horizotal > -0.1f)
             _selectDirection = 0;
 
+        // キーボードの矢印
         if (Input.GetKeyDown(KeyCode.RightArrow))
             _selectStageNum++;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
             _selectStageNum--;
 
+        // コントローラー十字キー
         if (_isAxisDown == false)
         {
             if (Input.GetAxis(_horizontalAxis) == 1.0f)
@@ -288,6 +296,12 @@ public class Select : MonoBehaviour
         }
         if (Input.GetAxis(_horizontalAxis) == 0.0f)
             _isAxisDown = false;
+
+        // コントローラーLRボタン
+        if (Input.GetButton(_rightRotateButton))
+            _selectStageNum++;
+        if (Input.GetButton(_leftRotateButton))
+            _selectStageNum--;
 
         // 0はタイトルステージなので、1 ~ max 
         _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, _stageMax);

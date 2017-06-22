@@ -32,6 +32,7 @@ public class AIGenerator : MonoBehaviour
     public List<GameObject> Humans { get { return _humans; } set { _humans = value; } }
 
     private bool _isStop;
+    private bool _canMove = true;
 
     private int _generateCount = 0;
 
@@ -167,10 +168,10 @@ public class AIGenerator : MonoBehaviour
             CreateVictim(GetVictimName(VictimType.FAT));
 
 
-        ShareData.instance.Reset();
-        ShareData.instance.WomanCount = human_data.woman;
-        ShareData.instance.TallManCount = human_data.tallman;
-        ShareData.instance.FatCount = human_data.fat;
+        ShareData.Instance.Reset();
+        ShareData.Instance.WomanCount = human_data.woman;
+        ShareData.Instance.TallManCount = human_data.tallman;
+        ShareData.Instance.FatCount = human_data.fat;
 
         if (_humanBoardlist)
             _humanBoardlist.HumanItemSetup();
@@ -203,6 +204,10 @@ public class AIGenerator : MonoBehaviour
     // 全ての人間の動きを動かすかどうか決める
     public void HumanMoveControll(bool can_move)
     {
+        if (_canMove == can_move)
+            return;
+        _canMove = can_move;
+
         if (can_move == false)
         {
             _isStop = true;
@@ -227,8 +232,9 @@ public class AIGenerator : MonoBehaviour
     {
         while (true)
         {
-            if (human.GetComponent<AIController>().GetMovement())
-                human.GetComponent<AIController>().GetMovement().CanMove = false;
+            if (human.GetComponent<AIController>())
+                if (human.GetComponent<AIController>().GetMovement())
+                    human.GetComponent<AIController>().GetMovement().CanMove = false;
 
             yield return null;
             if (_isStop == false)
@@ -237,8 +243,9 @@ public class AIGenerator : MonoBehaviour
                 break;
             }
         }
-        if (human.GetComponent<AIController>().GetMovement())
-            human.GetComponent<AIController>().GetMovement().CanMove = true;
+        if (human.GetComponent<AIController>())
+            if (human.GetComponent<AIController>().GetMovement())
+                human.GetComponent<AIController>().GetMovement().CanMove = true;
         _isStop = true;
     }
 

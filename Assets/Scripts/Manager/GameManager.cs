@@ -34,6 +34,10 @@ public class GameManager : MonoBehaviour
     private AIGenerator _aiGenerator;
     private GameMainUIController _uiController;
     private Reloader _reloader;
+
+    [SerializeField]
+    private MenuBarManager _menuBarManager;
+
     [SerializeField]
     private TrapSelectUI _trapSelectUI;
 
@@ -56,7 +60,18 @@ public class GameManager : MonoBehaviour
         var canvas = GameObject.Find("UICanvas");
         _uiController = canvas.GetComponent<GameMainUIController>();
 
+        // リスタートするやつ取得
         _reloader = GetComponent<Reloader>();
+
+        // メニューのバー初期化
+        _menuBarManager.gameObject.SetActive(false);
+        _menuBarManager.SetBarAction(0, () => { });
+        _menuBarManager.SetBarAction(1, () => _reloader.StageResetStart());
+        _menuBarManager.SetBarAction(2, () =>
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+            .SceneChange("GameMain", () => SoundManager.Instance.StopBGM());
+        });
 
         StateChangeCallBack(() => _aiGenerator.MoveStartHumans(), GameState.GAMEMAIN);
         StateChangeCallBack(() => _uiController.UiStart(), GameState.GAMEMAIN);
@@ -116,13 +131,13 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
-            ShareData.instance.Status = ResultStatus.GAMECLEAR;
+            ShareData.Instance.Status = ResultStatus.GAMECLEAR;
         }
         else if (Input.GetKey(KeyCode.T) && Input.GetKey("2"))
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
-            ShareData.instance.Status = ResultStatus.GAMEOVER;
+            ShareData.Instance.Status = ResultStatus.GAMEOVER;
         }
 
         GameClear();
@@ -154,7 +169,7 @@ public class GameManager : MonoBehaviour
 
         _isGameEnd = true;
         _currentGameState = GameState.GAMECLEAR;
-        ShareData.instance.Status = ResultStatus.GAMECLEAR;
+        ShareData.Instance.Status = ResultStatus.GAMECLEAR;
     }
 
     void GameOver()
@@ -188,7 +203,7 @@ public class GameManager : MonoBehaviour
 
         _isGameEnd = true;
         _currentGameState = GameState.GAMEOVER;
-        ShareData.instance.Status = ResultStatus.GAMEOVER;
+        ShareData.Instance.Status = ResultStatus.GAMEOVER;
     }
 
     public bool IsPushActionButton()
@@ -201,17 +216,19 @@ public class GameManager : MonoBehaviour
     //---------------------------------------------------------------------------------------------
     private bool HelpStartButton()
     {
+        // ヘルプを開いていなかったら
         if (Input.GetButtonDown(_gameStopButton))
             return true;
+
+        // ヘルプを開いていたら
         if (_isStop == false)
             return false;
-        if (Input.GetButtonDown(_selectEndButton))
+        if (Input.GetButtonDown(_gameStopButton))
             return true;
         if (Input.GetButtonDown(_restartButton))
-        {
-            _reloader.StageResetStart();
             return true;
-        }
+        if (_menuBarManager.IsBarUpdate())
+            return true;
         return false;
     }
 
@@ -234,15 +251,22 @@ public class GameManager : MonoBehaviour
         {
             _isStop = !_isStop;
             if (_isStop)
+            {
+                _menuBarManager.gameObject.SetActive(true);
                 StartCoroutine(ImageFadeIn(_help));
+            }
             else
+            {
+                _menuBarManager.gameObject.SetActive(false);
                 StartCoroutine(ImageFadeOut(_help));
+            }
         }
     }
 
     public IEnumerator ImageFadeIn(Image image, float speed = 3, float max_alpha = 1, bool is_child_trans = true)
     {
         _canHelpUpdate = false;
+
         image.color = new Color(1, 1, 1, 0);
         var color = image.color;
         while (color.a < max_alpha)
@@ -260,6 +284,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator ImageFadeOut(Image image, float speed = 3, float min_alpha = 0, bool is_child_trans = true)
     {
         _canHelpUpdate = false;
+
         var color = image.color;
         while (color.a > min_alpha)
         {
@@ -270,6 +295,7 @@ public class GameManager : MonoBehaviour
                 SetImageChildColor(image, color);
             yield return null;
         }
+
         _canHelpUpdate = true;
         _currentGameState = GameState.GAMEMAIN;
         MovementAllStart();
