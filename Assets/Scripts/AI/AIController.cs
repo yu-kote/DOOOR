@@ -63,6 +63,7 @@ public class AIController : MonoBehaviour
         NodeUpdate();
         AimForExit();
         BlackOutEffect();
+
     }
 
     private void MoveSpeedChange()
@@ -82,10 +83,12 @@ public class AIController : MonoBehaviour
             //GetMovement().Speed = _defaultSpeed;
         }
 
+#if DEBUG
         if (Input.GetKey(KeyCode.H))
         {
             GetMovement().Speed = 10.0f;
         }
+#endif
     }
 
     public AIBasicsMovement GetMovement()
