@@ -143,6 +143,9 @@ public class Reloader : MonoBehaviour
             GameStart();
             KillerSetup();
 
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("ingame");
+
             _camera.GetComponent<Rotater>().Setup();
             _player.GetComponent<Rotater>().Setup();
 
