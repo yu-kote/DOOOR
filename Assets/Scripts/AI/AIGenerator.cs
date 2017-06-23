@@ -270,4 +270,26 @@ public class AIGenerator : MonoBehaviour
                             human.GetComponent<MyNumber>().Number == number);
         return target;
     }
+
+    // 時間がないので、マジックナンバーです・・・
+    public Vector2 KillerPopCell(int stage_num)
+    {
+        if (stage_num == 1)
+            return new Vector2(8, 0);
+        if (stage_num == 2)
+            return new Vector2(10, 1);
+        if (stage_num == 3)
+            return new Vector2(6, 0);
+        if (stage_num == 4)
+            return new Vector2(2, 0);
+        if (stage_num == 5)
+            return new Vector2(4, 0);
+        if (stage_num == 6)
+            return new Vector2(15, 3);
+        if (stage_num == 7)
+            return new Vector2(32, 3);
+        if (stage_num == 8)
+            return new Vector2(4, 0);
+        return Vector2.zero;
+    }
 }

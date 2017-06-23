@@ -72,8 +72,11 @@ public class VictimAnimation : MonoBehaviour
             return;
 
         _animStatus = VictimAnimationStatus.IDOL;
-        var move_mode = _aiController.MoveMode;
 
+        if (GetComponent<AIController>().MoveStop == true)
+            return;
+
+        var move_mode = _aiController.MoveMode;
         if (GetComponent<AISearchMove>() || GetComponent<AITargetMove>())
             _animStatus = VictimAnimationStatus.WALK;
         if (GetComponent<AIRunAway>() && move_mode == AIController.MoveEmotion.DEFAULT)

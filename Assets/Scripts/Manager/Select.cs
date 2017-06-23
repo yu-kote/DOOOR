@@ -209,8 +209,6 @@ public class Select : MonoBehaviour
 
         if (_selectStageNum == 1)
         {
-            GameObject.Find("HumanManager")
-                .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
             _trapCrossOperation.SetActive(false);
             _trapSelectUi.SetEnableTrap(false, false, false, false);
         }
@@ -224,6 +222,12 @@ public class Select : MonoBehaviour
         {
             _trapSelectUi.SetEnableTrap();
         }
+
+        var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
+        var x = ai_generator.KillerPopCell(_selectStageNum).x;
+        var y = ai_generator.KillerPopCell(_selectStageNum).y;
+
+        ai_generator.KillerPopNodeCell((int)x, (int)y);
 
         ShareData.Instance.SelectStage = _selectStageNum;
     }
@@ -292,7 +296,7 @@ public class Select : MonoBehaviour
             _selectStageNum--;
 
         // 0はタイトルステージなので、1 ~ max 
-        _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin, 
+        _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin,
                                       ShareData.Instance.CanSelectStageMax);
 
         if (_currentSelectStageNum == _selectStageNum)

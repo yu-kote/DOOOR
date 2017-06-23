@@ -354,9 +354,7 @@ public class MapBackgrounds : MonoBehaviour
         var light_bulb = ceiling.transform.FindChild("LightBulb").gameObject;
         _lights.Add(light_bulb);
     }
-
-
-
+    
     public void OffsetSurface(int x, ref Vector3 offset_pos, float value)
     {
         if (_nodeManager.WhichSurfaceNum(x) == 0)

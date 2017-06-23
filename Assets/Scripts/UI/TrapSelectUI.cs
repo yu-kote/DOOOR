@@ -42,6 +42,7 @@ public class TrapSelectUI : MonoBehaviour
         public GameObject RecastBar;
         public float MinX, MaxX;
         public GameObject PushButtonEffect;
+        public GameObject BackGround;
     }
 
     TrapUseStatus[] _trapUseStatus = new TrapUseStatus[trap_max];
@@ -71,7 +72,8 @@ public class TrapSelectUI : MonoBehaviour
             _trapUseStatus[i].CurrentTime = 0.0f;
             _trapUseStatus[i].PushButtonEffect =
                 _traps[i].gameObject.transform.FindChild("PushButtonEffect").gameObject;
-
+            _trapUseStatus[i].BackGround =
+                _traps[i].gameObject.transform.FindChild("BackGround").gameObject;
 
             var bar = _trapUseStatus[i].RecastBar = _traps[i].gameObject.transform
                                           .FindChild("RecastBar").gameObject;
@@ -87,7 +89,6 @@ public class TrapSelectUI : MonoBehaviour
             // 初期値はバーを出さないようにする
             var start_bar_right = Mathf.Abs(_trapUseStatus[i].MinX) + Mathf.Abs(_trapUseStatus[i].MaxX);
             rect.offsetMax = new Vector2(-start_bar_right + _trapUseStatus[i].MaxX, rect.offsetMax.y);
-
         }
     }
 
@@ -248,7 +249,11 @@ public class TrapSelectUI : MonoBehaviour
             if (_trapUseStatus[i].Enable == false)
                 continue;
             if (_trapUseStatus[i].CanUse)
+            {
+                _trapUseStatus[i].BackGround.SetActive(true);
                 continue;
+            }
+            _trapUseStatus[i].BackGround.SetActive(false);
 
             _trapUseStatus[i].CurrentTime += Time.deltaTime;
 

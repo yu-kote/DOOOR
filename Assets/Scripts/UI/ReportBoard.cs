@@ -32,6 +32,8 @@ public class ReportBoard : MonoBehaviour
 
     private List<GameObject> _boards = new List<GameObject>();
 
+    bool _isFirstPop = false;
+
     float _popTime = 0.7f;
     float _endTime = 4.0f;
 
@@ -64,12 +66,18 @@ public class ReportBoard : MonoBehaviour
                     break;
                 yield return null;
             }
+            if (_isFirstPop)
+                yield return null;
             if (_boards.FirstOrDefault() == null)
                 yield break;
             EasingInitiator.Add(_boards.FirstOrDefault(), new Vector3(0, 450, 0), _popTime, EaseType.CubicIn);
             EasingInitiator.Wait(_boards.FirstOrDefault(), _endTime);
             EasingInitiator.Add(_boards.FirstOrDefault(), _boards.FirstOrDefault().transform.localPosition, _popTime, EaseType.CubicOut);
+
+            if (_isFirstPop == false)
+                _isFirstPop = true;
         }
+        _isFirstPop = false;
     }
 
     void Update()
@@ -82,6 +90,5 @@ public class ReportBoard : MonoBehaviour
                 Destroy(remove_list);
                 _boards.Remove(remove_list);
             }
-
     }
 }
