@@ -25,12 +25,15 @@ public class MenuBarManager : MonoBehaviour
     private int _selectNum;
     private int _currentselectnum;
 
+    private bool _isFirstSelectEnd;
+
     private void Awake()
     {
         _barActions = new Action[_bar.Count()];
         _selectNum = 0;
         _currentselectnum = -1;
         _isBarAction = false;
+        _isFirstSelectEnd = false;
     }
 
     void Start()
@@ -63,6 +66,11 @@ public class MenuBarManager : MonoBehaviour
             return;
         _barActions[_selectNum]();
         _isBarAction = true;
+        SoundManager.Instance.PlaySE("kettei");
+        EasingInitiator.Add(_bar[_selectNum].transform.FindChild("Button").gameObject,
+                            Vector3.one * 1.3f, 0.2f, EaseType.BackOut, EaseValue.SCALE);
+        EasingInitiator.Add(_bar[_selectNum].transform.FindChild("Button").gameObject,
+                            Vector3.one, 0.2f, EaseType.BackOut, EaseValue.SCALE);
     }
 
     // メニューの何かしらが実行されたらtrue
@@ -81,6 +89,13 @@ public class MenuBarManager : MonoBehaviour
         if (_currentselectnum == _selectNum)
             return;
         _currentselectnum = _selectNum;
+
+        if (_isFirstSelectEnd)
+            SoundManager.Instance.PlaySE("sentakuon");
+        if (_isFirstSelectEnd == false)
+            _isFirstSelectEnd = true;
+
+
 
         var before_scale = new Vector3(1f, 1f, 1f);
         var after_scale = new Vector3(1.3f, 1.3f, 1f);

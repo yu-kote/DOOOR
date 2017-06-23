@@ -157,17 +157,28 @@ public class AIController : MonoBehaviour
     private IEnumerator ExitStart()
     {
         yield return new WaitForSeconds(0.5f);
+
         if (_moveMode != MoveEmotion.TARGET_MOVE)
             yield break;
         var exit_node = ExitNode();
         if (exit_node == null)
             yield break;
 
-        if (GetComponent<AITargetMove>())
-            Destroy(GetComponent<AITargetMove>());
-        if (GetComponent<AISearchMove>())
-            Destroy(GetComponent<AISearchMove>());
+        while (GetComponent<AITargetMove>())
+        {
+            if (GetComponent<AITargetMove>())
+                Destroy(GetComponent<AITargetMove>());
+            yield return null;
+        }
+        while (GetComponent<AISearchMove>())
+        {
+            if (GetComponent<AISearchMove>())
+                Destroy(GetComponent<AISearchMove>());
+            yield return null;
+        }
 
+        if (_moveMode != MoveEmotion.TARGET_MOVE)
+            yield break;
         var mover = gameObject.AddComponent<AITargetMove>();
         mover.SetTargetNode(exit_node);
         mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
@@ -281,7 +292,11 @@ public class AIController : MonoBehaviour
         GetComponent<VictimAnimation>().DeadAnimation();
 
         if (GetComponent<AIItemController>().HaveItemCheck(ItemType.LASTKEY))
+        {
             CurrentNode.gameObject.GetComponent<ItemStatus>().AddPutItem((int)ItemType.LASTKEY);
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("ingame");
+        }
     }
 
     private void OnDisable()
