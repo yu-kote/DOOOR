@@ -90,6 +90,8 @@ public class PlayerAction : MonoBehaviour
         VoiceSoundUpdate();
 
         var value = _trapSelectUi.PushValue;
+        _trapSelectUi.SetCanUseTrapBackGround(TrapDirection.UP);
+
         // 停電を発動させる
         if (value == TrapDirection.UP)
         {
@@ -97,8 +99,8 @@ public class PlayerAction : MonoBehaviour
                 return;
 
             SoundManager.Instance.PlaySE("teiden", gameObject);
+            // 停電させる
             _mapBackgrounds.LightAllControll(false);
-
             // 何秒間停電を発動するかどうか
             float time = 10;// _trapSelectUi.GetRecastTime(TrapDirection.UP);
 
@@ -123,6 +125,9 @@ public class PlayerAction : MonoBehaviour
             != GameState.GAMEMAIN)
             return;
 
+        if (other.tag == "Node")
+            CheckAttribute(other.gameObject);
+
         var value = _trapSelectUi.PushValue;
         //ボタン押してなかったらはじく
         if (value != TrapDirection.NONE)
@@ -130,15 +135,18 @@ public class PlayerAction : MonoBehaviour
                 CreateTrap(other.gameObject, value);
 
         // 階段隠しの発動
-        if (value == TrapDirection.LEFT)
-            if (other.tag == "Attribute")
-                if (other.name.Contains("Stairs"))
+        if (other.tag == "Attribute")
+            if (other.name.Contains("Stairs"))
+            {
+                _trapSelectUi.SetCanUseTrapBackGround(TrapDirection.LEFT);
+                if (value == TrapDirection.LEFT)
                 {
                     if (_trapSelectUi.TrapRecast(value) == false)
                         return;
                     CraftTheInstallation(other.gameObject);
                     return;
                 }
+            }
 
         // ドアをロックする
         if (IsDoorLock())
@@ -159,6 +167,40 @@ public class PlayerAction : MonoBehaviour
 
                 ButtonGuideUpdate(other.gameObject);
             }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Node")
+        {
+            _trapSelectUi.TrapBackgroundReset(TrapDirection.DOWN);
+            _trapSelectUi.TrapBackgroundReset(TrapDirection.RIGHT);
+        }
+        if (other.tag == "Attribute")
+            if (other.name.Contains("Stairs"))
+            {
+                _trapSelectUi.TrapBackgroundReset(TrapDirection.LEFT);
+            }
+    }
+
+    private void CheckAttribute(GameObject node)
+    {
+        TrapStatus trapStatus = node.GetComponent<TrapStatus>();
+
+        //生成済みだった場合はじく
+        if (trapStatus.IsSpawn)
+            return;
+
+        //何も設置できない場合はじく
+        if (trapStatus.CanSetTrapStatus == 0)
+            return;
+
+        //設置不可能だった場合はじく
+        if (!trapStatus.IsCanSetTrap(_selectTrapType))
+            return;
+
+        _trapSelectUi.SetCanUseTrapBackGround(TrapDirection.DOWN);
+        _trapSelectUi.SetCanUseTrapBackGround(TrapDirection.RIGHT);
     }
 
     public bool IsDoorLock()
@@ -212,6 +254,8 @@ public class PlayerAction : MonoBehaviour
         if (cross_direction == TrapDirection.RIGHT)
             GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.RIGHT_TRAP, 0.6f);
 
+        _trapSelectUi.TrapBackgroundReset(TrapDirection.DOWN);
+        _trapSelectUi.TrapBackgroundReset(TrapDirection.RIGHT);
     }
 
     private void CraftTheInstallation(GameObject attribute)
@@ -222,12 +266,17 @@ public class PlayerAction : MonoBehaviour
             var complete = door.LockDoorStatus(_statusLockTime);
             if (complete == false)
                 return;
-            door.DoorLock(LockStart(attribute.transform.parent.gameObject));
+            if (door.DoorLock(LockStart(attribute.transform.parent.gameObject)))
+                SoundManager.Instance.PlaySE("rokku");
+
             DoorLockUpdate(door.transform.parent.gameObject);
         }
 
         if (attribute.name.Contains("Stairs"))
         {
+            SoundManager.Instance.PlaySE("rokku");
+            GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.LEFT_TRAP, 0.6f);
+
             var root_node = attribute.transform.parent.gameObject.GetComponent<Node>();
             var link_node = root_node.GetComponent<Stairs>().LinkNode;
 
@@ -239,7 +288,6 @@ public class PlayerAction : MonoBehaviour
             var complate = stairs2.LockStairsStatus(_stairsLockTime);
             if (complate == false)
                 return;
-
             stairs1.StairsLock(LockStart(stairs1.Attribute.transform.GetChild(0).gameObject));
             StairsLockUpdate(root_node.transform.gameObject,
                              link_node.transform.gameObject);
@@ -292,9 +340,6 @@ public class PlayerAction : MonoBehaviour
         _doorLock.transform.localPosition = offset_pos;
         _doorLock.transform.eulerAngles = FieldUiAngle();
         _doorLock.transform.localScale = Vector3.one;
-
-        GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.LEFT_TRAP, 0.6f);
-
     }
 
     private Vector3 CameraDistance()

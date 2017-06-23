@@ -74,6 +74,7 @@ public class TrapSelectUI : MonoBehaviour
                 _traps[i].gameObject.transform.FindChild("PushButtonEffect").gameObject;
             _trapUseStatus[i].BackGround =
                 _traps[i].gameObject.transform.FindChild("BackGround").gameObject;
+            _trapUseStatus[i].BackGround.SetActive(false);
 
             var bar = _trapUseStatus[i].RecastBar = _traps[i].gameObject.transform
                                           .FindChild("RecastBar").gameObject;
@@ -150,6 +151,24 @@ public class TrapSelectUI : MonoBehaviour
         _trapUseStatus[2].Enable = right;
         _trapUseStatus[3].Enable = left;
         TrapImageSetup();
+    }
+
+
+    public void SetCanUseTrapBackGround(TrapDirection dir)
+    {
+        if (dir == TrapDirection.NONE)
+            return;
+        var num = (int)dir - 1;
+        if (_trapUseStatus[num].CanUse)
+            _trapUseStatus[num].BackGround.SetActive(true);
+        else
+            _trapUseStatus[num].BackGround.SetActive(false);
+    }
+
+    public void TrapBackgroundReset(TrapDirection dir)
+    {
+        var num = (int)dir - 1;
+        _trapUseStatus[num].BackGround.SetActive(false);
     }
 
     private void TrapImageSetup()
@@ -249,11 +268,7 @@ public class TrapSelectUI : MonoBehaviour
             if (_trapUseStatus[i].Enable == false)
                 continue;
             if (_trapUseStatus[i].CanUse)
-            {
-                _trapUseStatus[i].BackGround.SetActive(true);
                 continue;
-            }
-            _trapUseStatus[i].BackGround.SetActive(false);
 
             _trapUseStatus[i].CurrentTime += Time.deltaTime;
 
