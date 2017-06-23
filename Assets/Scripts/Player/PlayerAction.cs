@@ -95,6 +95,8 @@ public class PlayerAction : MonoBehaviour
         {
             if (_trapSelectUi.TrapRecast(value) == false)
                 return;
+
+            SoundManager.Instance.PlaySE("teiden", gameObject);
             _mapBackgrounds.LightAllControll(false);
 
             // 何秒間停電を発動するかどうか
@@ -360,7 +362,7 @@ public class PlayerAction : MonoBehaviour
     void VoicePop()
     {
         GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.USETRAP2, 0.6f);
-        SoundManager.Instance.PlaySE("otodasu", gameObject);
+        SoundManager.Instance.PlaySE("ketaketawarau", gameObject);
         _aiSoundManager.MakeSound(gameObject, gameObject.transform.position,
                                   _voiceRange * 0.9f, 1, transform.eulerAngles);
 

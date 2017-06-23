@@ -219,9 +219,7 @@ public class Select : MonoBehaviour
         else if (_selectStageNum == 4)
             _trapSelectUi.SetEnableTrap(true, true, true, true);
         else
-        {
             _trapSelectUi.SetEnableTrap();
-        }
 
         var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
         var x = ai_generator.KillerPopCell(_selectStageNum).x;
@@ -243,6 +241,7 @@ public class Select : MonoBehaviour
             _isSelectEnd = true;
             SelectEndStaging();
             StartButtonChange();
+            SoundManager.Instance.PlaySE("kettei");
         }
 
         // スティック
