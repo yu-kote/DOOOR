@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
 #if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
-            ShareData.Instance.CanSelectStageMax = 10;
+            ShareData.Instance.CanSelectStageMax = 8;
         }
 #endif
     }
@@ -181,8 +181,13 @@ public class GameManager : MonoBehaviour
         _isGameEnd = true;
         _currentGameState = GameState.GAMECLEAR;
         ShareData.Instance.Status = ResultStatus.GAMECLEAR;
+
+        // ステージの最大数を増やす処理
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
+        ShareData.Instance.CanSelectStageMax = 
+            Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1,
+                        8);
     }
 
     void GameOver()

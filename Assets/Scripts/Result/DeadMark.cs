@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class DeadMark : MonoBehaviour
 {
+    private int _number;
+    public int Number { get { return _number; } set { _number = value; } }
 
     Image _background;
     Transform _crossTransform;
@@ -26,7 +28,8 @@ public class DeadMark : MonoBehaviour
 
     private IEnumerator Staging()
     {
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(_number * 0.3f);
 
         EasingInitiator.Add(_crossTransform.gameObject, Vector3.one, _moveTime,
                             EaseType.CircIn, EaseValue.SCALE);

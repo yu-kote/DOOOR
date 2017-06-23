@@ -66,7 +66,7 @@ public class Result : MonoBehaviour
 
         SoundManager.Instance.volume.Bgm = 3;
 
-        HumanBoardInstance();
+        HumanBoard();
     }
 
     void GameOver()
@@ -76,7 +76,7 @@ public class Result : MonoBehaviour
         SoundManager.Instance.PlayBGM("gameover");
     }
 
-    void HumanBoardInstance()
+    void HumanBoard()
     {
         if (ShareData.Instance.WomanCount >= 1)
             _humans.Add("Woman");
@@ -84,52 +84,58 @@ public class Result : MonoBehaviour
             _humans.Add("TallMan");
         if (ShareData.Instance.FatCount >= 1)
             _humans.Add("Fat");
+        StartCoroutine(HumanBoardInstance());
+    }
 
+    private IEnumerator HumanBoardInstance()
+    {
         var woman_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/woman_bustup");
         var tallman_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/noppo_bustup");
         var fat_sprite = Resources.Load<Sprite>("Texture/GameMainUI/HumanListUI/matyo_bustup");
         var board = Resources.Load<GameObject>("Prefabs/Result/HumanBoard");
 
+        var board_positions = new List<Vector3>();
+
+        if (_humans.Count == 2)
+        {
+            board_positions.Add(new Vector3(130, 0, 0));
+            board_positions.Add(new Vector3(-130, 0, 0));
+        }
+        if (_humans.Count == 3)
+        {
+            board_positions.Add(new Vector3(-200, 0, 0));
+            board_positions.Add(new Vector3(0, 0, 0));
+            board_positions.Add(new Vector3(200, 0, 0));
+        }
+
         for (int i = 0; i < _humans.Count; i++)
         {
+            var item = board;
             if (_humans[i] == "Woman")
             {
-                var item = Instantiate(board, transform);
+                item = Instantiate(board, transform);
                 item.transform.GetChild(0).GetComponent<Image>().sprite = woman_sprite;
                 _boards.Add(item);
             }
             if (_humans[i] == "TallMan")
             {
-                var item = Instantiate(board, transform);
+                item = Instantiate(board, transform);
                 item.transform.GetChild(0).GetComponent<Image>().sprite = tallman_sprite;
                 _boards.Add(item);
             }
             if (_humans[i] == "Fat")
             {
-                var item = Instantiate(board, transform);
+                item = Instantiate(board, transform);
                 item.transform.GetChild(0).GetComponent<Image>().sprite = fat_sprite;
                 _boards.Add(item);
             }
+
+            item.transform.localPosition = board_positions[i];
+            item.transform.localScale = Vector3.one;
+            item.transform.FindChild("DeadMark").GetComponent<DeadMark>().Number = i;
         }
 
-        foreach (var item in _boards)
-        {
-            var t = item.transform;
-            t.localPosition = Vector3.zero;
-            t.localScale = Vector3.one;
-        }
-
-        if (_boards.Count == 2)
-        {
-            _boards[0].transform.localPosition = new Vector3(130, 0, 0);
-            _boards[1].transform.localPosition = new Vector3(-130, 0, 0);
-        }
-        if (_boards.Count == 3)
-        {
-            _boards[0].transform.localPosition = new Vector3(-200, 0, 0);
-            _boards[1].transform.localPosition = new Vector3(0, 0, 0);
-            _boards[2].transform.localPosition = new Vector3(200, 0, 0);
-        }
+        yield return null;
     }
 
     private IEnumerator ChangeTitle(float time)
