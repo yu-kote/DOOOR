@@ -146,7 +146,7 @@ public class AITrapEffect : MonoBehaviour
 
         if (SceneManager.GetSceneByName("Title").name != null)
         {
-            _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);
+            _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.8f);
             _humanAnimController.Rotation(current_node.gameObject);
         }
     }

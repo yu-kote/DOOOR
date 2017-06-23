@@ -108,11 +108,12 @@ public class GameManager : MonoBehaviour
     {
         GameEndUpdate();
         HelpUpdate();
-
+#if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShareData.Instance.CanSelectStageMax = 10;
         }
+#endif
     }
 
     // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
@@ -143,7 +144,7 @@ public class GameManager : MonoBehaviour
                     .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             return;
         }
-
+#if DEBUG
         // デバッグ用
         if (Input.GetKey(KeyCode.T) && Input.GetKey("1"))
         {
@@ -157,7 +158,7 @@ public class GameManager : MonoBehaviour
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             ShareData.Instance.Status = ResultStatus.GAMEOVER;
         }
-
+#endif
         GameClear();
         GameOver();
     }

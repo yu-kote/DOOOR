@@ -152,9 +152,11 @@ public class Select : MonoBehaviour
             return;
         }
 
+#if DEBUG
         if (Input.GetKeyDown(KeyCode.T))
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Title", () => SoundManager.Instance.StopBGM());
+#endif
 
         ArrowEffect();
 

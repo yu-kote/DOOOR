@@ -89,10 +89,11 @@ public class ReportBoard : MonoBehaviour
                 Destroy(remove_list);
                 _boards.Remove(remove_list);
             }
-
+#if DEBUG
         if (Input.GetKeyDown(KeyCode.O))
         {
             Pop("test");
         }
+#endif
     }
 }
