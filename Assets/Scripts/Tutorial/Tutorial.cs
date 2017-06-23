@@ -36,12 +36,15 @@ public class Tutorial : MonoBehaviour
     [SerializeField]
     private Font _startFont;
 
+    [SerializeField]
+    private Image _aButtonImage;
+
     SceneChanger _sceneChanger;
 
     void Start()
     {
         _sceneChanger = GameObject.Find("SceneChanger").GetComponent<SceneChanger>();
-        SoundManager.Instance.PlayBGM("title");
+        SoundManager.Instance.PlayBGM("suto-ri-tyuu");
 
         _tutorialCanvas = gameObject;
         _storyMax = _tutorialCanvas.transform.childCount - 1;
@@ -105,7 +108,7 @@ public class Tutorial : MonoBehaviour
             var next_story_time = 0.0f;
             while (next_story_time < _nextStoryMoveTime)
             {
-                if (Input.GetButtonDown(_fastForwardButton))
+                if (Input.GetButton(_fastForwardButton))
                     break;
                 next_story_time += Time.deltaTime;
                 yield return null;
@@ -129,7 +132,7 @@ public class Tutorial : MonoBehaviour
                         StartCoroutine(DisplayGradually(
                             t.GetComponent<Image>(),
                             2, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
-                        
+
                         for (int k = 0; k < t.transform.childCount; k++)
                         {
                             var image_text = t.transform.GetChild(k).gameObject;
@@ -211,6 +214,10 @@ public class Tutorial : MonoBehaviour
             if (Input.GetButtonDown(_fastForwardButton))
             {
                 ChangeGamemain();
+                SoundManager.Instance.PlaySE("kettei");
+                EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
+                                    0.3f, EaseType.BackOut, EaseValue.SCALE);
+                yield break;
             }
             yield return null;
         }
@@ -249,7 +256,12 @@ public class Tutorial : MonoBehaviour
 
     void ChangeGamemain()
     {
-        _sceneChanger.SceneChange("GameMain");
+        _sceneChanger.SceneChange("GameMain", () =>
+        {
+            EasingInitiator.DestoryEase(_aButtonImage.gameObject);
+        });
         SoundManager.Instance.StopBGM();
     }
+
+
 }
