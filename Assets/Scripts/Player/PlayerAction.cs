@@ -96,7 +96,11 @@ public class PlayerAction : MonoBehaviour
             if (_trapSelectUi.TrapRecast(value) == false)
                 return;
             _mapBackgrounds.LightAllControll(false);
-            StartCoroutine(CallBack(_trapSelectUi.GetRecastTime(TrapDirection.UP),
+
+            // 何秒間停電を発動するかどうか
+            float time = 10;// _trapSelectUi.GetRecastTime(TrapDirection.UP);
+
+            StartCoroutine(CallBack(time,
                () => _mapBackgrounds.LightAllControll(true)));
             GetComponent<PlayerAnimation>().ChangeAnimation(PlayerAnimationStatus.UP_TRAP, 0.6f);
         }

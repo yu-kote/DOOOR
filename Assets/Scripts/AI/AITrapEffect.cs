@@ -68,8 +68,8 @@ public class AITrapEffect : MonoBehaviour
 
         var killer = _aiGenerator.GetKiller().GetComponent<AIController>();
 
-        _aiController.DefaultSpeed = killer.DefaultSpeed;
-        _aiController.HurryUpSpeed = killer.HurryUpSpeed;
+        _aiController.DefaultSpeed = killer.DefaultSpeed / 2;
+        _aiController.HurryUpSpeed = killer.HurryUpSpeed / 2;
 
         yield return new WaitForSeconds(2.0f);
         if (_aiController == null)

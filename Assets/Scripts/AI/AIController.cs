@@ -19,6 +19,7 @@ public class AIController : MonoBehaviour
     private NodeManager _nodeManager;
     private NodeController _nodeController;
     private RoadPathManager _roadPathManager;
+    private MapBackgrounds _mapBackGrounds;
 
     public enum MoveEmotion
     {
@@ -39,12 +40,17 @@ public class AIController : MonoBehaviour
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
 
+    private bool _moveStop;
+    public bool MoveStop { get { return _moveStop; } set { _moveStop = value; } }
+
+
     void Start()
     {
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
         _nodeController = field.GetComponent<NodeController>();
         _roadPathManager = field.GetComponent<RoadPathManager>();
+        _mapBackGrounds = field.GetComponent<MapBackgrounds>();
         _aiGenerator = gameObject.transform.parent.gameObject.GetComponent<AIGenerator>();
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
@@ -56,6 +62,7 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
+        BlackOutEffect();
     }
 
     private void MoveSpeedChange()
@@ -144,20 +151,26 @@ public class AIController : MonoBehaviour
         // 同フレームで探索移動をdestroyしているので未定義で死ぬのを防御するため
         // 数フレーム遅らせる。
         // TODO:設計見直し箇所
-        Observable.Timer(TimeSpan.FromSeconds(0.1f)).Subscribe(_ =>
-        {
-            var exit_node = ExitNode();
-            if (exit_node == null)
-                return;
-            if (GetComponent<AITargetMove>())
-                Destroy(GetComponent<AITargetMove>());
-            if (GetComponent<AISearchMove>())
-                Destroy(GetComponent<AISearchMove>());
-            var mover = gameObject.AddComponent<AITargetMove>();
-            mover.SetTargetNode(exit_node);
-            mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
+        StartCoroutine(ExitStart());
+    }
 
-        }).AddTo(gameObject);
+    private IEnumerator ExitStart()
+    {
+        yield return new WaitForSeconds(0.5f);
+        if (_moveMode != MoveEmotion.TARGET_MOVE)
+            yield break;
+        var exit_node = ExitNode();
+        if (exit_node == null)
+            yield break;
+
+        if (GetComponent<AITargetMove>())
+            Destroy(GetComponent<AITargetMove>());
+        if (GetComponent<AISearchMove>())
+            Destroy(GetComponent<AISearchMove>());
+
+        var mover = gameObject.AddComponent<AITargetMove>();
+        mover.SetTargetNode(exit_node);
+        mover.Speed = GetComponent<AIController>()._hurryUpSpeed;
     }
 
     // 出口のノードを返す関数
@@ -227,6 +240,38 @@ public class AIController : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         action();
+    }
+
+    bool _currentLightOn = true;
+    // 停電したときに動きを止める処理
+    private void BlackOutEffect()
+    {
+        // 停電の時は一度だけ通る
+        if (_mapBackGrounds.IsLightOn == _currentLightOn)
+            return;
+
+        if (GetMovement().MoveComplete() == false)
+            return;
+        _currentLightOn = _mapBackGrounds.IsLightOn;
+
+        if (tag == "Killer")
+            return;
+
+        if (GetMovement() == null)
+            return;
+
+        if (_currentLightOn == false)
+        {
+            GetMovement().CanMove = false;
+            _moveStop = true;
+            GetMovement().MoveSetup();
+        }
+        else
+        {
+            _moveStop = false;
+            GetMovement().CanMove = true;
+            GetMovement().MoveSetup();
+        }
     }
 
     public void BeKilled()
