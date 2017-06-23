@@ -222,6 +222,8 @@ public class AIGenerator : MonoBehaviour
     {
         while (true)
         {
+            if (human == null)
+                break;
             if (human.GetComponent<AIController>().GetMovement())
                 human.GetComponent<AIController>().GetMovement().CanMove = can_move;
             yield return null;

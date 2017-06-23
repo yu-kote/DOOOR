@@ -177,8 +177,6 @@ public class AIChace : AIRouteSearch
             GetComponent<AIController>()
                 .StopMovement(2.0f, () =>
                 {
-                    GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
-
                     human.GetComponent<AIController>().BeKilled();
                     GetComponent<KillerAnimation>().KillAnimation();
 

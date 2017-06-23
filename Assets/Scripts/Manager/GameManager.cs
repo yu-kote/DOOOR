@@ -44,7 +44,6 @@ public class GameManager : MonoBehaviour
 
     private GameState _currentGameState;
     public GameState CurrentGameState { get { return _currentGameState; } set { _currentGameState = value; } }
-    private GameState _prevGameState;
 
     private bool _isGameEnd;
     public bool IsGameEnd { get { return _isGameEnd; } set { _isGameEnd = value; } }
@@ -107,7 +106,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        GameStateUpdate();
         GameEndUpdate();
         HelpUpdate();
 
@@ -172,14 +170,6 @@ public class GameManager : MonoBehaviour
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
     }
 
-    void GameStateUpdate()
-    {
-        if (_currentGameState == _prevGameState)
-            return;
-        _prevGameState = _currentGameState;
-
-    }
-
     void GameClear()
     {
         var humans = _aiGenerator.Humans;
@@ -223,9 +213,22 @@ public class GameManager : MonoBehaviour
         if (goal_human == null)
             return;
 
+        Staging(goal_human.GetComponent<AIController>().CurrentNode);
+        goal_human.AddComponent<AIEndMove>();
+
         _isGameEnd = true;
         _currentGameState = GameState.GAMEOVER;
         ShareData.Instance.Status = ResultStatus.GAMEOVER;
+    }
+
+    private void Staging(Node target)
+    {
+        var app_pos = target.transform.position + new Vector3(0, 4, -2);
+
+        var node_manager = GameObject.Find("Field").GetComponent<NodeManager>();
+        var side = node_manager.WhichSurfaceNum(target.CellX);
+
+        GameObject.Find("MainCamera").GetComponent<KillApproach>().StartApproach(app_pos, side);
     }
 
     public bool IsPushActionButton()
