@@ -184,7 +184,9 @@ public class GameTutorial : MonoBehaviour
     {
         if (stage_num == 1)
             return 4;
-        if (stage_num == 2 || stage_num == 3)
+        if (stage_num == 2)
+            return 3;
+        if (stage_num == 3)
             return 2;
         if (stage_num == 4 || stage_num == 5)
             return 1;

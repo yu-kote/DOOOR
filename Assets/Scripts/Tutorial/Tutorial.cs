@@ -68,8 +68,15 @@ public class Tutorial : MonoBehaviour
             {
                 var c_text = texts.transform.GetChild(k).gameObject;
                 c_text.SetActive(false);
+
                 var text = c_text.transform.GetChild(0).GetComponent<Text>();
-                text.font = _font;
+                for (int h = 0; h < c_text.transform.childCount; h++)
+                {
+                    text = c_text.transform.GetChild(h).GetComponent<Text>();
+                    text.font = _font;
+                }
+
+                // 一番最後の文字だけ例外処理
                 if (i == _textCanvas.transform.childCount - 1)
                     if (k == texts.transform.childCount - 1)
                         text.font = _startFont;
@@ -122,11 +129,14 @@ public class Tutorial : MonoBehaviour
                         StartCoroutine(DisplayGradually(
                             t.GetComponent<Image>(),
                             2, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
+                        
+                        for (int k = 0; k < t.transform.childCount; k++)
+                        {
+                            var image_text = t.transform.GetChild(k).gameObject;
 
-                        var image_text = t.transform.GetChild(0).gameObject;
-
-                        StartCoroutine(DisplayGradually(
-                            image_text.GetComponent<Text>(), 2, 0, -1));
+                            StartCoroutine(DisplayGradually(
+                                image_text.GetComponent<Text>(), 2, 0, -1));
+                        }
                     }
                     continue;
                 }
@@ -163,10 +173,14 @@ public class Tutorial : MonoBehaviour
                         t.GetComponent<Image>(),
                         2, 0, -1, () => t.transform.parent.gameObject.SetActive(false)));
 
-                    var image_text = t.transform.GetChild(0).gameObject;
 
-                    StartCoroutine(DisplayGradually(
-                        image_text.GetComponent<Text>(), 2, 0, -1));
+                    for (int k = 0; k < t.transform.childCount; k++)
+                    {
+                        var image_text = t.transform.GetChild(k).gameObject;
+
+                        StartCoroutine(DisplayGradually(
+                            image_text.GetComponent<Text>(), 2, 0, -1));
+                    }
                 }
                 continue;
             }
@@ -179,21 +193,16 @@ public class Tutorial : MonoBehaviour
             text_image.color = new Color(1, 1, 1, 0);
             StartCoroutine(DisplayGradually(text_image, 2, 0.75f));
 
-            var tc = text_image.transform.GetChild(0).gameObject.GetComponent<Text>();
-            tc.color = new Color(tc.color.r, tc.color.g, tc.color.b, 0);
-            StartCoroutine(DisplayGradually(tc, 1, 0.75f));
+            for (int k = 0; k < text_image.transform.childCount; k++)
+            {
+                var tc = text_image.transform.GetChild(k).gameObject.GetComponent<Text>();
+                tc.color = new Color(tc.color.r, tc.color.g, tc.color.b, 0);
+                StartCoroutine(DisplayGradually(tc, 1, 0.75f));
+            }
 
             // 場面が変わる判定
             story_count++;
 
-            //next_story_time = 0.0f;
-            //while (next_story_time < _nextTextMoveTime)
-            //{
-            //    if (Input.GetButtonDown(_fastForwardButton))
-            //        break;
-            //    next_story_time += Time.deltaTime;
-            //    yield return null;
-            //}
             yield return new WaitForSeconds(_nextTextMoveTime);
         }
 
