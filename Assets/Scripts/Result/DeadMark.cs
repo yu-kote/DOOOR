@@ -35,7 +35,11 @@ public class DeadMark : MonoBehaviour
         while (true)
         {
             if (EasingInitiator.IsEaseEnd(_crossTransform.gameObject, EaseValue.SCALE))
+            {
+                SoundManager.Instance.PlaySE("harituke");
                 _background.color = new Color(0, 0, 0, 0.5f);
+                yield break;
+            }
             color.a += 0.01f;
             _crossTransform.GetComponent<Image>().color = color;
             yield return null;

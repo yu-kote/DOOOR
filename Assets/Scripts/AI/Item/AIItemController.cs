@@ -47,9 +47,11 @@ public class AIItemController : MonoBehaviour
         {
             ReportBoard.Instance.Pop("侵入者が出口に向かい始めています。阻止してください。");
             SoundManager.Instance.PlaySE("kaginyuusyu");
+            // 鍵を持っていかれたらBGM鳴らす
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM("kagiwotorareta");
         }
-
-
+        
         _haveItems.Add(item);
 
         // UIにゲットしたアイテムを表示する

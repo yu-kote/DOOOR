@@ -221,11 +221,7 @@ public class Select : MonoBehaviour
         else
             _trapSelectUi.SetEnableTrap();
 
-        var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
-        var x = ai_generator.KillerPopCell(_selectStageNum).x;
-        var y = ai_generator.KillerPopCell(_selectStageNum).y;
-
-        ai_generator.KillerPopNodeCell((int)x, (int)y);
+        _reloader.KillerSetup();
 
         ShareData.Instance.SelectStage = _selectStageNum;
     }

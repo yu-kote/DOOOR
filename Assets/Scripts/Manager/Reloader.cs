@@ -85,6 +85,14 @@ public class Reloader : MonoBehaviour
                           -2);
     }
 
+    public void KillerSetup()
+    {
+        var ai_generator = GameObject.Find("HumanManager").GetComponent<AIGenerator>();
+        var x = ai_generator.KillerPopCell(_selectStageNum).x;
+        var y = ai_generator.KillerPopCell(_selectStageNum).y;
+        ai_generator.KillerPopNodeCell((int)x, (int)y);
+    }
+
     public void GameStart()
     {
         StartCoroutine(Callback(1.0f, () =>
@@ -133,6 +141,7 @@ public class Reloader : MonoBehaviour
             StageSetup(_selectStageNum);
             CameraSetup();
             GameStart();
+            KillerSetup();
 
             _camera.GetComponent<Rotater>().Setup();
             _player.GetComponent<Rotater>().Setup();

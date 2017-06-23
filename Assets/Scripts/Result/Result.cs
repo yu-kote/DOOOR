@@ -8,7 +8,6 @@ using System.Linq;
 
 public class Result : MonoBehaviour
 {
-
     [SerializeField]
     private string _actionButton = "Action";
     [SerializeField]
@@ -41,11 +40,17 @@ public class Result : MonoBehaviour
         _imageText.color = new Color(1, 1, 1, 0);
 
         _menuBarManager.SetBarAction(0, () =>
-                    GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
-                    .SceneChange("GameMain", () => SoundManager.Instance.StopBGM()));
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                            .SceneChange("GameMain", () => SoundManager.Instance.StopBGM());
+            SoundManager.Instance.volume.Bgm = 1;
+        });
         _menuBarManager.SetBarAction(1, () =>
-                    GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
-                    .SceneChange("Title", () => SoundManager.Instance.StopBGM()));
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                            .SceneChange("Title", () => SoundManager.Instance.StopBGM());
+            SoundManager.Instance.volume.Bgm = 1;
+        });
 
         StartCoroutine(ChangeTitle(2.0f));
     }
@@ -58,6 +63,8 @@ public class Result : MonoBehaviour
         var image = _gameClear.GetComponent<Image>();
         image.sprite = Resources.Load<Sprite>("Texture/Result/clear03");
         SoundManager.Instance.PlayBGM("gameclear");
+
+        SoundManager.Instance.volume.Bgm = 3;
 
         HumanBoardInstance();
     }
@@ -122,9 +129,7 @@ public class Result : MonoBehaviour
             _boards[0].transform.localPosition = new Vector3(-200, 0, 0);
             _boards[1].transform.localPosition = new Vector3(0, 0, 0);
             _boards[2].transform.localPosition = new Vector3(200, 0, 0);
-
         }
-
     }
 
     private IEnumerator ChangeTitle(float time)
@@ -140,8 +145,13 @@ public class Result : MonoBehaviour
         }
     }
 
-    void Update()
+
+    private void Update()
     {
+        if (ShareData.Instance.Status == ResultStatus.GAMECLEAR)
+            SoundManager.Instance.volume.Bgm = 3;
+        if (ShareData.Instance.Status == ResultStatus.GAMEOVER)
+            SoundManager.Instance.volume.Bgm = 1;
 
     }
 
