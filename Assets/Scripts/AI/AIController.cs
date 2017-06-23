@@ -38,7 +38,7 @@ public class AIController : MonoBehaviour
     [SerializeField]
     private float _hurryUpSpeed;
     public float HurryUpSpeed { get { return _hurryUpSpeed; } set { _hurryUpSpeed = value; } }
-    
+
     void Start()
     {
         var field = GameObject.Find("Field");
@@ -56,7 +56,6 @@ public class AIController : MonoBehaviour
         MoveSpeedChange();
         NodeUpdate();
         AimForExit();
-        MovementExcess();
     }
 
     private void MoveSpeedChange()
@@ -94,28 +93,6 @@ public class AIController : MonoBehaviour
         if (GetComponent<AIChace>())
             movement = GetComponent<AIChace>();
         return movement;
-    }
-
-    public void MovementExcess()
-    {
-        var movements = new List<AIBasicsMovement>();
-        if (GetComponent<AISearchMove>())
-            movements.Add(GetComponent<AISearchMove>());
-        if (GetComponent<AITargetMove>())
-            movements.Add(GetComponent<AITargetMove>());
-        if (GetComponent<AIRunAway>())
-            movements.Add(GetComponent<AIRunAway>());
-        if (GetComponent<AIChace>())
-            movements.Add(GetComponent<AIChace>());
-
-        if (movements.Count > 1)
-        {
-            //Debug.Log("Movement Over" + tag);
-            //foreach (var move in movements)
-            //    Destroy(move);
-
-            //StartCoroutine(Callback(0.2f, () => gameObject.AddComponent<AISearchMove>()));
-        }
     }
 
     public void NodeUpdate()

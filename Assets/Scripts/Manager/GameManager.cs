@@ -213,9 +213,22 @@ public class GameManager : MonoBehaviour
         if (goal_human == null)
             return;
 
+        Staging(goal_human.GetComponent<AIController>().CurrentNode);
+        goal_human.AddComponent<AIEndMove>();
+
         _isGameEnd = true;
         _currentGameState = GameState.GAMEOVER;
         ShareData.Instance.Status = ResultStatus.GAMEOVER;
+    }
+
+    private void Staging(Node target)
+    {
+        var app_pos = target.transform.position + new Vector3(0, 4, -2);
+
+        var node_manager = GameObject.Find("Field").GetComponent<NodeManager>();
+        var side = node_manager.WhichSurfaceNum(target.CellX);
+
+        GameObject.Find("MainCamera").GetComponent<KillApproach>().StartApproach(app_pos, side);
     }
 
     public bool IsPushActionButton()
