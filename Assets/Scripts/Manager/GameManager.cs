@@ -108,12 +108,13 @@ public class GameManager : MonoBehaviour
     {
         GameEndUpdate();
         HelpUpdate();
-#if DEBUG
+
+        //#if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShareData.Instance.CanSelectStageMax = 8;
         }
-#endif
+        //#endif
     }
 
     // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
@@ -185,7 +186,7 @@ public class GameManager : MonoBehaviour
         // ステージの最大数を増やす処理
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
-        ShareData.Instance.CanSelectStageMax = 
+        ShareData.Instance.CanSelectStageMax =
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1,
                         8);
     }
