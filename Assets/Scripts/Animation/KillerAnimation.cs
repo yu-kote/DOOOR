@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ public class KillerAnimation : MonoBehaviour
     private KillerAnimationStatus _animStatus;
     public KillerAnimationStatus AnimStatus { get { return _animStatus; } set { _animStatus = value; } }
 
+    private GameObject _soundReactImage;
+
     private AIController _aiController;
     private GameManager _gameManager;
 
@@ -29,10 +32,16 @@ public class KillerAnimation : MonoBehaviour
         _animStatus = KillerAnimationStatus.IDOL;
         _aiController = GetComponent<AIController>();
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        
     }
-
+    
     void Update()
     {
+        if (_aiController.MoveMode == AIController.MoveEmotion.REACT_SOUND)
+            gameObject.transform.GetChild(0).FindChild("SoundEffect").gameObject.SetActive(true);
+        else
+            gameObject.transform.GetChild(0).FindChild("SoundEffect").gameObject.SetActive(false);
+
         if (_gameManager.CurrentGameState == GameState.GAMECLEAR)
         {
             if (_animStatus == KillerAnimationStatus.ATTACK)
@@ -74,5 +83,4 @@ public class KillerAnimation : MonoBehaviour
                 _animStatus = KillerAnimationStatus.HAPPY;
         });
     }
-
 }

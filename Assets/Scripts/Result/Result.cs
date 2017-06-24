@@ -96,6 +96,10 @@ public class Result : MonoBehaviour
 
         var board_positions = new List<Vector3>();
 
+        if (_humans.Count == 1)
+        {
+            board_positions.Add(new Vector3(0, 0, 0));
+        }
         if (_humans.Count == 2)
         {
             board_positions.Add(new Vector3(130, 0, 0));
