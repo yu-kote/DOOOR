@@ -146,14 +146,14 @@ public class GameManager : MonoBehaviour
         }
 #if DEBUG
         // デバッグ用
-        if (Input.GetKey(KeyCode.T) && Input.GetKey("1"))
+        if (Input.GetKey(KeyCode.T) && Input.GetKeyDown("1"))
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             ShareData.Instance.Status = ResultStatus.GAMECLEAR;
             StageOpen();
         }
-        else if (Input.GetKey(KeyCode.T) && Input.GetKey("2"))
+        else if (Input.GetKey(KeyCode.T) && Input.GetKeyDown("2"))
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());

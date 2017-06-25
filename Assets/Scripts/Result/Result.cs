@@ -20,6 +20,8 @@ public class Result : MonoBehaviour
 
     private Image _imageText;
     private Text _imageTextComment;
+    private Text _imageTextCommentDropShadow;
+
     private List<string> _humans = new List<string>();
     private List<GameObject> _boards = new List<GameObject>();
 
@@ -62,9 +64,13 @@ public class Result : MonoBehaviour
         _gameClear.SetActive(true);
         _imageText = _gameClear.transform.GetChild(0).GetComponent<Image>();
 
-        _imageTextComment = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextComment = _imageText.transform.GetChild(1).GetComponent<Text>();
         _imageTextComment.color = new Color(1, 0, 0, 0);
         _imageTextComment.text = CommetRandom(ResultStatus.GAMECLEAR);
+
+        _imageTextCommentDropShadow = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextCommentDropShadow.color = new Color(0, 0, 0, 0);
+        _imageTextCommentDropShadow.text = _imageTextComment.text;
 
         var image = _gameClear.GetComponent<Image>();
         image.sprite = Resources.Load<Sprite>("Texture/Result/clear03");
@@ -80,9 +86,13 @@ public class Result : MonoBehaviour
         _gameOver.SetActive(true);
         _imageText = _gameOver.transform.GetChild(0).GetComponent<Image>();
 
-        _imageTextComment = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextComment = _imageText.transform.GetChild(1).GetComponent<Text>();
         _imageTextComment.color = new Color(1, 1, 1, 0);
         _imageTextComment.text = CommetRandom(ResultStatus.GAMEOVER);
+
+        _imageTextCommentDropShadow = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextCommentDropShadow.color = new Color(0, 0, 0, 0);
+        _imageTextCommentDropShadow.text = _imageTextComment.text;
 
         SoundManager.Instance.PlayBGM("gameover");
     }
@@ -95,6 +105,9 @@ public class Result : MonoBehaviour
             _humans.Add("TallMan");
         if (ShareData.Instance.FatCount >= 1)
             _humans.Add("Fat");
+        _humans.Add("Fat");
+        _humans.Add("Fat");
+        _humans.Add("Fat");
         StartCoroutine(HumanBoardInstance());
     }
 
@@ -165,6 +178,9 @@ public class Result : MonoBehaviour
             var comment_color = _imageTextComment.color;
             comment_color.a += Time.deltaTime;
             _imageTextComment.color = comment_color;
+            var comment_drop_shadow_color = _imageTextCommentDropShadow.color;
+            comment_drop_shadow_color.a += Time.deltaTime;
+            _imageTextCommentDropShadow.color = comment_drop_shadow_color;
 
             yield return null;
         }
