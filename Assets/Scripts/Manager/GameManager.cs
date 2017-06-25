@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
 
         // リザルトに移行する
         StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(6.0f)), GameState.GAMEOVER);
-        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(6.0f)), GameState.GAMECLEAR);
+        StateChangeCallBack(() => StartCoroutine(ScenaChangeResult(5.0f)), GameState.GAMECLEAR);
     }
 
     void Update()
@@ -108,12 +108,12 @@ public class GameManager : MonoBehaviour
         GameEndUpdate();
         HelpUpdate();
 
-        //#if DEBUG
+#if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
             ShareData.Instance.CanSelectStageMax = 5;
         }
-        //#endif
+#endif
     }
 
     // ゲームのステータスが切り替わった時にコールバックされる関数を登録する
@@ -198,10 +198,15 @@ public class GameManager : MonoBehaviour
             if (ShareData.Instance.SelectStage > 5)
                 ShareData.Instance.CanSelectStageMax = ShareData.Instance.StageMax;
         }
+
         ShareData.Instance.CanSelectStageMax =
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, ShareData.Instance.StageMax);
         ShareData.Instance.SelectStage =
             Mathf.Clamp(ShareData.Instance.SelectStage, 1, ShareData.Instance.StageMax);
+
+        if (ShareData.Instance.ClearStages.Contains(ShareData.Instance.StageMax) == false)
+            if (ShareData.Instance.SelectStage == ShareData.Instance.StageMax)
+                ShareData.Instance.ClearStages.Add(ShareData.Instance.StageMax);
     }
 
     void GameOver()
