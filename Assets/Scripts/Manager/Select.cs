@@ -18,6 +18,8 @@ public class Select : MonoBehaviour
     private GameObject _trapCrossOperation;
     [SerializeField]
     private TrapSelectUI _trapSelectUi;
+    [SerializeField]
+    private GameObject _helpButtonGuide;
 
     [SerializeField]
     private Text _stageNum;
@@ -209,10 +211,12 @@ public class Select : MonoBehaviour
         SoundManager.Instance.PlayBGM("ingame");
         _gameManager.CurrentGameState = GameState.GAMEMAIN;
 
+        _helpButtonGuide.SetActive(false);
         if (_selectStageNum == 1)
         {
             _trapCrossOperation.SetActive(false);
             _trapSelectUi.SetEnableTrap(false, false, false, false);
+            _helpButtonGuide.SetActive(true);
         }
         else if (_selectStageNum == 2)
             _trapSelectUi.SetEnableTrap(false, true, false, false);
