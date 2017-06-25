@@ -300,7 +300,7 @@ public class Select : MonoBehaviour
                 _isSelectEnd = true;
                 SelectEndStaging();
                 StartButtonChange();
-                SoundManager.Instance.PlaySE("kettei");
+                SoundManager.Instance.ChoiceSE();
             }
 
         // スティック

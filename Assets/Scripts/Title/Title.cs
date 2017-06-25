@@ -56,7 +56,7 @@ public class Title : MonoBehaviour
                         0.5f, EaseType.BackOut, EaseValue.SCALE);
             }
             if (_isChangeScene)
-                SoundManager.Instance.PlaySE("kettei");
+                SoundManager.Instance.ChoiceSE();
             yield return null;
         }
     }

@@ -51,7 +51,7 @@ public class Credit : MonoBehaviour
         }
 
         if (_isChangeScene)
-            SoundManager.Instance.PlaySE("kettei");
+            SoundManager.Instance.ChoiceSE();
     }
 
     void ChangeTitle()

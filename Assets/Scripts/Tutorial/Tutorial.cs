@@ -214,7 +214,7 @@ public class Tutorial : MonoBehaviour
             if (Input.GetButtonDown(_fastForwardButton))
             {
                 ChangeGamemain();
-                SoundManager.Instance.PlaySE("kettei");
+                SoundManager.Instance.ChoiceSE();
                 EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
                                     0.3f, EaseType.BackOut, EaseValue.SCALE);
                 yield break;
