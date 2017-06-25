@@ -254,6 +254,8 @@ public class AISearchMove : AIBasicsMovement
         _roadPathManager.RoadGuideReset(gameObject);
         CanMove = false;
 
+        _nodeController.ReStepIn(gameObject, GetComponent<AIController>().CurrentNode);
+
         CallBack(0.3f, () =>
         {
             if (GetComponent<AITargetMove>())
