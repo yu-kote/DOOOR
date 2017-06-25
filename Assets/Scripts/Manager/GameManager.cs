@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
         //#if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
-            ShareData.Instance.CanSelectStageMax = 8;
+            ShareData.Instance.CanSelectStageMax = 5;
         }
         //#endif
     }
@@ -189,6 +189,8 @@ public class GameManager : MonoBehaviour
         {
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
             ShareData.Instance.SelectStage += 1;
+            if (ShareData.Instance.SelectStage > 5)
+                ShareData.Instance.CanSelectStageMax = ShareData.Instance.StageMax;
         }
         ShareData.Instance.CanSelectStageMax =
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, 8);
