@@ -5,6 +5,8 @@ using System.Linq;
 using UniRx;
 using System;
 using UnityEngine.UI;
+using System.IO;
+
 
 public enum GameState
 {
@@ -203,6 +205,52 @@ public class GameManager : MonoBehaviour
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, ShareData.Instance.StageMax);
         ShareData.Instance.SelectStage =
             Mathf.Clamp(ShareData.Instance.SelectStage, 1, ShareData.Instance.StageMax);
+
+        StageDataSave();
+    }
+
+    void StageDataSave()
+    {
+        var text = Resources.Load<TextAsset>("SaveData/SaveData");
+        var save_data = JsonUtility.FromJson<SaveDataJson>(text.text);
+
+        // 上書き
+        if (save_data.CanSelectStageMax < ShareData.Instance.CanSelectStageMax)
+            save_data.CanSelectStageMax = ShareData.Instance.CanSelectStageMax;
+
+        save_data.ClearStages = ShareData.Instance.ClearStages;
+
+        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
+
+        using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+        {
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                sw.WriteLine(JsonUtility.ToJson(save_data));
+            }
+        }
+    }
+
+    public void Load()
+    {
+        var data = LoadData();
+
+        ShareData.Instance.CanSelectStageMax = data.CanSelectStageMax;
+        ShareData.Instance.ClearStages = data.ClearStages;
+    }
+
+    private SaveDataJson LoadData()
+    {
+        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
+        using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+        {
+            using (StreamReader sr = new StreamReader(fs))
+            {
+                var sd = JsonUtility.FromJson<SaveDataJson>(sr.ReadToEnd());
+                if (sd == null) return new SaveDataJson();
+                return sd;
+            }
+        }
     }
 
     void GameOver()
