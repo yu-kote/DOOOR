@@ -131,15 +131,15 @@ public class AIGenerator : MonoBehaviour
 
     private void TitlePopHuman()
     {
-        Observable.Timer(TimeSpan.FromSeconds(1.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(0.2f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.WOMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
-        Observable.Timer(TimeSpan.FromSeconds(5.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(4.2f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.TALLMAN)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
-        Observable.Timer(TimeSpan.FromSeconds(10.0f)).Subscribe(_ =>
+        Observable.Timer(TimeSpan.FromSeconds(9.2f)).Subscribe(_ =>
         {
             CreateVictim(GetVictimName(VictimType.FAT)).GetComponent<AIBeginMove>().BeginMoveStart();
         }).AddTo(this);
