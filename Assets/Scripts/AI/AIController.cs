@@ -260,6 +260,10 @@ public class AIController : MonoBehaviour
     // 停電したときに動きを止める処理
     private void BlackOutEffect()
     {
+        if (_moveStop)
+            if (GetMovement())
+                GetMovement().CanMove = false;
+
         // 停電の時は一度だけ通る
         if (_mapBackGrounds.IsLightOn == _currentLightOn)
             return;
