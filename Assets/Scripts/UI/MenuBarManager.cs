@@ -71,7 +71,8 @@ public class MenuBarManager : MonoBehaviour
 
         _barActions[_selectNum]();
         _isBarAction = true;
-        SoundManager.Instance.PlaySE("kettei");
+        //SoundManager.Instance.PlaySE("kettei");
+        SoundManager.Instance.ChoiceSE();
         EasingInitiator.Add(_bar[_selectNum].transform.FindChild("Button").gameObject,
                             Vector3.one * 1.3f, 0.2f, EaseType.BackOut, EaseValue.SCALE);
         EasingInitiator.Add(_bar[_selectNum].transform.FindChild("Button").gameObject,

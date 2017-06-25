@@ -27,6 +27,10 @@ public class SceneChanger : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     public void SceneChange(string scene_name, Action action = null)
