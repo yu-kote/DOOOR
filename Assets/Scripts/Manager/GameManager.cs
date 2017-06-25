@@ -187,7 +187,7 @@ public class GameManager : MonoBehaviour
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
         {
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
-            ShareData.Instance.SelectStage = ShareData.Instance.CanSelectStageMax;
+            ShareData.Instance.SelectStage += 1; 
         }
         ShareData.Instance.CanSelectStageMax =
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, 8);
