@@ -185,10 +185,14 @@ public class GameManager : MonoBehaviour
 
         // ステージの最大数を増やす処理
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
+        {
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
+            ShareData.Instance.SelectStage = ShareData.Instance.CanSelectStageMax;
+        }
         ShareData.Instance.CanSelectStageMax =
-            Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1,
-                        8);
+            Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, 8);
+
+
     }
 
     void GameOver()
