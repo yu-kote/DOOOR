@@ -172,10 +172,10 @@ public class AIChace : AIRouteSearch
 
             Staging(human);
 
-            human.GetComponent<AIController>().StopMovement(2);
+            human.GetComponent<AIController>().StopMovement(1);
             GetComponent<KillerAnimation>().AnimStatus = KillerAnimationStatus.IDOL;
             GetComponent<AIController>()
-                .StopMovement(2.0f, () =>
+                .StopMovement(1.0f, () =>
                 {
                     human.GetComponent<AIController>().BeKilled();
                     GetComponent<KillerAnimation>().KillAnimation();

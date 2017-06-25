@@ -76,7 +76,7 @@ public class KillerAnimation : MonoBehaviour
     {
         _animStatus = KillerAnimationStatus.ATTACK;
         GetComponent<AIController>()
-        .StopMovement(2f, () =>
+        .StopMovement(1f, () =>
         {
             _animStatus = KillerAnimationStatus.IDOL;
             if (_gameManager.CurrentGameState == GameState.GAMECLEAR)

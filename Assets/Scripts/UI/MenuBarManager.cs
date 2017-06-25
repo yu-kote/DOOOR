@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using UniRx;
 
 public class MenuBarManager : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class MenuBarManager : MonoBehaviour
     private GameObject[] _bar;
 
     private Action[] _barActions = null;
+    private bool _isActionUpdate = false;
 
     private bool _isBarAction;
     private int _selectDirection;
@@ -64,6 +66,9 @@ public class MenuBarManager : MonoBehaviour
     {
         if (Input.GetButtonDown(_actionButton) == false)
             return;
+        if (_isActionUpdate)
+            return;
+
         _barActions[_selectNum]();
         _isBarAction = true;
         SoundManager.Instance.PlaySE("kettei");
@@ -71,6 +76,12 @@ public class MenuBarManager : MonoBehaviour
                             Vector3.one * 1.3f, 0.2f, EaseType.BackOut, EaseValue.SCALE);
         EasingInitiator.Add(_bar[_selectNum].transform.FindChild("Button").gameObject,
                             Vector3.one, 0.2f, EaseType.BackOut, EaseValue.SCALE);
+
+        _isActionUpdate = true;
+        Observable.Timer(TimeSpan.FromSeconds(3.0f)).Subscribe(_ =>
+        {
+            _isActionUpdate = false;
+        }).AddTo(this);
     }
 
     // メニューの何かしらが実行されたらtrue
@@ -94,8 +105,6 @@ public class MenuBarManager : MonoBehaviour
             SoundManager.Instance.PlaySE("sentakuon");
         if (_isFirstSelectEnd == false)
             _isFirstSelectEnd = true;
-
-
 
         var before_scale = new Vector3(1f, 1f, 1f);
         var after_scale = new Vector3(1.3f, 1.3f, 1f);
