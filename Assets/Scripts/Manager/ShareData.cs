@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum ResultStatus
 {
-    GAMECLEAR,
     GAMEOVER,
+    GAMECLEAR,
 }
 
 public class ShareData

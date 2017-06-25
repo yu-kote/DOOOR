@@ -19,6 +19,7 @@ public class Result : MonoBehaviour
     private MenuBarManager _menuBarManager;
 
     private Image _imageText;
+    private Text _imageTextComment;
     private List<string> _humans = new List<string>();
     private List<GameObject> _boards = new List<GameObject>();
 
@@ -39,6 +40,7 @@ public class Result : MonoBehaviour
 
         _imageText.color = new Color(1, 1, 1, 0);
 
+
         _menuBarManager.SetBarAction(0, () =>
         {
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
@@ -52,13 +54,17 @@ public class Result : MonoBehaviour
             SoundManager.Instance.volume.Bgm = 1;
         });
 
-        StartCoroutine(ChangeTitle(2.0f));
+        StartCoroutine(ChangeTitle(2.5f));
     }
 
     void GameClear()
     {
         _gameClear.SetActive(true);
         _imageText = _gameClear.transform.GetChild(0).GetComponent<Image>();
+
+        _imageTextComment = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextComment.color = new Color(1, 0, 0, 0);
+        _imageTextComment.text = CommetRandom(ResultStatus.GAMECLEAR);
 
         var image = _gameClear.GetComponent<Image>();
         image.sprite = Resources.Load<Sprite>("Texture/Result/clear03");
@@ -73,6 +79,11 @@ public class Result : MonoBehaviour
     {
         _gameOver.SetActive(true);
         _imageText = _gameOver.transform.GetChild(0).GetComponent<Image>();
+
+        _imageTextComment = _imageText.transform.GetChild(0).GetComponent<Text>();
+        _imageTextComment.color = new Color(1, 1, 1, 0);
+        _imageTextComment.text = CommetRandom(ResultStatus.GAMEOVER);
+
         SoundManager.Instance.PlayBGM("gameover");
     }
 
@@ -84,6 +95,9 @@ public class Result : MonoBehaviour
             _humans.Add("TallMan");
         if (ShareData.Instance.FatCount >= 1)
             _humans.Add("Fat");
+        _humans.Add("Fat");
+        _humans.Add("Fat");
+        _humans.Add("Fat");
         StartCoroutine(HumanBoardInstance());
     }
 
@@ -151,10 +165,42 @@ public class Result : MonoBehaviour
             color.a += Time.deltaTime;
             _imageText.color = color;
 
+            var comment_color = _imageTextComment.color;
+            comment_color.a += Time.deltaTime;
+            _imageTextComment.color = comment_color;
+
             yield return null;
         }
     }
 
+    private string CommetRandom(ResultStatus status)
+    {
+        var max_num = 8;
+        var rand_num = UnityEngine.Random.Range(0, max_num);
+        if (status == ResultStatus.GAMECLEAR)
+        {
+            if (rand_num == 0) return "これでまた平穏が訪れましたね";
+            if (rand_num == 1) return "また犠牲者が増えてしまいました";
+            if (rand_num == 2) return "あぁ、なんてむごい";
+            if (rand_num == 3) return "屋敷内のお掃除完了です";
+            if (rand_num == 4) return "隠れるためには必要な犠牲なのです";
+            if (rand_num == 5) return "あぁ、もっと殺したい";
+            if (rand_num == 6) return "この感触は慣れることはないですね";
+            if (rand_num == 7) return "無事に時が過ぎ去ります";
+        }
+        if (status == ResultStatus.GAMEOVER)
+        {
+            if (rand_num == 0) return "彼らは今後楽しく生きるのでしょうか";
+            if (rand_num == 1) return "此処の場所を言いふらさないといいのですが";
+            if (rand_num == 2) return "われらも外、出たいですね";
+            if (rand_num == 3) return "今日はピクニック日よりみたいです";
+            if (rand_num == 4) return "おや、いつの間にか朝でしたね";
+            if (rand_num == 5) return "新しい鍵を作らなくては";
+            if (rand_num == 6) return "当分は怯えながら暮らすことになりそうです";
+            if (rand_num == 7) return "逃げてしまいましたか";
+        }
+        return "";
+    }
 
     private void Update()
     {
