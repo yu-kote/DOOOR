@@ -75,9 +75,6 @@ public class Select : MonoBehaviour
 
     void Awake()
     {
-        _selectStageNum = ShareData.Instance.SelectStage;
-        _currentSelectStageNum = _selectStageNum;
-
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
 
@@ -90,6 +87,10 @@ public class Select : MonoBehaviour
         _camera.transform.position += new Vector3(0, 0, -20);
 
         _trapCrossOperation.SetActive(true);
+
+        // ステージ数の初期化
+        _selectStageNum = ShareData.Instance.SelectStage;
+        _currentSelectStageNum = _selectStageNum;
 
         // ヘルプの初期化
         _help.color = new Color(1, 1, 1, 0);
@@ -116,6 +117,7 @@ public class Select : MonoBehaviour
     private IEnumerator Setup()
     {
         yield return null;
+        _gameManager.Load();
         _reloader.StageSetup(_selectStageNum);
         CameraSetup();
         ClearCheck(_selectStageNum);
@@ -145,7 +147,6 @@ public class Select : MonoBehaviour
             color.a = Mathf.Clamp(color.a, alpha_min, 1.0f);
             _fade.color = color;
 
-            BackToTitle();
             if (MapSelect() == false)
                 continue;
 
@@ -219,6 +220,8 @@ public class Select : MonoBehaviour
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Title", () => SoundManager.Instance.StopBGM());
 #endif
+
+        BackToTitle();
 
         ArrowEffect();
 
