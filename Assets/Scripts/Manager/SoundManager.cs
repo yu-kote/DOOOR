@@ -191,7 +191,7 @@ public class SoundManager : MonoBehaviour
     public void ChoiceSE()
     {
         List<string> voicelist = new List<string>();
-        voicelist.Add("bizyohimei");
+        voicelist.Add("bijyohimei");
         voicelist.Add("noppohimei");
         voicelist.Add("debuhimei");
 
