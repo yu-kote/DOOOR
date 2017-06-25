@@ -95,9 +95,6 @@ public class Result : MonoBehaviour
             _humans.Add("TallMan");
         if (ShareData.Instance.FatCount >= 1)
             _humans.Add("Fat");
-        _humans.Add("Fat");
-        _humans.Add("Fat");
-        _humans.Add("Fat");
         StartCoroutine(HumanBoardInstance());
     }
 

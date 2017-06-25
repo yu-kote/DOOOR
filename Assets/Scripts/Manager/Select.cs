@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class Select : MonoBehaviour
 {
@@ -42,7 +43,8 @@ public class Select : MonoBehaviour
 
     [SerializeField]
     private Image _fade;
-
+    [SerializeField]
+    private GameObject _clearMark;
     [SerializeField]
     private Image _help;
 
@@ -91,6 +93,9 @@ public class Select : MonoBehaviour
         // 左右の矢印の初期化
         _rightArrowStartPos = _rightArrow.transform.localPosition;
         _leftArrowStartPos = _leftArrow.transform.localPosition;
+
+        // クリアマークの初期化
+        _clearMark.SetActive(false);
     }
 
     private void Start()
@@ -134,6 +139,7 @@ public class Select : MonoBehaviour
             }
             _reloader.StageSetup(_selectStageNum);
             CameraSetup();
+            StageClearCheck(_selectStageNum);
         }
     }
 
@@ -144,6 +150,16 @@ public class Select : MonoBehaviour
         var camera_pos = _nodeManager.GetNodesCenterPoint();
         _camera.transform.position = new Vector3(camera_pos.x, camera_pos.y, _camera.transform.position.z);
         _camera.transform.eulerAngles = mover.StartAngle;
+    }
+
+    void StageClearCheck(int stage_num)
+    {
+        _clearMark.SetActive(false);
+
+        // クリア済みのステージならクリアマークを出す
+        if (ShareData.Instance.ClearStages.FirstOrDefault(num => num == stage_num) == 0)
+            return;
+        _clearMark.SetActive(true);
     }
 
     void Update()
@@ -343,9 +359,9 @@ public class Select : MonoBehaviour
         else if (_selectStageNum > _stageMin)
             _leftArrow.SetActive(true);
 
-        if (_selectStageNum >= ShareData.Instance.CanSelectStageMax)
+        if (_selectStageNum >= ShareData.Instance.StageMax)
             _rightArrow.SetActive(false);
-        else if (_selectStageNum < ShareData.Instance.CanSelectStageMax)
+        else if (_selectStageNum < ShareData.Instance.StageMax)
             _rightArrow.SetActive(true);
 
         _effectTime += 10 * Time.deltaTime;

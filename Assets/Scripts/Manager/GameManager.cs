@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
         _menuBarManager.gameObject.SetActive(true);
     }
 
-
     void Start()
     {
         var human_manager = GameObject.Find("HumanManager");
@@ -183,15 +182,16 @@ public class GameManager : MonoBehaviour
         _currentGameState = GameState.GAMECLEAR;
         ShareData.Instance.Status = ResultStatus.GAMECLEAR;
 
+        // クリアしたステージを保存する
+        ShareData.Instance.ClearStages.Add(ShareData.Instance.SelectStage);
         // ステージの最大数を増やす処理
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
         {
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
-            ShareData.Instance.SelectStage += 1; 
+            ShareData.Instance.SelectStage += 1;
         }
         ShareData.Instance.CanSelectStageMax =
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, 8);
-
 
     }
 
