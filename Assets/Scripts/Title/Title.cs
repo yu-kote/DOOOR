@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,34 +26,39 @@ public class Title : MonoBehaviour
         _sceneChanger = GameObject.Find("SceneChanger").GetComponent<SceneChanger>();
         SoundManager.Instance.PlayBGM("title");
         _isChangeScene = false;
+        StartCoroutine(SceneChange());
     }
 
-    void Update()
+    private IEnumerator SceneChange()
     {
-        if (_isChangeScene)
-            return;
+        yield return new WaitForSeconds(1.0f);
 
-        if (Input.GetButtonDown(_startButton))
+        while (true)
         {
-            ChangeTutorial();
-            EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
-                                0.5f, EaseType.BackOut, EaseValue.SCALE);
+            if (_isChangeScene)
+                break;
+            if (Input.GetButtonDown(_startButton))
+            {
+                ChangeTutorial();
+                EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
+                                    0.5f, EaseType.BackOut, EaseValue.SCALE);
+            }
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                ChangeTutorial();
+                EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
+                        0.5f, EaseType.BackOut, EaseValue.SCALE);
+            }
+            if (Input.GetButtonDown(_creditButton))
+            {
+                ChangeCredit();
+                EasingInitiator.Add(_bButtonImage.gameObject, Vector3.one * 1.3f,
+                        0.5f, EaseType.BackOut, EaseValue.SCALE);
+            }
+            if (_isChangeScene)
+                SoundManager.Instance.PlaySE("kettei");
+            yield return null;
         }
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            ChangeTutorial();
-            EasingInitiator.Add(_aButtonImage.gameObject, Vector3.one * 1.3f,
-                    0.5f, EaseType.BackOut, EaseValue.SCALE);
-        }
-        if (Input.GetButtonDown(_creditButton))
-        {
-            ChangeCredit();
-            EasingInitiator.Add(_bButtonImage.gameObject, Vector3.one * 1.3f,
-                    0.5f, EaseType.BackOut, EaseValue.SCALE);
-        }
-
-        if (_isChangeScene)
-            SoundManager.Instance.PlaySE("kettei");
     }
 
     void ChangeGamemain()
