@@ -53,6 +53,8 @@ public class Select : MonoBehaviour
     private Image _help;
 
     [SerializeField]
+    private string _backToTitleButton = "Sound";
+    [SerializeField]
     string _horizontalAxis = "Horizontal";
     bool _isAxisDown;
     [SerializeField]
@@ -116,6 +118,7 @@ public class Select : MonoBehaviour
         yield return null;
         _reloader.StageSetup(_selectStageNum);
         CameraSetup();
+        ClearCheck(_selectStageNum);
         StartCoroutine(StageSelectStart());
     }
 
@@ -142,6 +145,7 @@ public class Select : MonoBehaviour
             color.a = Mathf.Clamp(color.a, alpha_min, 1.0f);
             _fade.color = color;
 
+            BackToTitle();
             if (MapSelect() == false)
                 continue;
 
@@ -286,6 +290,15 @@ public class Select : MonoBehaviour
         _reloader.KillerSetup();
 
         ShareData.Instance.SelectStage = _selectStageNum;
+    }
+
+    private void BackToTitle()
+    {
+        if (Input.GetButtonDown(_backToTitleButton))
+        {
+            GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
+                .SceneChange("Title", () => SoundManager.Instance.StopBGM());
+        }
     }
 
     private bool MapSelect()

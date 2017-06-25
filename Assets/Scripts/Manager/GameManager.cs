@@ -203,10 +203,6 @@ public class GameManager : MonoBehaviour
             Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, ShareData.Instance.StageMax);
         ShareData.Instance.SelectStage =
             Mathf.Clamp(ShareData.Instance.SelectStage, 1, ShareData.Instance.StageMax);
-
-        if (ShareData.Instance.ClearStages.Contains(ShareData.Instance.StageMax) == false)
-            if (ShareData.Instance.SelectStage == ShareData.Instance.StageMax)
-                ShareData.Instance.ClearStages.Add(ShareData.Instance.StageMax);
     }
 
     void GameOver()
