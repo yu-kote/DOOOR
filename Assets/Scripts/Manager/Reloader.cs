@@ -98,11 +98,7 @@ public class Reloader : MonoBehaviour
         StartCoroutine(Callback(1.0f, () =>
         {
             GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
-
-            if (_selectStageNum == 1)
-                GameObject.Find("HumanManager")
-                    .GetComponent<AIGenerator>().KillerPopNodeCell(4, 2);
-
+            
             _aiGenerator.MoveStartHumans();
         }));
     }
@@ -138,7 +134,7 @@ public class Reloader : MonoBehaviour
             if (color.a < 1)
                 continue;
 
-            StageSetup(_selectStageNum);
+            StageSetup();
             CameraSetup();
             GameStart();
             KillerSetup();

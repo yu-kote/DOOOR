@@ -25,7 +25,7 @@ public class KillApproach : MonoBehaviour
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
 
-        _approachTime = 2.0f;
+        _approachTime = 1.0f;
 
         _gameManager.StateChangeCallBack(() => _startZ = transform.position.z, GameState.GAMEMAIN);
     }
@@ -61,7 +61,7 @@ public class KillApproach : MonoBehaviour
         EasingInitiator.Add(gameObject, approach_position, _approachTime, EaseType.CircOut);
 
         yield return new WaitForSeconds(_approachTime);
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(2.0f);
 
         Load();
 

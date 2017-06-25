@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
         _menuBarManager.gameObject.SetActive(true);
     }
 
-
     void Start()
     {
         var human_manager = GameObject.Find("HumanManager");
@@ -112,7 +111,7 @@ public class GameManager : MonoBehaviour
         //#if DEBUG
         if (Input.GetKeyDown(KeyCode.P))
         {
-            ShareData.Instance.CanSelectStageMax = 8;
+            ShareData.Instance.CanSelectStageMax = 5;
         }
         //#endif
     }
@@ -152,6 +151,7 @@ public class GameManager : MonoBehaviour
             GameObject.Find("SceneChanger").GetComponent<SceneChanger>()
                 .SceneChange("Result", () => SoundManager.Instance.StopBGM());
             ShareData.Instance.Status = ResultStatus.GAMECLEAR;
+            StageOpen();
         }
         else if (Input.GetKey(KeyCode.T) && Input.GetKey("2"))
         {
@@ -183,16 +183,25 @@ public class GameManager : MonoBehaviour
         _currentGameState = GameState.GAMECLEAR;
         ShareData.Instance.Status = ResultStatus.GAMECLEAR;
 
+        StageOpen();
+    }
+
+    void StageOpen()
+    {
+        // クリアしたステージを保存する
+        ShareData.Instance.ClearStages.Add(ShareData.Instance.SelectStage);
         // ステージの最大数を増やす処理
         if (ShareData.Instance.SelectStage >= ShareData.Instance.CanSelectStageMax)
         {
             ShareData.Instance.CanSelectStageMax = ShareData.Instance.SelectStage + 1;
-            ShareData.Instance.SelectStage += 1; 
+            ShareData.Instance.SelectStage += 1;
+            if (ShareData.Instance.SelectStage > 5)
+                ShareData.Instance.CanSelectStageMax = ShareData.Instance.StageMax;
         }
         ShareData.Instance.CanSelectStageMax =
-            Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, 8);
-
-
+            Mathf.Clamp(ShareData.Instance.CanSelectStageMax, 1, ShareData.Instance.StageMax);
+        ShareData.Instance.SelectStage =
+            Mathf.Clamp(ShareData.Instance.SelectStage, 1, ShareData.Instance.StageMax);
     }
 
     void GameOver()

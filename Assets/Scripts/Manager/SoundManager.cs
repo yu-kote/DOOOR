@@ -187,6 +187,17 @@ public class SoundManager : MonoBehaviour
             Destroy(s);
         }
     }
+
+    public void ChoiceSE()
+    {
+        List<string> voicelist = new List<string>();
+        voicelist.Add("bizyohimei");
+        voicelist.Add("noppohimei");
+        voicelist.Add("debuhimei");
+
+        var r = Random.Range(0, 3);
+        PlaySE(voicelist[r]);
+    }
 }
 
 

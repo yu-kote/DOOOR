@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class Select : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class Select : MonoBehaviour
     [SerializeField]
     private Text _stageNum;
     [SerializeField]
+    private GameObject _pushStartBar;
+    [SerializeField]
     private Image _startButton;
 
     [SerializeField]
@@ -42,7 +45,10 @@ public class Select : MonoBehaviour
 
     [SerializeField]
     private Image _fade;
-
+    [SerializeField]
+    private GameObject _clearMark;
+    [SerializeField]
+    private Text _stageGuideText;
     [SerializeField]
     private Image _help;
 
@@ -91,6 +97,11 @@ public class Select : MonoBehaviour
         // 左右の矢印の初期化
         _rightArrowStartPos = _rightArrow.transform.localPosition;
         _leftArrowStartPos = _leftArrow.transform.localPosition;
+
+        // クリアマークの初期化
+        _clearMark.SetActive(false);
+        // ステージ解放のガイドコメント初期化
+        _stageGuideText.text = "";
     }
 
     private void Start()
@@ -120,7 +131,15 @@ public class Select : MonoBehaviour
 
             var color = _fade.color;
             color.a -= Time.deltaTime * 2;
-            color.a = Mathf.Clamp(color.a, 0, 1);
+
+            var alpha_min = 0.0f;
+            var bitblack_alpha = 0.8f;
+            if (color.a <= bitblack_alpha)
+                if (_selectStageNum > ShareData.Instance.CanSelectStageMax)
+                {
+                    alpha_min = bitblack_alpha;
+                }
+            color.a = Mathf.Clamp(color.a, alpha_min, 1.0f);
             _fade.color = color;
 
             if (MapSelect() == false)
@@ -132,8 +151,12 @@ public class Select : MonoBehaviour
                 _fade.color = color;
                 yield return null;
             }
+
+            // ステージを切り替える
             _reloader.StageSetup(_selectStageNum);
             CameraSetup();
+            ClearCheck(_selectStageNum);
+            CanStartChangeUI(_selectStageNum);
         }
     }
 
@@ -144,6 +167,39 @@ public class Select : MonoBehaviour
         var camera_pos = _nodeManager.GetNodesCenterPoint();
         _camera.transform.position = new Vector3(camera_pos.x, camera_pos.y, _camera.transform.position.z);
         _camera.transform.eulerAngles = mover.StartAngle;
+    }
+
+    void ClearCheck(int stage_num)
+    {
+        _clearMark.SetActive(false);
+
+        // クリア済みのステージならクリアマークを出す
+        if (ShareData.Instance.ClearStages.FirstOrDefault(num => num == stage_num) == 0)
+            return;
+        _clearMark.SetActive(true);
+    }
+
+    void CanStartChangeUI(int stage_num)
+    {
+        if (_selectStageNum <= ShareData.Instance.CanSelectStageMax)
+        {
+            _pushStartBar.SetActive(true);
+            _stageGuideText.text = "";
+        }
+        else
+        {
+            var t = "ステージ";
+            if (stage_num == 2) t = "Stage" + 1 + "をクリアすることで解放できます";
+            if (stage_num == 3) t = "Stage" + 2 + "をクリアすることで解放できます";
+            if (stage_num == 4) t = "Stage" + 3 + "をクリアすることで解放できます";
+            if (stage_num == 5) t = "Stage" + 4 + "をクリアすることで解放できます";
+            if (stage_num == 6) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 7) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 8) t = "Stage" + 5 + "をクリアすることで解放できます";
+
+            _stageGuideText.text = t;
+            _pushStartBar.SetActive(false);
+        }
     }
 
     void Update()
@@ -238,13 +294,14 @@ public class Select : MonoBehaviour
             return false;
 
         // ステージ選択が終わったら演出する
-        if (_gameManager.IsPushActionButton() || Input.GetKeyDown(KeyCode.Return))
-        {
-            _isSelectEnd = true;
-            SelectEndStaging();
-            StartButtonChange();
-            SoundManager.Instance.PlaySE("kettei");
-        }
+        if (_selectStageNum <= ShareData.Instance.CanSelectStageMax)
+            if (_gameManager.IsPushActionButton() || Input.GetKeyDown(KeyCode.Return))
+            {
+                _isSelectEnd = true;
+                SelectEndStaging();
+                StartButtonChange();
+                SoundManager.Instance.ChoiceSE();
+            }
 
         // スティック
         float horizotal = Input.GetAxis("Horizontal");
@@ -298,7 +355,7 @@ public class Select : MonoBehaviour
 
         // 0はタイトルステージなので、1 ~ max 
         _selectStageNum = Mathf.Clamp(_selectStageNum, _stageMin,
-                                      ShareData.Instance.CanSelectStageMax);
+                                      ShareData.Instance.StageMax);
 
         if (_currentSelectStageNum == _selectStageNum)
             return false;
@@ -312,6 +369,7 @@ public class Select : MonoBehaviour
 
     public void SelectEndStaging()
     {
+        StartCoroutine(ClearMarkStaging());
         float staging_time = 3.0f;
         EasingInitiator.Wait(gameObject, staging_time);
         EasingInitiator.Add(_selectCanvas, new Vector3(0, 0, -600), staging_time, EaseType.CubicOut);
@@ -322,6 +380,19 @@ public class Select : MonoBehaviour
         var default_angle = new Vector3(0, 0, 360);
         EasingInitiator.Add(_camera, default_angle, staging_time, EaseType.CubicOut, EaseValue.ROTATION);
         EasingInitiator.Add(_frame, new Vector3(0, 0, -15), staging_time, EaseType.CubicOut, EaseValue.ROTATION);
+    }
+
+    private IEnumerator ClearMarkStaging()
+    {
+        var image = _clearMark.GetComponent<Image>();
+        var color = image.color;
+        while (color.a > 0)
+        {
+            color.a -= Time.deltaTime;
+            image.color = color;
+            yield return null;
+        }
+        _clearMark.SetActive(false);
     }
 
     private void StageNumTextupdate()
@@ -343,9 +414,9 @@ public class Select : MonoBehaviour
         else if (_selectStageNum > _stageMin)
             _leftArrow.SetActive(true);
 
-        if (_selectStageNum >= ShareData.Instance.CanSelectStageMax)
+        if (_selectStageNum >= ShareData.Instance.StageMax)
             _rightArrow.SetActive(false);
-        else if (_selectStageNum < ShareData.Instance.CanSelectStageMax)
+        else if (_selectStageNum < ShareData.Instance.StageMax)
             _rightArrow.SetActive(true);
 
         _effectTime += 10 * Time.deltaTime;
