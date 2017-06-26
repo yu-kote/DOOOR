@@ -209,48 +209,39 @@ public class GameManager : MonoBehaviour
         StageDataSave();
     }
 
-    void StageDataSave()
+    private void StageDataSave()
     {
         var text = Resources.Load<TextAsset>("SaveData/SaveData");
         var save_data = JsonUtility.FromJson<SaveDataJson>(text.text);
 
         // 上書き
-        if (save_data.CanSelectStageMax < ShareData.Instance.CanSelectStageMax)
-            save_data.CanSelectStageMax = ShareData.Instance.CanSelectStageMax;
-
+        save_data.CanSelectStageMax = ShareData.Instance.CanSelectStageMax;
         save_data.ClearStages = ShareData.Instance.ClearStages;
-
+        
         var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
-
-        using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+        StreamWriter sw = new StreamWriter(path, false);
         {
-            using (StreamWriter sw = new StreamWriter(fs))
-            {
-                sw.WriteLine(JsonUtility.ToJson(save_data));
-            }
+            sw.WriteLine(JsonUtility.ToJson(save_data));
+            Debug.Log(save_data.CanSelectStageMax);
         }
+
+        sw.Flush();
+        sw.Close();
+        //{"CanSelectStageMax":1,"ClearStages":[0]}
     }
 
     public void Load()
     {
-        var data = LoadData();
+        string text = "";
+        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
+        using (StreamReader sr = new StreamReader(path))
+        {
+            text = sr.ReadLine();
+        }
+        var data = JsonUtility.FromJson<SaveDataJson>(text);
 
         ShareData.Instance.CanSelectStageMax = data.CanSelectStageMax;
         ShareData.Instance.ClearStages = data.ClearStages;
-    }
-
-    private SaveDataJson LoadData()
-    {
-        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
-        using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-        {
-            using (StreamReader sr = new StreamReader(fs))
-            {
-                var sd = JsonUtility.FromJson<SaveDataJson>(sr.ReadToEnd());
-                if (sd == null) return new SaveDataJson();
-                return sd;
-            }
-        }
     }
 
     void GameOver()

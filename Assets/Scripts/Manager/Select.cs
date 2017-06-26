@@ -117,7 +117,6 @@ public class Select : MonoBehaviour
     private IEnumerator Setup()
     {
         yield return null;
-        _gameManager.Load();
         _reloader.StageSetup(_selectStageNum);
         CameraSetup();
         ClearCheck(_selectStageNum);

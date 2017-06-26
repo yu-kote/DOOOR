@@ -11,6 +11,7 @@ public class Reloader : MonoBehaviour
     [SerializeField]
     private Image _fade;
 
+    private GameManager _gameManager;
     private GameObject _player;
     private GameObject _camera;
     private NodeManager _nodeManager;
@@ -24,6 +25,8 @@ public class Reloader : MonoBehaviour
 
     void Start()
     {
+        _gameManager = GetComponent<GameManager>();
+
         var field = GameObject.Find("Field");
         _nodeManager = field.GetComponent<NodeManager>();
         _mapLoader = field.GetComponent<MapLoader>();
@@ -46,6 +49,8 @@ public class Reloader : MonoBehaviour
 
     public void StageSetup(int select_stage_num)
     {
+        _gameManager.Load();
+
         _selectStageNum = select_stage_num;
         // マップを読み直す
         ChangeMap(select_stage_num);
@@ -98,7 +103,7 @@ public class Reloader : MonoBehaviour
         StartCoroutine(Callback(1.0f, () =>
         {
             GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
-            
+
             _aiGenerator.MoveStartHumans();
         }));
     }
