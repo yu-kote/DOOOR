@@ -221,7 +221,6 @@ public class Select : MonoBehaviour
 #endif
 
         BackToTitle();
-
         ArrowEffect();
 
         // テキスト更新
