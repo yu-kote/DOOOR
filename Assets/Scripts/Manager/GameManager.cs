@@ -6,6 +6,7 @@ using UniRx;
 using System;
 using UnityEngine.UI;
 using System.IO;
+using System.Text;
 
 
 public enum GameState
@@ -211,20 +212,18 @@ public class GameManager : MonoBehaviour
 
     private void StageDataSave()
     {
-        var text = Resources.Load<TextAsset>("SaveData/SaveData");
-        var save_data = JsonUtility.FromJson<SaveDataJson>(text.text);
+        SaveDataJson save_data = new SaveDataJson();
 
         // 上書き
         save_data.CanSelectStageMax = ShareData.Instance.CanSelectStageMax;
         save_data.ClearStages = ShareData.Instance.ClearStages;
-        
-        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
-        StreamWriter sw = new StreamWriter(path, false);
-        {
-            sw.WriteLine(JsonUtility.ToJson(save_data));
-            Debug.Log(save_data.CanSelectStageMax);
-        }
 
+        //var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
+        var item = JsonUtility.ToJson(save_data);
+
+        StreamWriter sw = new StreamWriter("Assets/Resources/SaveData/SaveData.json", false);
+
+        sw.WriteLine(item);
         sw.Flush();
         sw.Close();
         //{"CanSelectStageMax":1,"ClearStages":[0]}
@@ -232,16 +231,13 @@ public class GameManager : MonoBehaviour
 
     public void Load()
     {
-        string text = "";
-        var path = Application.dataPath + "/Resources/SaveData/SaveData.json";
-        using (StreamReader sr = new StreamReader(path))
+        using (StreamReader sr = new StreamReader("Assets/Resources/SaveData/SaveData.json"))
         {
-            text = sr.ReadLine();
+            string line = sr.ReadLine();
+            var item = JsonUtility.FromJson<SaveDataJson>(line);
+            ShareData.Instance.CanSelectStageMax = item.CanSelectStageMax;
+            ShareData.Instance.ClearStages = item.ClearStages;
         }
-        var data = JsonUtility.FromJson<SaveDataJson>(text);
-
-        ShareData.Instance.CanSelectStageMax = data.CanSelectStageMax;
-        ShareData.Instance.ClearStages = data.ClearStages;
     }
 
     void GameOver()
