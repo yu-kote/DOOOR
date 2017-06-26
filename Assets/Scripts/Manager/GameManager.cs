@@ -399,8 +399,18 @@ public class GameManager : MonoBehaviour
                 SetImageChildColor(child_image, color);
             }
             var child_text = t.GetChild(i).GetComponent<Text>();
+            //if (child_text.name == "TrapText")
+            //    continue;
+
+
             if (child_text)
             {
+                if (child_text.name == "TrapText")
+                {
+                    child_text.color = color;
+                    child_text.color = new Color(0, 0, 0, color.a);
+                    continue;
+                }
                 child_text.color = color;
                 SetImageChildColor(child_text, color);
             }

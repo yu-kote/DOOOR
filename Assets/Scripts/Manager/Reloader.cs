@@ -11,6 +11,18 @@ public class Reloader : MonoBehaviour
     [SerializeField]
     private Image _fade;
 
+    [SerializeField]
+    private GameObject _crossHelp;
+    [SerializeField]
+    private GameObject _trap1;
+    [SerializeField]
+    private GameObject _trap2;
+    [SerializeField]
+    private GameObject _trap3;
+    [SerializeField]
+    private GameObject _trap4;
+
+
     private GameManager _gameManager;
     private GameObject _player;
     private GameObject _camera;
@@ -49,6 +61,8 @@ public class Reloader : MonoBehaviour
 
     public void StageSetup(int select_stage_num)
     {
+        HelpTrap(select_stage_num);
+
         _gameManager.Load();
 
         _selectStageNum = select_stage_num;
@@ -63,6 +77,38 @@ public class Reloader : MonoBehaviour
 
         if (select_stage_num >= 5)
             _nodeManager.CreateItem();
+    }
+
+    private void HelpTrap(int stage_num)
+    {
+        _crossHelp.SetActive(false);
+        _trap1.SetActive(false);
+        _trap2.SetActive(false);
+        _trap3.SetActive(false);
+        _trap4.SetActive(false);
+
+        var color = new Color(0, 0, 0, 1);
+
+        if (stage_num == 2)
+        {
+            _crossHelp.SetActive(true);
+            _trap2.SetActive(true);
+        }
+        if (stage_num == 3)
+        {
+            _crossHelp.SetActive(true);
+            _trap2.SetActive(true);
+            _trap3.SetActive(true);
+            _trap4.SetActive(true);
+        }
+        if (stage_num >= 4)
+        {
+            _crossHelp.SetActive(true);
+            _trap1.SetActive(true);
+            _trap2.SetActive(true);
+            _trap3.SetActive(true);
+            _trap4.SetActive(true);
+        }
     }
 
     public void CameraSetup()
@@ -103,7 +149,6 @@ public class Reloader : MonoBehaviour
         StartCoroutine(Callback(1.0f, () =>
         {
             GetComponent<GameManager>().CurrentGameState = GameState.GAMEMAIN;
-
             _aiGenerator.MoveStartHumans();
         }));
     }
