@@ -57,7 +57,7 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
-        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER);
+        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER, 2.0f);
         StartCoroutine(Deceleration());
     }
 
@@ -72,8 +72,8 @@ public class AITrapEffect : MonoBehaviour
         _aiController.HurryUpSpeed = killer.HurryUpSpeed / 2;
 
         yield return new WaitForSeconds(2.0f);
-        if (_aiController == null)
-            yield break;
+
+        _aiController = GetComponent<AIController>();
 
         _victimAnimation.AnimStatus = VictimAnimationStatus.IDOL;
         _aiController.DefaultSpeed = defalut_speed;
@@ -143,7 +143,7 @@ public class AITrapEffect : MonoBehaviour
         door.StartOpening(_isReverseDoor);
         if (door.IsDoorLock())
             return;
-        
+
         if (SceneManager.GetSceneByName("Title").name != null)
         {
             _victimAnimation.ChangeAnimation(VictimAnimationStatus.OPEN_DOOR, 0.5f);

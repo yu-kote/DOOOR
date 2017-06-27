@@ -159,27 +159,32 @@ public class AIController : MonoBehaviour
 
     private IEnumerator ExitStart()
     {
-        yield return new WaitForSeconds(0.5f);
+        for (int i = 0; i < 3; i++)
+        {
+            yield return new WaitForSeconds(0.5f);
 
-        if (_moveMode != MoveEmotion.TARGET_MOVE)
-            yield break;
+            if (_moveMode != MoveEmotion.TARGET_MOVE)
+                yield break;
+
+
+            while (GetComponent<AITargetMove>())
+            {
+                if (GetComponent<AITargetMove>())
+                    Destroy(GetComponent<AITargetMove>());
+                yield return null;
+            }
+            while (GetComponent<AISearchMove>())
+            {
+                if (GetComponent<AISearchMove>())
+                    Destroy(GetComponent<AISearchMove>());
+                yield return null;
+            }
+        }
+
         var exit_node = ExitNode();
         if (exit_node == null)
             yield break;
-
-        while (GetComponent<AITargetMove>())
-        {
-            if (GetComponent<AITargetMove>())
-                Destroy(GetComponent<AITargetMove>());
-            yield return null;
-        }
-        while (GetComponent<AISearchMove>())
-        {
-            if (GetComponent<AISearchMove>())
-                Destroy(GetComponent<AISearchMove>());
-            yield return null;
-        }
-
+        
         if (_moveMode != MoveEmotion.TARGET_MOVE)
             yield break;
         var mover = gameObject.AddComponent<AITargetMove>();

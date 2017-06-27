@@ -288,6 +288,7 @@ public class GameManager : MonoBehaviour
 
         var node_manager = GameObject.Find("Field").GetComponent<NodeManager>();
         var side = node_manager.WhichSurfaceNum(target.CellX);
+
         GameObject.Find("MainCamera").GetComponent<KillApproach>().Reverberation = 5.0f;
         GameObject.Find("MainCamera").GetComponent<KillApproach>().StartApproach(app_pos, side);
     }
