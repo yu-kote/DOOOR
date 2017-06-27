@@ -234,9 +234,14 @@ public class GameManager : MonoBehaviour
         using (StreamReader sr = new StreamReader("Assets/Resources/SaveData/SaveData.json"))
         {
             string line = sr.ReadLine();
-            var item = JsonUtility.FromJson<SaveDataJson>(line);
-            ShareData.Instance.CanSelectStageMax = item.CanSelectStageMax;
-            ShareData.Instance.ClearStages = item.ClearStages;
+            var data = JsonUtility.FromJson<SaveDataJson>(line);
+            ShareData.Instance.CanSelectStageMax = data.CanSelectStageMax;
+
+            foreach (var item in data.ClearStages)
+            {
+                if (ShareData.Instance.ClearStages.Contains(item) == false)
+                    ShareData.Instance.ClearStages.Add(item);
+            }
         }
     }
 
@@ -283,7 +288,7 @@ public class GameManager : MonoBehaviour
 
         var node_manager = GameObject.Find("Field").GetComponent<NodeManager>();
         var side = node_manager.WhichSurfaceNum(target.CellX);
-
+        GameObject.Find("MainCamera").GetComponent<KillApproach>().Reverberation = 5.0f;
         GameObject.Find("MainCamera").GetComponent<KillApproach>().StartApproach(app_pos, side);
     }
 

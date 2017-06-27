@@ -200,6 +200,12 @@ public class Select : MonoBehaviour
             if (stage_num == 6) t = "Stage" + 5 + "をクリアすることで解放できます";
             if (stage_num == 7) t = "Stage" + 5 + "をクリアすることで解放できます";
             if (stage_num == 8) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 9) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 10) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 11) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 12) t = "Stage" + 5 + "をクリアすることで解放できます";
+            if (stage_num == 13) t = "Stage" + 5 + "をクリアすることで解放できます";
+
 
             _stageGuideText.text = t;
             _pushStartBar.SetActive(false);

@@ -10,6 +10,9 @@ public class KillApproach : MonoBehaviour
     private Rotater _rotater;
 
     private float _approachTime;
+    private float _reverberation;
+    public float Reverberation { get { return _reverberation; } set { _reverberation = value; } }
+
 
     private float _startZ;
 
@@ -26,6 +29,7 @@ public class KillApproach : MonoBehaviour
         _nodeManager = GameObject.Find("Field").GetComponent<NodeManager>();
 
         _approachTime = 1.0f;
+        _reverberation = 2.0f;
 
         _gameManager.StateChangeCallBack(() => _startZ = transform.position.z, GameState.GAMEMAIN);
     }
@@ -61,7 +65,7 @@ public class KillApproach : MonoBehaviour
         EasingInitiator.Add(gameObject, approach_position, _approachTime, EaseType.CircOut);
 
         yield return new WaitForSeconds(_approachTime);
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(_reverberation);
 
         Load();
 

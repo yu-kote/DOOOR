@@ -26,7 +26,7 @@ public class ShareData
 
     public int SelectStage = 1;
     public int CanSelectStageMax = 0;
-    public int StageMax = 8;
+    public int StageMax = 13;
 
     public List<int> ClearStages = new List<int>();
 }
