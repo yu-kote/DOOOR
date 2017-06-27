@@ -97,10 +97,6 @@ public class AIRunAway : AIRouteSearch
         next_node = StairsPoint(EscapeNodes());
         _roadPathManager.RoadGuideReset(gameObject);
 
-        // 壁かどうか
-        if (next_node.GetComponent<Wall>() != null)
-            return false;
-
         // 階段がロックされていたら通れない
         if (IsStairsLock(next_node))
         {
@@ -109,6 +105,10 @@ public class AIRunAway : AIRouteSearch
             if (next_node == null)
                 return false;
         }
+
+        // 壁かどうか
+        if (next_node.GetComponent<Wall>() != null)
+            return false;
 
         // ドアの鍵が閉まっているかどうか
         if (IsDoorLock(next_node))

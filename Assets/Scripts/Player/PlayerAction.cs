@@ -339,7 +339,7 @@ public class PlayerAction : MonoBehaviour
 
         _doorLock.transform.localPosition = offset_pos;
         _doorLock.transform.eulerAngles = FieldUiAngle();
-        _doorLock.transform.localScale = Vector3.one;
+        _doorLock.transform.localScale = new Vector3(1.3f, 1, 1);
     }
 
     private Vector3 CameraDistance()
