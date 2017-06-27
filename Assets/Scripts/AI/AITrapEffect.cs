@@ -57,7 +57,7 @@ public class AITrapEffect : MonoBehaviour
     {
         //人が転ぶアニメーション記述
         //未実装
-        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER, 2.0f);
+        _victimAnimation.ChangeAnimation(VictimAnimationStatus.STAGGER);
         StartCoroutine(Deceleration());
     }
 
@@ -68,10 +68,20 @@ public class AITrapEffect : MonoBehaviour
 
         var killer = _aiGenerator.GetKiller().GetComponent<AIController>();
 
+        if (killer == null)
+            yield break;
+
         _aiController.DefaultSpeed = killer.DefaultSpeed / 2;
         _aiController.HurryUpSpeed = killer.HurryUpSpeed / 2;
 
-        yield return new WaitForSeconds(2.0f);
+        float time = 2.0f;
+        while (time > 0)
+        {
+            time -= Time.deltaTime;
+            _aiController.DefaultSpeed = killer.DefaultSpeed / 2;
+            _aiController.HurryUpSpeed = killer.HurryUpSpeed / 2;
+            yield return null;
+        }
 
         _aiController = GetComponent<AIController>();
 
