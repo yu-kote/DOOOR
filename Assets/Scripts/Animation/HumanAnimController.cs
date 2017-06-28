@@ -29,8 +29,10 @@ public class HumanAnimController : MonoBehaviour
 
         var camera = ai_generator.View3dCamera;
         var prefab = _human.GetComponent<Script_SpriteStudio_ControlPrefab>();
-        prefab.InstanceManagerDraw = camera.GetComponent<Script_SpriteStudio_ManagerDraw>();
 
+        var manager_draw = camera.GetComponent<Script_SpriteStudio_ManagerDraw>();
+        prefab.InstanceManagerDraw = manager_draw;
+        manager_draw.CameraTarget = GameObject.Find("MainCamera").GetComponent<Camera>();
     }
 
     void Update()
