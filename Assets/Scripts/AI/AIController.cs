@@ -43,6 +43,9 @@ public class AIController : MonoBehaviour
     private bool _moveStop;
     public bool MoveStop { get { return _moveStop; } set { _moveStop = value; } }
 
+    private bool _isDead;
+    public bool IsDead { get { return _isDead; } set { _isDead = value; } }
+
 
     void Start()
     {
@@ -55,6 +58,7 @@ public class AIController : MonoBehaviour
 
         _currentNode = _nodeManager.SearchOnNodeHuman(gameObject);
         GetMovement().Speed = _defaultSpeed;
+        _isDead = false;
     }
 
     void Update()
@@ -184,7 +188,7 @@ public class AIController : MonoBehaviour
         var exit_node = ExitNode();
         if (exit_node == null)
             yield break;
-        
+
         if (_moveMode != MoveEmotion.TARGET_MOVE)
             yield break;
         var mover = gameObject.AddComponent<AITargetMove>();
@@ -299,7 +303,11 @@ public class AIController : MonoBehaviour
 
     public void BeKilled()
     {
-        StopMovement(2f, () => Destroy(gameObject));
+        StopMovement(2f, () =>
+        {
+            _isDead = true;
+            StopMovement(2f, () => { Destroy(gameObject); });
+        });
         OnDisable();
         GetComponent<VictimAnimation>().DeadAnimation();
 
