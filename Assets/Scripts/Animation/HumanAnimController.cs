@@ -46,11 +46,21 @@ public class HumanAnimController : MonoBehaviour
 
     void VictimAnimationStatusUpdate()
     {
+        if (_currentVictimAnimStatus == VictimAnimationStatus.DEAD &&
+            GetComponent<AIController>().IsDead)
+        {
+            _root.AnimationStop();
+            return;
+        }
+
+
         if (_currentVictimAnimStatus == GetComponent<VictimAnimation>().AnimStatus)
             return;
 
         _currentVictimAnimStatus = GetComponent<VictimAnimation>().AnimStatus;
         _root.AnimationPlay((int)_currentVictimAnimStatus);
+
+
     }
 
     void KillerAnimationStatusUpdate()

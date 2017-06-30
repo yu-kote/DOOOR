@@ -142,10 +142,8 @@ public class AITrapEffect : MonoBehaviour
                 else
                     _isReverseDoor = false;
 
-        Observable.Timer(TimeSpan.FromSeconds(1f)).Subscribe(_ =>
-        {
-            door.StartClosing();
-        }).AddTo(gameObject);
+        // ドアを閉める関数を開始する
+        StartCoroutine(ClosingDoor(door));
 
         if (door._doorStatus == Door.DoorStatus.OPEN)
             return;
@@ -161,4 +159,10 @@ public class AITrapEffect : MonoBehaviour
         }
     }
 
+    private IEnumerator ClosingDoor(Door door)
+    {
+        yield return new WaitForSeconds(1.0f);
+        while (door.StartClosing() == false)
+            yield return null;
+    }
 }

@@ -275,7 +275,7 @@ public class AIGenerator : MonoBehaviour
     public Vector2 KillerPopCell(int stage_num)
     {
         if (stage_num == 1)
-            return new Vector2(6, 0);
+            return new Vector2(8, 0);
         if (stage_num == 2)
             return new Vector2(11, 1);
         if (stage_num == 3)
